@@ -7,13 +7,20 @@ export const useProfileStore = defineStore('profile', {
     state: () => {
         return {
             userList: [] as Profile[],
-            activeUser: null as Profile | null,
+            activeUser: null as ActiveUserInfo | null,
             currentUser: null as Profile | null
         }
-    }
+    },
+    persist: true
 })
 
 interface UserInfo {
     firstName: string
     lastName: string
+}
+
+interface ActiveUserInfo {
+    role: string
+    id: string
+    email: string
 }

@@ -12,7 +12,7 @@
       </thead>
       <tbody>
         <tr
-          v-for="user in users.userList"
+          v-for="user in profileStore.userList"
           :key="user.firstName"
         >
           <td>{{ user.firstName }}</td>
@@ -27,43 +27,19 @@ import { defineComponent, watch } from 'vue'
 import { mapStores } from 'pinia'
 import { useProfileStore } from '@/store/profile'
 import { useQuery } from '@vue/apollo-composable'
-import { provideApolloClient } from "@vue/apollo-composable";
-import gql from 'graphql-tag'
-import { ApolloClient, InMemoryCache } from '@apollo/client/core'
-
+import { GET_ALL_PROFILES_QUERY } from '../../api/Queries'
 
 export default defineComponent({ 
   
   beforeMount() {
-    const GET_ALL_PROFILES_QUERY = gql`
-            {
-                getAllProfiles {
-                    id
-                    email
-                    profilePassword
-                    firstName
-                    lastName
-                    patronymic
-                    profileRole
-                    studentGroup
-                    studentCourse
-                }
-            }
-            `
-
-    const cache = new InMemoryCache()
-
-    const apolloClient = new ApolloClient({
-      cache,
-      uri: 'http://localhost:8084/graphql',
-    })
-
-    const { onResult } = provideApolloClient(apolloClient)(() => useQuery(GET_ALL_PROFILES_QUERY))
+    
+    const { onResult } = useQuery(GET_ALL_PROFILES_QUERY)
 
     onResult(queryResult => {
       this.loading = queryResult.loading
       if (!queryResult.loading) {
-        this.users.userList = queryResult.data.getAllProfiles
+        console.log(this.profileStore)
+        this.profileStore.userList = queryResult.data.getAllProfiles
       }
       console.log(queryResult.networkStatus)
     })
@@ -74,7 +50,7 @@ export default defineComponent({
   },
   data () {
       return {
-          users: useProfileStore(),
+          profileStore: useProfileStore(),
           loading: true
       }
   },
