@@ -7,10 +7,9 @@ import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
 import { loadFonts } from './plugins/webfontloader'
-import { DefaultApolloClient } from '@vue/apollo-composable'
+import { DefaultApolloClient, provideApolloClient } from '@vue/apollo-composable'
 import { ApolloClient, InMemoryCache } from '@apollo/client/core'
-
-loadFonts()
+import piniaPluginPersistedState from "pinia-plugin-persistedstate"
 
 const cache = new InMemoryCache()
 
@@ -19,27 +18,27 @@ const apolloClient = new ApolloClient({
   uri: 'http://localhost:8084/graphql',
 })
 
-const myCustomLightTheme: ThemeDefinition = {
-  dark: false,
-  colors: {
-    background: '#FFFFFF',
-    surface: '#FFFFFF',
-    primary: '#6200EE',
-    'primary-darken-1': '#3700B3',
-    secondary: '#03DAC6',
-    'secondary-darken-1': '#018786',
-    error: '#B00020',
-    info: '#2196F3',
-    success: '#4CAF50',
-    warning: '#FB8C00',
+const theme: ThemeDefinition = {
+  "dark": false,
+  "colors": {
+    "background": "#F5F5F5",
+    "surface": "#FFFFFF",
+    "primary": "#50A6FF",
+    "secondary": "#E6E9FF",
+    "error": "#F44336",
+    "info": "#2196F3",
+    "success": "#4CAF50",
+    "warning": "#FFC107",
+    "on-background": "#212121",
+    "on-surface": "#212121"
   }
-}
+};
 
 const vuetify = createVuetify({
   theme: {
-    defaultTheme: 'myCustomLightTheme',
+    defaultTheme: 'theme',
     themes: {
-      myCustomLightTheme,
+      theme,
     }
   },
   icons: {
@@ -54,10 +53,12 @@ const vuetify = createVuetify({
 })
 
 const pinia = createPinia()
+pinia.use(piniaPluginPersistedState)
 
 const app = createApp({
   setup () {
-    provide(DefaultApolloClient, apolloClient)
+    provide(DefaultApolloClient, apolloClient),
+    provideApolloClient(apolloClient)
   },
 
   render: () => h(App),

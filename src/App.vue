@@ -23,3 +23,9 @@ export default defineComponent({
   },
 })
 </script>
+
+<style>
+#app {
+  font-family: "Roboto", sans-serif;
+}
+</style>

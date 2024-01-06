@@ -8,6 +8,13 @@
         </template>
 
         <v-app-bar-title>WiseTasks</v-app-bar-title>
+        <v-btn
+          density="comfortable"
+          icon="mdi-login"
+          @click="login"
+          >
+
+        </v-btn>
       </v-app-bar>
 </template>
 
@@ -15,6 +22,10 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-    
+    methods: {
+      login() {
+        this.$router.push('/signin')
+      }
+    }
 })
 </script>

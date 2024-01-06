@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import ProfilesView from '../views/ProfilesView.vue'
+import SignInComponent from '../components/profile/SignInComponent.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -11,6 +12,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/profile/:id',
     name: 'profile',
     component: ProfilesView
+  },
+  {
+    path: '/signin',
+    name: 'signIn',
+    component: SignInComponent
   }
   // {
   //   path: '/about',
