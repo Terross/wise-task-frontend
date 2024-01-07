@@ -24,7 +24,7 @@ import { defineComponent } from 'vue'
 export default defineComponent({
     methods: {
       login() {
-        this.$router.push('/signin')
+        this.$router.push('/auth/signin')
       }
     }
 })

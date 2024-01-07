@@ -27,7 +27,7 @@ import { defineComponent, watch } from 'vue'
 import { mapStores } from 'pinia'
 import { useProfileStore } from '@/store/profile'
 import { useQuery } from '@vue/apollo-composable'
-import { GET_ALL_PROFILES_QUERY } from '../../api/Queries'
+import { GET_ALL_PROFILES_QUERY } from '@/api/Queries'
 
 export default defineComponent({ 
   
