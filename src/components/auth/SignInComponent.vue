@@ -5,12 +5,14 @@
 				label="Email"
 				color="primary"
 				v-model="email"
+                variant="solo-filled"
 			>
 			</v-text-field>
 			<v-text-field
-					label="Пароль"
-					color="primary"
-					v-model="password"
+                label="Пароль"
+                color="primary"
+                v-model="password"
+                variant="solo-filled"
 			>
 			</v-text-field>
 			<v-btn
@@ -28,9 +30,9 @@
 
 <script lang="ts">
 import { useProfileStore } from '@/store/profile'
+import { SIGN_IN } from '@/api/Mutations'
 import { useMutation, useQuery } from '@vue/apollo-composable'
 import { defineComponent } from 'vue'
-import { SIGN_IN } from '../../api/Mutations'
 
 export default defineComponent({
     data () {
@@ -43,7 +45,7 @@ export default defineComponent({
     },
     methods: {
 			login(event: any) {
-        this.loading = true
+                this.loading = true
 				const { mutate: signIn, onDone, onError } = useMutation(SIGN_IN)
 				
 				const request = {
@@ -56,16 +58,16 @@ export default defineComponent({
 				signIn(request)
 
 				onDone(response => {
-          this.loading = false
-          const token = response.data.signIn.token
-          const jwtData = token.split('.')[1]
-          const decodedJwtJsonData = window.atob(jwtData)
-          const decodedJwtData = JSON.parse(decodedJwtJsonData)
-          const user = {
-            role: decodedJwtData.role,
-            id: decodedJwtData.id,
-            email: decodedJwtData.email
-          }
+                    this.loading = false
+                    const token = response.data.signIn.token
+                    const jwtData = token.split('.')[1]
+                    const decodedJwtJsonData = window.atob(jwtData)
+                    const decodedJwtData = JSON.parse(decodedJwtJsonData)
+                    const user = {
+                        role: decodedJwtData.role,
+                        id: decodedJwtData.id,
+                        email: decodedJwtData.email
+                    }
           this.profileStore.activeUser = user
 				})
 

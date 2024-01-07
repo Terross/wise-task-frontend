@@ -1,17 +1,16 @@
 import { defineStore } from "pinia";
 import { useQuery } from '@vue/apollo-composable'
 import gql from "graphql-tag";
-import { Profile } from "@/__generated__/graphql";
+// import { Profile } from "@/__generated__/graphql";
 
 export const useProfileStore = defineStore('profile', {
     state: () => {
         return {
-            userList: [] as Profile[],
+            userList: [] as any,
             activeUser: null as ActiveUserInfo | null,
-            currentUser: null as Profile | null
+            currentUser: null as any | null
         }
-    },
-    persist: true
+    }
 })
 
 interface UserInfo {
