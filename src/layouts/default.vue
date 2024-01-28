@@ -1,7 +1,9 @@
 <template>
     <v-app>
       <Bar />
+      
       <View />
+      
     </v-app>
   </template>
   

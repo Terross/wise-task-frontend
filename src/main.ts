@@ -26,7 +26,7 @@ const apolloClient = new ApolloClient({
 
 const app = createApp({
     setup () {
-      provide(DefaultApolloClient, apolloClient),
+      // provide(DefaultApolloClient, apolloClient), ??? creating 2 requests instead of 1
       provideApolloClient(apolloClient)
     },
   

@@ -22,6 +22,11 @@
               >
               </v-text-field>
               <v-text-field
+                label="Отчество"
+                color="primary"
+                v-model="patronymic">
+              </v-text-field>
+              <v-text-field
                 label="Email"
                 color="primary"
                 v-model="email"
@@ -39,6 +44,19 @@
                 label="Повторите пароль"
                 color="primary"
                 v-model="repeatedPassword"
+                variant="solo-filled"
+              >
+              </v-text-field>
+              <v-select
+                label="Роль"
+                :items="['Студент', 'Преподаватель']"
+                v-model="role"
+                variant="solo-filled"
+              ></v-select>
+              <v-text-field v-if="role=='Студент'"
+                label="Группа"
+                color="primary"
+                v-model="group"
                 variant="solo-filled"
               >
               </v-text-field>
@@ -76,6 +94,14 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { useProfileStore } from '@/store/profile'
+import { SIGN_UP } from '@/api/Mutations'
+import { useMutation } from '@vue/apollo-composable'
+
+enum Role {
+  Студент = "STUDENT",
+  Преподаватель = "TEACHER"
+}
 
 export default defineComponent({
   data () {
@@ -84,8 +110,12 @@ export default defineComponent({
       email :'',
       firstName: '',
       lastName: '',
+      patronymic: '',
       password: '',
       repeatedPassword: '',
+      role: 'Студент',
+      group: '',
+      profileStore: useProfileStore(),
       firstNameRules: [
       (value: string) => {
           if (value?.length > 3) return true
@@ -97,7 +127,47 @@ export default defineComponent({
   },
   methods: {
     signUp() {
-      console.log(123)
+      this.loading = true
+      const { mutate, onDone, onError } = useMutation(SIGN_UP)
+
+      const request = {
+        signUpRequest: {
+          profile: {
+            email: this.email,
+            profilePassword: this.password,
+            firstName: this.firstName,
+            lastName: this.lastName,
+            patronymic: this.patronymic,
+            profileRole: Role[this.role as keyof typeof Role],
+            studentGroup: this.group,
+          }
+        }
+      }
+
+      mutate(request)
+
+      onDone(response => {
+        this.loading = false
+        const token = response.data.signUp.token
+        const jwtData = token.split('.')[1]
+        const decodedJwtJsonData = window.atob(jwtData)
+        const decodedJwtData = JSON.parse(decodedJwtJsonData)
+        const user = {
+            role: decodedJwtData.role,
+            id: decodedJwtData.id,
+            email: decodedJwtData.email
+        }
+        this.profileStore.activeUser = user
+      })
+
+      onError(({graphQLErrors}) => {
+        this.loading = false
+        if (graphQLErrors) {
+          graphQLErrors.map(({message}) => {
+            console.error(message)
+          })
+        } 
+      })
     },
     signIn() {
       this.$router.push('/auth/signin')

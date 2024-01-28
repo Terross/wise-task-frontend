@@ -11,7 +11,6 @@ export const GET_ALL_PROFILES_QUERY = gql`
         patronymic
         profileRole
         studentGroup
-        studentCourse
     }
 }
 `
