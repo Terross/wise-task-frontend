@@ -81,16 +81,16 @@ export default defineComponent({
 				signIn(request)
 
 				onDone(response => {
-                    this.loading = false
-                    const token = response.data.signIn.token
-                    const jwtData = token.split('.')[1]
-                    const decodedJwtJsonData = window.atob(jwtData)
-                    const decodedJwtData = JSON.parse(decodedJwtJsonData)
-                    const user = {
-                        role: decodedJwtData.role,
-                        id: decodedJwtData.id,
-                        email: decodedJwtData.email
-                    }
+          this.loading = false
+          const token = response.data.signIn.token
+          const jwtData = token.split('.')[1]
+          const decodedJwtJsonData = window.atob(jwtData)
+          const decodedJwtData = JSON.parse(decodedJwtJsonData)
+          const user = {
+              role: decodedJwtData.role,
+              id: decodedJwtData.id,
+              email: decodedJwtData.email
+          }
           this.profileStore.activeUser = user
 				})
 
