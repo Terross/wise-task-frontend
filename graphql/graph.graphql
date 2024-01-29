@@ -1,0 +1,69 @@
+input CreateGraphRequest {
+   graph: GraphInput!
+}
+
+input GenerateGraphRequest {
+    vertexCount: Int!
+    edgeCount: Int!
+    isDirect: Boolean!
+    isSaved: Boolean!
+}
+
+input GraphInput {
+    id: ID!
+    vertexCount: Int!
+    edgeCount: Int!
+    isDirect: Boolean!
+    vertexList: [VertexInput]!
+    edgeList: [EdgeInput]!
+}
+
+input VertexInput {
+    id: Int!
+    weight: Int!
+    label: String!
+    xCoordinate: Int!
+    yCoordinate: Int!
+    color: Color!
+}
+
+input EdgeInput {
+    source: Int!
+    target: Int!
+    weight: Int!
+    label: String!
+    color: Color!
+}
+
+type Graph {
+    id: String!
+    vertexCount: Int!
+    edgeCount: Int!
+    isDirect: Boolean!
+    vertexList: [Vertex]!
+    edgeList: [Edge]!
+}
+
+type Vertex {
+    id: Int!
+    weight: Int!
+    label: String!
+    xCoordinate: Int!
+    yCoordinate: Int!
+    color: Color!
+}
+
+type Edge {
+    source: Int!
+    target: Int!
+    weight: Int!
+    label: String!
+    color: Color!
+}
+
+enum Color {
+    GRAY
+    RED
+    BLUE
+    GREEN
+}

@@ -45,9 +45,6 @@ export default defineComponent({
     })
     
   },
-  computed: {
-      ...mapStores(useProfileStore)
-  },
   data () {
       return {
           profileStore: useProfileStore(),

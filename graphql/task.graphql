@@ -1,0 +1,73 @@
+input TaskInput {
+    id: ID!
+    name: String!
+    description: String!
+    authorId: ID!
+    category: Category!
+    graph: GraphInput
+    conditionList: [ConditionInput]!
+}
+
+input TaskSolutionInput {
+    id: ID!
+    taskId: ID!
+    authorId: ID!
+    graph: GraphInput!
+}
+
+input ConditionInput {
+    id: ID!
+    taskId: ID!
+    pluginId: ID!
+    answer: AnswerInput!
+}
+
+input AnswerInput {
+    id: ID!
+    pluginType: PluginType!
+    value: String!
+}
+
+type Task {
+    id: ID!
+    name: String!
+    description: String!
+    authorId: ID!
+    category: Category!
+    graph: Graph
+    conditionList: [Condition]
+}
+
+type TaskSolution {
+    id: ID!
+    taskId: ID!
+    authorId: ID!
+    graph: Graph
+    isCorrect: Boolean!
+    pluginResultList: [PluginResult]
+}
+
+type PluginResult {
+    id: ID!
+    pluginId: ID!
+    isCorrect: Boolean!
+    answer: Answer!
+    exceptedAnswer: Answer!
+}
+
+type Condition {
+    id: ID!
+    taskId: ID!
+    pluginId: ID!
+    answer: Answer!
+}
+
+type Answer {
+    id: ID!
+    pluginType: PluginType!
+    value: String!
+}
+
+enum Category {
+    BASIC
+}
