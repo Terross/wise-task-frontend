@@ -1,0 +1,72 @@
+input PluginInput {
+    id: ID!
+    name: String!
+    description: String!
+    category: String!
+    authorId: ID!
+    jarName: String
+    jarFile: String
+    beanName: String
+    pluginType: PluginType!
+    isInternal: Boolean!
+}
+
+input SolutionInput {
+    pluginId: ID!
+    pluginType: PluginType!
+    payload: Payload!
+    additionalPayload: AdditionalPayload
+}
+
+input Payload {
+    discriminator: PayloadType!
+    graph: GraphInput
+}
+
+input AdditionalPayload {
+    discriminator: AdditionPayloadType!
+    otherGraph: GraphInput
+    handwrittenAnswer: String
+}
+
+type Plugin {
+    id: ID!
+    name: String!
+    description: String!
+    category: String!
+    authorId: ID!
+    jarName: String
+    jarFile: String
+    beanName: String
+    pluginType: PluginType!
+    isInternal: Boolean!
+}
+
+type ImplementationResult {
+    result: Boolean!
+    graphTestResults: [GraphTestResult]!
+}
+
+type GraphTestResult {
+    graphId: ID!
+    originalTimeResult: Int!
+    timeResult: Int!
+    result: String!
+    originalResult: String!
+}
+
+enum PluginType {
+    GRAPH_PROPERTY,
+    GRAPH_CHARACTERISTIC,
+    GRAPH_NEW_GRAPH,
+    GRAPH_STRING
+}
+
+enum PayloadType {
+    GRAPH
+}
+
+enum AdditionPayloadType {
+    GRAPH,
+    STRING
+}

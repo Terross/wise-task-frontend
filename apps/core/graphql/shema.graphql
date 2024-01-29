@@ -1,0 +1,44 @@
+type Query {
+    #profile
+    getAllProfiles: [Profile]!
+    getProfile(id: ID!): Profile!
+
+    #graph
+    getGraphById(id: ID!): Graph!
+
+    #plugin
+    getAllPlugins: [Plugin]!
+    getPlugin(id: ID!): Plugin!
+
+    #task
+    getTask(id: ID!): Task!
+    getAllTasks: [Task]!
+    getTaskSolution(id: ID!): TaskSolution!
+    getAllTaskSolutions(userId: ID!, taskId: ID!): [TaskSolution]!
+    getUserSolutionStatistic(userId: ID!): [TaskSolution]!
+}
+
+type Mutation {
+    #profile
+    signUp(signUpRequest: SignUpRequest!): Token!
+    signIn(signInRequest: SignInRequest!): Token!
+    updateProfile(profile: ProfileInput): Profile!
+    deleteProfile(id: ID!): String!
+
+    #graph
+    createGraph(graph: CreateGraphRequest!): Graph!
+    generateGraph(generateGraphRequest: GenerateGraphRequest!): Graph
+
+    #plugin
+    createPlugin(plugin: PluginInput!): Plugin
+    updatePlugin(plugin: PluginInput!): Plugin
+    deletePlugin(id: ID!): String!
+    checkPluginSolution(solution: SolutionInput!): String!
+    checkPluginImplementation(id: ID!, file: String!): ImplementationResult!
+
+    #task
+    deleteTask(id: ID!): String!
+    createTask(task: TaskInput!): Task!
+    updateTask(task: TaskInput!): Task!
+    solveTask(solution: TaskSolutionInput!): TaskSolution!
+}
