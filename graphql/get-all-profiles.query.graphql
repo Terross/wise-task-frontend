@@ -1,5 +1,0 @@
-query getAllProfiles {
-  profile {
-    firstName
-  }
-}

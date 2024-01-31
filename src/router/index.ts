@@ -12,18 +12,16 @@ import { useProfileStore } from '@/store/profile'
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   extendRoutes: (routes: any) => [
+    ...setupLayouts(routes),
     {
       path: '/*',
-      redirect: (to: { query: any }) => {
-        const profileStore = useProfileStore()
-        const { activeUser } = profileStore
-        
+      redirect: () => {
+        const { activeUser } = useProfileStore()
         return activeUser == null ? 
           'auth/signIn' : 
           'profiles'
       },
     },
-    ...setupLayouts(routes),
   ],
 })
 
