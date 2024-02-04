@@ -38,15 +38,19 @@ export default defineComponent({
   methods: {
     showTaskConstructor() {
       this.$router.push('/taskconstructor')
+      this.$emit('hideMenu')
     },
     showTaskList() {
       this.$router.push('/tasks')
+      this.$emit('hideMenu')
     },
     showModuleList() {
       this.$router.push('/modules')
+      this.$emit('hideMenu')
     },
     showProfileList() {
       this.$router.push('/profiles')
+      this.$emit('hideMenu')
     }
   }
 })

@@ -1,5 +1,5 @@
 <template>
-    <ProfilesList />
+    <profiles-component />
 </template>
   
 <script lang="ts">

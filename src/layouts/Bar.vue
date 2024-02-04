@@ -26,7 +26,7 @@
         >
       </v-btn>
     </v-app-bar>
-    <navigation :drawer="drawer"></navigation>
+    <navigation :drawer="drawer" @hideMenu="drawer = !drawer"></navigation>
 </template>
 
 <script lang='ts'>
