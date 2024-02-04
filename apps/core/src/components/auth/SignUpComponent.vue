@@ -97,11 +97,7 @@ import { defineComponent } from 'vue'
 import { useProfileStore } from '@/store/profile'
 import { SIGN_UP } from '@/api/Mutations'
 import { useMutation } from '@vue/apollo-composable'
-
-enum Role {
-  Студент = "STUDENT",
-  Преподаватель = "TEACHER"
-}
+import { Role } from '@/common/Role'
 
 export default defineComponent({
   data () {
