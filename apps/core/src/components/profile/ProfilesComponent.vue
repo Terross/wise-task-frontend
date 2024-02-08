@@ -1,9 +1,9 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <v-row>
       <v-col cols="12" sm="9">
         <v-card>
-          <profiles-list></profiles-list>
+          <profiles-table-component></profiles-table-component>
         </v-card>
       </v-col>
       <v-col cols="12" sm="3">
@@ -16,7 +16,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import ProfilesList from './ProfilesList.vue'
+import ProfilesTableComponent from './ProfilesTableComponent.vue'
 
 export default defineComponent({
   setup() {
