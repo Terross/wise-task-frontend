@@ -6,19 +6,27 @@
       density="compact"
       >
         <template v-slot:item.patronymic="{ value }">
-            {{ value.length === 0 ? '-' : value }}
+          {{ value.length === 0 ? '-' : value }}
         </template>
         <template v-slot:item.studentGroup="{ value }">
-            {{ value.length === 0 ? '-' : value }}
+          {{ value.length === 0 ? '-' : value }}
         </template>
         <template v-slot:item.profileRole="{ value }">
-            {{ mapRole(value) }}
+          {{ mapRole(value) }}
+        </template>
+        <template v-slot:item.actions="{ item }">
+          <v-icon
+            size="small"
+            @click="toProfile(item.id)"
+          >
+            mdi-eye
+          </v-icon>
         </template>
     </v-data-table>
   </template>
 
 <script lang="ts">
-import { defineComponent, watch } from 'vue'
+import { defineComponent } from 'vue'
 import { useProfileStore } from '@/store/profile'
 import { useQuery } from '@vue/apollo-composable'
 import { GET_ALL_PROFILES_QUERY } from '@/api/Queries'
@@ -50,12 +58,16 @@ export default defineComponent({
             { title: 'Группа', align: 'start', key: 'studentGroup' },
             { title: 'E-mail', align: 'start', key: 'email' },
             { title: 'Роль', align: 'start', key: 'profileRole' },
+            { title: '', align: 'start', key: 'actions', sortable: false}
           ]
       }
   },
   methods: {
     mapRole(role: string) {
       return getKeyByValue(role)
+    },
+    toProfile(id: string) {
+      this.$router.push('/profiles/' + id)
     }
   }
     

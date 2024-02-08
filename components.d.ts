@@ -13,6 +13,7 @@ declare module 'vue' {
     ProfileFilterComponent: typeof import('./src/components/profile/ProfileFilterComponent.vue')['default']
     ProfilesComponent: typeof import('./src/components/profile/ProfilesComponent.vue')['default']
     ProfilesList: typeof import('./src/components/profile/ProfilesList.vue')['default']
+    ProfilesTableComponent: typeof import('./src/components/profile/ProfilesTableComponent.vue')['default']
     PulginList: typeof import('./src/components/module/PulginList.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
