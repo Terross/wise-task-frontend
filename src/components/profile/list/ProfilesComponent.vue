@@ -16,7 +16,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import ProfilesTableComponent from './ProfilesTableComponent.vue'
 
 export default defineComponent({
   setup() {
