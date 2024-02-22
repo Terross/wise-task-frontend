@@ -7,7 +7,7 @@ export const useProfileStore = defineStore('profile', {
         return {
             userList: [] as Profile[],
             activeUser: null as ActiveUserInfo | null,
-            currentUser: null as any | null,
+            currentUser: null as Profile | null,
             filterState: {
                 email: '',
                 firstName: '',
