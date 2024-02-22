@@ -11,10 +11,10 @@ import { registerPlugins } from '@/plugins'
 import App from './App.vue'
 
 // Composables
-import { createApp, provide, h } from 'vue'
+import { createApp,  h } from 'vue'
 
 // Apollo
-import { DefaultApolloClient, provideApolloClient } from '@vue/apollo-composable'
+import { provideApolloClient } from '@vue/apollo-composable'
 import { ApolloClient, InMemoryCache } from '@apollo/client/core'
 
 const cache = new InMemoryCache({addTypename: false})
