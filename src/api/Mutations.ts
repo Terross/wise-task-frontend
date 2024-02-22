@@ -15,3 +15,18 @@ export const SIGN_UP = gql`
         }
     }
 `
+
+export const UPDATE_PROFILE = gql`
+    mutation updateProfile ($profile: ProfileInput!) {
+        updateProfile (profile: $profile) {
+            id
+            email
+            profilePassword
+            firstName
+            lastName
+            patronymic
+            profileRole
+            studentGroup
+        }
+    }
+`

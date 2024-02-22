@@ -1,15 +1,25 @@
 <template>
-	<v-card>
+	<v-skeleton-loader
+    v-if="loading"
+    class="mx-auto border"
+    type="table"
+  ></v-skeleton-loader>
+	<v-card v-if="!loading">
 		<v-card-title>Карточка решенных задач</v-card-title>
 	</v-card>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { computed, defineComponent } from 'vue'
 
 export default defineComponent({
-	setup() {
-			
+	props: {
+    profile: Object,
+    loading: Boolean
+  },
+	setup(props) {
+    const profile = computed(() => props.profile)
+    return { profile }
 	},
 })
 </script>

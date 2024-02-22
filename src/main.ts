@@ -17,7 +17,7 @@ import { createApp, provide, h } from 'vue'
 import { DefaultApolloClient, provideApolloClient } from '@vue/apollo-composable'
 import { ApolloClient, InMemoryCache } from '@apollo/client/core'
 
-const cache = new InMemoryCache()
+const cache = new InMemoryCache({addTypename: false})
 
 const apolloClient = new ApolloClient({
   cache,

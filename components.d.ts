@@ -10,6 +10,7 @@ declare module 'vue' {
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     ModuleList: typeof import('./src/components/module/ModuleList.vue')['default']
     ProfileComponent: typeof import('./src/components/profile/ProfileComponent.vue')['default']
+    ProfileDialogComponent: typeof import('./src/components/profile/ProfileDialogComponent.vue')['default']
     ProfileFilterComponent: typeof import('./src/components/profile/list/ProfileFilterComponent.vue')['default']
     ProfileInfoComponent: typeof import('./src/components/profile/ProfileInfoComponent.vue')['default']
     ProfilesComponent: typeof import('./src/components/profile/list/ProfilesComponent.vue')['default']
