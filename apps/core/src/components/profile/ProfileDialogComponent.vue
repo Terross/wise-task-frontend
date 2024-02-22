@@ -43,7 +43,7 @@
 
 <script lang="ts">
 import { UPDATE_PROFILE } from '@/api/Mutations'
-import { defineComponent, toRefs, defineEmits } from 'vue'
+import { defineComponent, toRefs } from 'vue'
 import { useMutation } from '@vue/apollo-composable'
 import { storeToRefs } from 'pinia'
 import { useProfileStore } from '@/store/profile'
@@ -53,6 +53,7 @@ export default defineComponent({
 		dialog: Boolean,
 		profile: Object
 	},
+	emits: ['hideDialog'],
 	setup(props: any) {
 		const { dialog, profile } = toRefs(props)
     const { currentUser, userList } = storeToRefs(useProfileStore())
@@ -73,7 +74,7 @@ export default defineComponent({
 
       onDone(response => {
         const profile = response.data.updateProfile
-        this.$emit("hideDialogWithUpdating", false, profile)
+        this.$emit("hideDialog", false)
         this.currentUser = profile
         const index = this.userList.findIndex(x => x.id == profile.id);
         this.userList[index] = profile

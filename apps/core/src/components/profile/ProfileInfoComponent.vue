@@ -23,15 +23,12 @@
   <profile-dialog-component
     v-bind:dialog="dialog"
     v-bind:profile="profileModel"
-    @hideDialog="dialog = false"
-    @hideDialogWithUpdating="updateProfile"></profile-dialog-component>
+    @hideDialog="dialog = false"></profile-dialog-component>
 </template>
 
 <script lang="ts">
-import { useProfileStore } from '@/store/profile'
-import { Profile, Role } from '@/__generated__/graphql'
-import { storeToRefs } from 'pinia'
-import { computed, defineComponent, reactive, ref, defineEmits } from 'vue'
+import { Role } from '@/__generated__/graphql'
+import { computed, defineComponent, reactive, ref, toRefs } from 'vue'
 
 export default defineComponent({
   props: {
@@ -39,17 +36,9 @@ export default defineComponent({
     loading: Boolean
   },
   setup(props) {
-    const profile = computed(() => {
-      if (props.profile && props.profile.getProfile) {
-        return props.profile.getProfile
-      } else {
-        return null
-      }
-    })
+    const { profile } = toRefs(props)
     const items = computed(() => {
-      if (profile == null) {
-        return []
-      } else {
+      if (profile.value) {
         const result = []
         result.push(
           {
@@ -83,28 +72,23 @@ export default defineComponent({
         }
         console.log(profile.value.profileRole === Role.Student)
         return result
+      } else {
+        return []
       }
     })
     const dialog = ref(false)
-    const { currentUser } = storeToRefs(useProfileStore())
-    const profileModel = reactive({ ...currentUser.value })
+    const profileModel = reactive({ ...profile.value })
     return { 
       profile,
       items, 
       dialog, 
-      profileModel,
-      currentUser
+      profileModel
      }
   },
   methods: {
     updateProfileClick() {
       this.dialog = !this.dialog
-      Object.assign(this.profileModel, { ...this.currentUser })
-    },
-    updateProfile(dialog: boolean, profile: Profile) {
-      console.log(123)
-      this.$emit("updateProfile", profile)
-      this.dialog = dialog
+      Object.assign(this.profileModel, { ...this.profile })
     }
   }
 })

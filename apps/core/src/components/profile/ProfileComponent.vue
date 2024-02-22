@@ -3,17 +3,16 @@
     <v-row>
       <v-col cols="4">
         <profile-info-component 
-          v-bind:profile="result" 
-          v-bind:loading="loading"
-          @updateProfile="updateProfile1"></profile-info-component>
+          v-bind:profile="profile" 
+          v-bind:loading="loading"></profile-info-component>
       </v-col>
       <v-col cols="8">
         <v-row>
           <v-col cols="12">
-            <profile-task-component v-bind:profile="result" v-bind:loading="loading"></profile-task-component>
+            <profile-task-component v-bind:profile="profile" v-bind:loading="loading"></profile-task-component>
           </v-col>         
           <v-col cols="12">
-            <profile-solutions-component v-bind:profile="result" v-bind:loading="loading"></profile-solutions-component>
+            <profile-solutions-component v-bind:profile="profile" v-bind:loading="loading"></profile-solutions-component>
           </v-col>
         </v-row>
       </v-col>
@@ -22,32 +21,29 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, defineEmits } from 'vue'
+import { defineComponent, computed } from 'vue'
 import { GET_PROFILE } from '@/api/Queries'
 import { useQuery } from '@vue/apollo-composable'
 import { useProfileStore } from '@/store/profile'
-import { Profile } from '@/__generated__/graphql'
+import { storeToRefs } from 'pinia'
+
 
 export default defineComponent({
   setup(props) {
-    const { result, onResult, loading, error } = useQuery(GET_PROFILE, { id: props.id })
-    onResult(result => {
-      if (result.data) {
-        useProfileStore().currentUser = result.data.getProfile
+    const { onResult, loading, error } = useQuery(GET_PROFILE, { id: props.id })
+    const { currentUser } = storeToRefs(useProfileStore())
+    const profile = computed(() => currentUser)
+    onResult(response => {
+      if (response.data) {
+        useProfileStore().currentUser = response.data.getProfile
       }
     })
     return {
-      result,
+      profile,
       loading,
       error
     }
   },
-  props: ["id"],
-  methods: {
-    updateProfile1(profile: Profile) {
-      console.log(12344)
-      this.result = profile
-    }
-  }
+  props: ["id"]
 })
 </script>
