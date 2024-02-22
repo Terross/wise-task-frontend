@@ -17,6 +17,7 @@
     "graphql-tag": "^2.12.6",
     "lodash": "^4.17.21",
     "roboto-fontface": "*",
+    "v-network-graph": "^0.9.15",
     "vue": "^3.3.0",
     "vuetify": "^3.0.0"
   },
