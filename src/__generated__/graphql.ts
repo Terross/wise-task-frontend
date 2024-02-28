@@ -1,5 +1,4 @@
 /* eslint-disable */
-import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -100,6 +99,8 @@ export type Graph = {
   edgeList: Array<Maybe<Edge>>;
   id: Scalars['String']['output'];
   isDirect: Scalars['Boolean']['output'];
+  isNamed: Scalars['Boolean']['output'];
+  name?: Maybe<Scalars['String']['output']>;
   vertexCount: Scalars['Int']['output'];
   vertexList: Array<Maybe<Vertex>>;
 };
@@ -109,6 +110,8 @@ export type GraphInput = {
   edgeList: Array<InputMaybe<EdgeInput>>;
   id: Scalars['ID']['input'];
   isDirect: Scalars['Boolean']['input'];
+  isNamed: Scalars['Boolean']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
   vertexCount: Scalars['Int']['input'];
   vertexList: Array<InputMaybe<VertexInput>>;
 };
@@ -164,7 +167,7 @@ export type MutationCheckPluginSolutionArgs = {
 
 
 export type MutationCreateGraphArgs = {
-  graph: CreateGraphRequest;
+  graph: GraphInput;
 };
 
 
@@ -312,6 +315,7 @@ export type Query = {
   getAllTasks: Array<Maybe<Task>>;
   /** graph */
   getGraphById: Graph;
+  getGraphLibrary: Array<Maybe<Graph>>;
   getPlugin: Plugin;
   getProfile: Profile;
   /** task */
@@ -440,11 +444,3 @@ export type VertexInput = {
   xCoordinate: Scalars['Int']['input'];
   yCoordinate: Scalars['Int']['input'];
 };
-
-export type GetProfileQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetProfileQuery = { __typename?: 'Query', getProfile: { __typename?: 'Profile', firstName: string } };
-
-
-export const GetProfileDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getProfile"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getProfile"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"StringValue","value":"135b7ab5-5f98-4fb3-8890-a650ce791ae4","block":false}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}}]}}]}}]} as unknown as DocumentNode<GetProfileQuery, GetProfileQueryVariables>;
