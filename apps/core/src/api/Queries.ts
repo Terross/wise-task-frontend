@@ -29,3 +29,31 @@ query getProfile ($id: ID!) {
     }
 }
 `
+
+export const GET_GRAPH_LIBRARY = gql`
+{
+    getGraphLibrary {
+      id
+      vertexCount
+      edgeCount
+      isDirect
+      vertexList {
+        id
+        weight
+        label
+        xCoordinate
+        yCoordinate
+        color
+      }
+      edgeList {
+        source
+        target
+        weight
+        label
+        color
+      }
+      isNamed
+      name
+    }
+}
+`

@@ -1,43 +1,45 @@
 <template>
-	<v-network-graph
-		class="graph"
-		:nodes="nodes"
-		:edges="edges"
-		:layouts="layouts"
-	/>
+	<v-card max-width="444">
+		<v-card-title>Какой-то граф</v-card-title>
+		<v-card-text>
+			<v-network-graph
+				class="graph"
+				:nodes="nodes"
+				:edges="edges"
+				:layouts="layouts"
+				:configs="configs"
+			/>
+		</v-card-text>
+	</v-card>
+	
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, reactive } from 'vue'
+import * as vNG from "v-network-graph"
+import { configs } from "@/helper/graphConfig"
+import { useQuery } from '@vue/apollo-composable'
+import { GET_GRAPH_LIBRARY } from '@/api/Queries'
+import { toVGraph } from '@/helper/graph'
+
 
 export default defineComponent({
 	setup() {
-		const nodes = {
-			node1: { name: "Node 1" },
-			node2: { name: "Node 2" },
-			node3: { name: "Node 3" },
-			node4: { name: "Node 4" },
-		}
-
-		const edges = {
-			edge1: { source: "node1", target: "node2" },
-			edge2: { source: "node2", target: "node3" },
-			edge3: { source: "node3", target: "node4" },
-		}
-
-		const layouts = {
-			nodes: {
-				node1: { x: 0, y: 0 },
-				node2: { x: 50, y: 50 },
-				node3: { x: 100, y: 0 },
-				node4: { x: 150, y: 50 },
-			},
-		}
-
+		const nodes = reactive({ })
+		const edges = reactive({ })
+		const layouts = reactive({ nodes: {} })
+		console.log(123)
+		const { onResult, loading, error } = useQuery(GET_GRAPH_LIBRARY)
+		onResult(response => {
+			if (response.data) {
+				toVGraph(response.data.getGraphLibrary[0], nodes, edges, layouts)
+			}
+		})
 		return {
 			nodes,
 			edges,
-			layouts
+			layouts,
+			configs
 		}
 	},
 })
