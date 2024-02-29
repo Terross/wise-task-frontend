@@ -12,7 +12,7 @@ export const configs = vNG.defineConfigs<Node, Edge>({
         },
         selectable: true,
         label: {
-          visible: node => !!node.label,
+          visible: node => !!(node.label || node.weight),
         },
         focusring: {
           color: "darkgray",
