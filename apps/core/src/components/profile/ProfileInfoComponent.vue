@@ -70,7 +70,6 @@ export default defineComponent({
             }
           )
         }
-        console.log(profile.value.profileRole === Role.Student)
         return result
       } else {
         return []

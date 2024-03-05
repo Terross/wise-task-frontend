@@ -1,0 +1,3 @@
+<template>
+    <GraphLibraryComponent/>
+</template>
