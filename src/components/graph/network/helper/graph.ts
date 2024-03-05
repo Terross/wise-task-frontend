@@ -22,8 +22,10 @@ export interface Layout {
     nodeId: number | undefined
 }
 
-export function toVGraph(graph: Graph, nodes: any, edges: any, layouts: any) {
-    console.log(graph)
+export function toVGraph(graph: Graph) {
+    const nodes = {}
+    const edges = {}
+    const layouts = { nodes: {} }
     graph.vertexList.forEach(node => {
         addNode({ 
             id: node?.id,
@@ -56,6 +58,12 @@ export function toVGraph(graph: Graph, nodes: any, edges: any, layouts: any) {
         }, edges)
         edgeId++
     })
+    return {
+		name: graph.name,
+		edges: edges,
+		nodes: nodes,
+		layouts: layouts
+	}
 }
 
 export function toGraph(nodes: Node[], edges: Edge[]) {
@@ -81,5 +89,4 @@ export function addEdge(edge: Omit<Edge, "source" | "target">, edges: any) {
 export function addLayout(layout: Layout, layouts: any) {
     const nodeId = `node${layout.nodeId}`
     layouts.nodes[nodeId] = { ...layout }
-    console.log(layouts)
 }
