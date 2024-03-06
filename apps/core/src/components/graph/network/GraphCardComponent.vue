@@ -54,4 +54,4 @@ export default defineComponent({
 		}
 	},
 })
-</script>@/components/graph/network/helper/graphConfig@/components/graph/network/helper/graph
+</script>
