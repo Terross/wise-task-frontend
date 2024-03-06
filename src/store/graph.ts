@@ -7,6 +7,15 @@ export const useGraphStore = defineStore('graph', {
     state: () => {
         return {
             graphLibrary: [] as Graph[],
+            activeGraph: {
+                edges: {},
+                nodes: {},
+                layouts: {}
+            } as Graph,
+            constructorGraphState: {
+                isDirect: false,
+                mode: ConstructionMode.MOVE
+            } as any
         }
     }
 })
@@ -17,4 +26,11 @@ interface Graph {
     edges: Object,
     nodes: Object,
     layouts: Object
+}
+
+enum ConstructionMode {
+    MOVE,
+    DRAW,
+    EDIT,
+    DELETE
 }
