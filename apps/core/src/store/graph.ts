@@ -1,6 +1,4 @@
 import { Maybe } from "@/__generated__/graphql";
-import { Edge, Layout } from "@/components/graph/network/helper/graph";
-import { Node } from "@/components/graph/network/helper/graph";
 import { defineStore } from "pinia";
 
 export const useGraphStore = defineStore('graph', {
@@ -10,11 +8,11 @@ export const useGraphStore = defineStore('graph', {
             activeGraph: {
                 edges: {},
                 nodes: {},
-                layouts: {}
+                layouts: { nodes: {} }
             } as Graph,
             constructorGraphState: {
                 isDirect: false,
-                mode: ConstructionMode.MOVE
+                mode: ConstructionMode.DRAW
             } as any
         }
     }
@@ -23,12 +21,12 @@ export const useGraphStore = defineStore('graph', {
 
 interface Graph {
     name: Maybe<string> | undefined,
-    edges: Object,
-    nodes: Object,
-    layouts: Object
+    edges: any,
+    nodes: any,
+    layouts: any
 }
 
-enum ConstructionMode {
+export enum ConstructionMode {
     MOVE,
     DRAW,
     EDIT,

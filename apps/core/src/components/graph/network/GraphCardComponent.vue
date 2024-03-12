@@ -3,7 +3,7 @@
 		<v-card-title>{{ graph.name }}</v-card-title>
 		<v-card-text>
 			<v-network-graph
-				class="graph"
+				:style="graphStyle"
 				:nodes="graph.nodes"
 				:edges="graph.edges"
 				:layouts="graph.layouts"
@@ -11,7 +11,7 @@
 			>
 			<template
 				#override-node-label="{
-					scale, text, x, y, config, textAnchor, dominantBaseline
+					nodeId, scale, x, y, config, textAnchor, dominantBaseline
 				}"
 				>
 				<text
@@ -21,7 +21,7 @@
 					text-anchor="middle"
 					dominant-baseline="central"
 					fill="#ffffff"
-				>{{ text.weight }}</text>
+				>{{ graph.nodes[nodeId].weight }}</text>
 				<text
 					x="0"
 					y="0"
@@ -30,8 +30,22 @@
 					:dominant-baseline="dominantBaseline"
 					:fill="config.color"
 					:transform="`translate(${x} ${y})`"
-				>{{ text.label }}</text>
-				</template>
+				>{{ graph.nodes[nodeId].label }}</text>
+			</template>
+			<template #edge-label="{ edgeId, ...slotProps }">
+			<v-edge-label
+				:text="`${graph.edges[edgeId].weight}`"
+				align="center"
+				vertical-align="below"
+				v-bind="slotProps"
+			/>
+			<v-edge-label
+				:text="`${graph.edges[edgeId].label}`"
+				align="center"
+				vertical-align="above"
+				v-bind="slotProps"
+			/>
+			</template>
 			</v-network-graph>
 		</v-card-text>
 	</v-card>
@@ -48,9 +62,17 @@ export default defineComponent({
 	},
 	setup(props) {
 		const { graph } = toRefs(props)
+		const graphStyle = computed(() => {
+			return {
+				// "width": size.value + "px",
+				// "height": size.value + "px",
+				"border": "1px solid #000"
+			}
+		})
 		return {
 			graph,
-			configs
+			configs,
+			graphStyle
 		}
 	},
 })

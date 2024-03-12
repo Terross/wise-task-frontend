@@ -1,11 +1,14 @@
 <template>
-  <v-card :min-height="height">
+  <v-card :min-height="size" >
 		<v-network-graph
-			class="graph"
+			ref="graph"
+			:style="graphStyle"
 			:nodes="activeGraph.nodes"
 			:edges="activeGraph.edges"
 			:layouts="activeGraph.layouts"
 			:configs="configs"
+			:event-handlers="eventHandlers"
+			:class="{ linkMode: isLinkMode, linking: linkModeState.linking }"
 		>
 		<template
 			#override-node-label="{
@@ -29,24 +32,53 @@
 				:fill="config.color"
 				:transform="`translate(${x} ${y})`"
 			>{{ text.label }}</text>
-			</template>
+		</template>
+		<template #edge-label="{ edgeId, ...slotProps }">
+      <v-edge-label
+				:text="`${activeGraph.edges[edgeId].weight}`"
+        align="center"
+        vertical-align="below"
+        v-bind="slotProps"
+      />
+      <v-edge-label
+				:text="`${activeGraph.edges[edgeId].label}`"
+        align="center"
+        vertical-align="above"
+        v-bind="slotProps"
+      />
+    </template>
+		<template #linking="{ scale }">
+      <line
+        v-if="temporaryLinkLinePos"
+        v-bind="temporaryLinkLinePos"
+        :stroke="
+          linkModeState.linking && linkModeState.to ? '#4466cc' : 'hotpink'
+        "
+        :stroke-width="4 * scale"
+      />
+    </template>
+    <template #override-node="slotProps">
+      <v-shape v-bind="{ ...slotProps, ...nodeHandlers(slotProps.nodeId) }" />
+    </template>
 		</v-network-graph>
 	</v-card>
 </template>
 
 <script lang="ts">
-import { useGraphStore } from '@/store/graph';
+import { ConstructionMode, useGraphStore } from '@/store/graph';
 import { storeToRefs } from 'pinia';
-import { defineComponent, computed } from 'vue'
+import { defineComponent, computed, ref } from 'vue'
+import * as vNG from "v-network-graph"
 import { configs } from "@/components/graph/network/helper/graphConfig"
 import { useDisplay } from 'vuetify/lib/framework.mjs';
-
+import { useLinkMode } from "@/components/graph/network/helper/linkMode";
+import { createEventHandlers } from './helper/events';
+import { generateEdgeIdFuncFactory } from './helper/graph';
 
 export default defineComponent({
 	setup() {
-		const { activeGraph } = storeToRefs(useGraphStore())
 		const { name } = useDisplay()
-		const height = computed(() => {
+		const size = computed(() => {
 			switch (name.value) {
 					case 'xs': return 220
 					case 'sm': return 400
@@ -56,10 +88,36 @@ export default defineComponent({
 					case 'xxl': return 1200
 				}
 		})
+		const graphStyle = computed(() => {
+			return {
+				// "width": size.value + "px",
+				"height": size.value + "px",
+				"border": "1px solid #000"
+			}
+		})
+		const { activeGraph, constructorGraphState } = storeToRefs(useGraphStore())
+		const graph = ref<vNG.Instance>()
+		const isLinkMode = computed(() => constructorGraphState.value.mode === ConstructionMode.DRAW)
+		const { eventHandlers } = createEventHandlers(graph)
+		const { nodeHandlers, linkModeState, temporaryLinkLinePos } = useLinkMode(
+			graph,
+			isLinkMode,
+			activeGraph.value.edges,
+			activeGraph.value.layouts,
+			generateEdgeIdFuncFactory(activeGraph.value.edges)
+		);
+		
 		return {
 			activeGraph,
 			configs,
-			height
+			size,
+			eventHandlers,
+			graphStyle,
+			graph,
+			isLinkMode,
+			linkModeState,
+			nodeHandlers,
+			temporaryLinkLinePos
 		}
 	},
 })

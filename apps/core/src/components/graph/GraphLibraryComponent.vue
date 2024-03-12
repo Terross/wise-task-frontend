@@ -20,12 +20,8 @@ import { GET_GRAPH_LIBRARY } from '@/api/Queries'
 import { useGraphStore } from '@/store/graph'
 import { toVGraph } from './network/helper/graph'
 import { Graph } from '@/__generated__/graphql'
-import ControlPanelComponent from './network/ControlPanelComponent.vue'
-
-
 
 export default defineComponent({
-  components: { ControlPanelComponent },
     setup() {
 			const { onResult } = useQuery(GET_GRAPH_LIBRARY)
 			onResult(response => {
