@@ -26,15 +26,13 @@ export function toVGraph(graph: Graph) {
     const nodes = {}
     const edges = {}
     const layouts = { nodes: {} }
+    const generateEdgeId = generateEdgeIdFuncFactory(edges)
     graph.vertexList.forEach(node => {
         addNode({ 
             id: node?.id,
             color: node?.color,
-            label: {
-                label: node?.label,
-                weight: node?.weight
-            }, 
-            weight: node?.weight 
+            label: node?.label,
+            weight: node?.weight,
         }, nodes)
         addLayout({
             x: node?.xCoordinate,
@@ -43,20 +41,15 @@ export function toVGraph(graph: Graph) {
         }, layouts)
     });
 
-    let edgeId = 1;
     graph.edgeList.forEach(edge => {
         addEdge({
-            id: edgeId,
+            id: generateEdgeId(`node${edge?.source}`, `node${edge?.target}`),
             color: edge?.color,
-            label: {
-                label: edge?.label,
-                weight: edge?.weight
-            }, 
+            label: edge?.label,
             weight: edge?.weight,
             source: edge?.source,
             target: edge?.target 
         }, edges)
-        edgeId++
     })
     return {
 		name: graph.name,
@@ -66,7 +59,7 @@ export function toVGraph(graph: Graph) {
 	}
 }
 
-export function toGraph(nodes: Node[], edges: Edge[]) {
+export function toGraph(nodes: Node[], edges: Edge[], layouts: Layout[]) {
     
 }
 
@@ -80,13 +73,25 @@ export function addNode(node: Omit<Node, "name">, nodes: any) {
 export function addEdge(edge: Omit<Edge, "source" | "target">, edges: any) {
     const source = `node${edge.source}`
     const target = `node${edge.target}`
-    const edgeId = `edge${edge.id}`
     edge.source = source
     edge.target = target
-    edges[edgeId] = { source, target, ...edge } as Edge
+    edges[edge.id] = { source, target, ...edge } as Edge
 }
 
 export function addLayout(layout: Layout, layouts: any) {
     const nodeId = `node${layout.nodeId}`
     layouts.nodes[nodeId] = { ...layout }
+}
+
+export function generateEdgeIdFuncFactory(edges: vNG.Edges) {
+    return (source: string, target: string) => {
+        const base = `${source}=>${target}`;
+        let index = 0;
+        let edgeId = `${base}.${index}`;
+        while (edgeId in edges) {
+            index++;
+            edgeId = `${base}.${index}`;
+        }
+        return edgeId;
+    };
 }
