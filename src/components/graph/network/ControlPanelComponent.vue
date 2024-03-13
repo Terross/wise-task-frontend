@@ -7,6 +7,7 @@
 					<v-btn color="primary" @click="setDrawMode">DRAW</v-btn>
 					<v-btn color="primary" @click="setEditMode">EDIT</v-btn>
 					<v-btn color="primary" @click="setDeleteMode">DELETE</v-btn>
+					<v-checkbox label="Ориентированный" v-model="isDirect"></v-checkbox>
 				</v-card>
 			</v-col>
 		</v-row>
@@ -16,11 +17,23 @@
 <script lang="ts">
 import { ConstructionMode, useGraphStore } from '@/store/graph';
 import { storeToRefs } from 'pinia';
-import { defineComponent } from 'vue'
+import { defineComponent, computed } from 'vue'
 
 export default defineComponent({
 	setup() {
-			
+		const { constructorGraphState } = storeToRefs(useGraphStore())
+		const isDirect = computed({
+			get() {
+				return constructorGraphState.value.isDirect
+			},
+			set(value) {
+				constructorGraphState.value.isDirect = value
+			}
+		})
+
+		return {
+			isDirect
+		}
 	},
 	methods: {
 		setMoveMode() {

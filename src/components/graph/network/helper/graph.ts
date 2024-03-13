@@ -53,6 +53,7 @@ export function toVGraph(graph: Graph) {
     })
     return {
 		name: graph.name,
+        isDirect: graph.isDirect,
 		edges: edges,
 		nodes: nodes,
 		layouts: layouts
@@ -65,7 +66,7 @@ export function toGraph(nodes: Node[], edges: Edge[], layouts: Layout[]) {
 
 export function addNode(node: Omit<Node, "name">, nodes: any) {
     const nodeId = `node${node.id}`
-    const name = node.label
+    const name = node.id
     node.id = nodeId
     nodes[nodeId] = { name, ...node } as Node
 }

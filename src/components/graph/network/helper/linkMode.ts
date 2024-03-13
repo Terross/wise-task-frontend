@@ -1,6 +1,7 @@
 import { Ref, computed, ref, watch } from "vue";
 import * as vNG from "v-network-graph";
 import { addEdge } from "./graph";
+import { stat } from "fs";
 
 type LinkingState =
   | {
@@ -11,6 +12,7 @@ type LinkingState =
       from: string;
       to?: string;
       pos: { x: number; y: number };
+      self: boolean;
     };
 
 export function useLinkMode(
@@ -36,6 +38,7 @@ export function useLinkMode(
       linking: true,
       from: nodeId,
       pos: point,
+      self: false
     };
   }
 
@@ -66,15 +69,18 @@ export function useLinkMode(
     state.value = {
       ...state.value,
       to: nodeId,
+      self: true
     };
   }
 
   function leaveNode(nodeId: string) {
     if (!state.value.linking) return;
     if (state.value.to !== nodeId) return;
+    console.log('leave')
     state.value = {
       ...state.value,
       to: undefined,
+      self: true
     };
   }
 
@@ -83,7 +89,7 @@ export function useLinkMode(
     event.stopPropagation();
     document.removeEventListener("pointerup", cancel);
     document.removeEventListener("pointermove", move);
-
+    if (state.value.self) {
       const source = state.value.from;
       const target = nodeId;
       addEdge({
@@ -94,6 +100,9 @@ export function useLinkMode(
         source: source.substring(4),
         target: target.substring(4)
       }, edges)
+      state.value = { ...state.value, self: false };
+    }
+    
     state.value = { linking: false };
   }
 

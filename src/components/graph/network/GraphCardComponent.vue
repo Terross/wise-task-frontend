@@ -54,7 +54,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, reactive, ref, toRefs } from 'vue'
-import { configs } from "@/components/graph/network/helper/graphConfig"
+import { directGraphConfigs, undirectGraphConfigs } from "@/components/graph/network/helper/graphConfig"
 
 export default defineComponent({
 	props: {
@@ -69,6 +69,12 @@ export default defineComponent({
 				"border": "1px solid #000"
 			}
 		})
+		const configs = computed(() => {
+			if (graph.value && graph.value.isDirect) {
+				return directGraphConfigs
+			}
+			return undirectGraphConfigs
+		}) 
 		return {
 			graph,
 			configs,

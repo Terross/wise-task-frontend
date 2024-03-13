@@ -21,6 +21,7 @@ export const useGraphStore = defineStore('graph', {
 
 interface Graph {
     name: Maybe<string> | undefined,
+    isDirect: boolean,
     edges: any,
     nodes: any,
     layouts: any
