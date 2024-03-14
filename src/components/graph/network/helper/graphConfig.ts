@@ -2,6 +2,10 @@ import * as vNG from "v-network-graph"
 import { Node, Edge } from "./graph"
 
 export const undirectGraphConfigs = vNG.defineConfigs<Node, Edge>({
+    view: {
+      autoPanAndZoomOnLoad: "fit-content",
+      fitContentMargin: "8%"
+    },
     node: {
         normal: {
           type: "circle",
@@ -46,6 +50,10 @@ export const undirectGraphConfigs = vNG.defineConfigs<Node, Edge>({
 })
 
 export const directGraphConfigs = vNG.defineConfigs<Node, Edge>({
+  view: {
+    autoPanAndZoomOnLoad: "fit-content",
+    fitContentMargin: "8%"
+  },
   node: {
       normal: {
         type: "circle",

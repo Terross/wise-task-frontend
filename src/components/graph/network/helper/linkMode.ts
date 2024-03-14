@@ -1,7 +1,7 @@
 import { Ref, computed, ref, watch } from "vue";
 import * as vNG from "v-network-graph";
 import { addEdge } from "./graph";
-import { stat } from "fs";
+import { Graph } from "@/store/graph";
 
 type LinkingState =
   | {
@@ -18,8 +18,7 @@ type LinkingState =
 export function useLinkMode(
   graph: Ref<vNG.Instance | undefined>,
   isLinkMode: Ref<boolean>,
-  edges: vNG.Edges,
-  layouts: vNG.Layouts,
+  activeGraph: Ref<Graph>,
   generateEdgeId: (source: string, target: string) => string
 ) {
   const state = ref<LinkingState>({
@@ -76,7 +75,6 @@ export function useLinkMode(
   function leaveNode(nodeId: string) {
     if (!state.value.linking) return;
     if (state.value.to !== nodeId) return;
-    console.log('leave')
     state.value = {
       ...state.value,
       to: undefined,
@@ -97,9 +95,9 @@ export function useLinkMode(
         color: "BLUE",
         label: '',
         weight: '',
-        source: source.substring(4),
-        target: target.substring(4)
-      }, edges)
+        source: source,
+        target: target
+      }, activeGraph.value.edges)
       state.value = { ...state.value, self: false };
     }
     
@@ -108,9 +106,9 @@ export function useLinkMode(
 
   const temporaryLinkLinePos = computed(() => {
     if (state.value.linking) {
-      const n1 = graph.value?.translateFromSvgToDomCoordinates(layouts.nodes[state.value.from]) ?? { x: 0, y: 0 };
+      const n1 = graph.value?.translateFromSvgToDomCoordinates(activeGraph.value.layouts.nodes[state.value.from]) ?? { x: 0, y: 0 };
       if (state.value.to) {
-        const n2 = graph.value?.translateFromSvgToDomCoordinates(layouts.nodes[state.value.to]) ?? { x: 0, y: 0 };
+        const n2 = graph.value?.translateFromSvgToDomCoordinates(activeGraph.value.layouts.nodes[state.value.to]) ?? { x: 0, y: 0 };
         return {
           x1: n1.x,
           y1: n1.y,

@@ -6,16 +6,11 @@
 				<graph-constructor-component></graph-constructor-component>
 			</v-col>
 			<v-col>
-				<v-row>
-					<v-col>
-						<graph-input-component></graph-input-component>
-					</v-col>
-					<v-col>
-						<graph-filter-component></graph-filter-component>
-					</v-col>
-				</v-row>
 				<v-col>
-					<named-graph-list-component></named-graph-list-component>
+					<graph-input-component></graph-input-component>
+				</v-col>
+				<v-col>
+					<graph-table-component></graph-table-component>
 				</v-col>
 			</v-col>
 		</v-row>
@@ -33,6 +28,7 @@ import { Graph } from '@/__generated__/graphql'
 
 export default defineComponent({
     setup() {
+			useGraphStore().graphLibrary = []
 			const { onResult } = useQuery(GET_GRAPH_LIBRARY)
 			onResult(response => {
 				if (response.data) {

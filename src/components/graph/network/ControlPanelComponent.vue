@@ -3,11 +3,12 @@
 		<v-row>
 			<v-col>
 				<v-card id="edit-panel">
-					<v-btn color="primary" @click="setMoveMode">MOVE</v-btn>
-					<v-btn color="primary" @click="setDrawMode">DRAW</v-btn>
-					<v-btn color="primary" @click="setEditMode">EDIT</v-btn>
-					<v-btn color="primary" @click="setDeleteMode">DELETE</v-btn>
-					<v-checkbox label="Ориентированный" v-model="isDirect"></v-checkbox>
+					<v-col>
+						<v-btn color="primary" @click="setMoveMode">MOVE</v-btn>
+						<v-btn color="primary" @click="setDrawMode">DRAW</v-btn>
+						<v-btn color="primary" @click="setDeleteMode">DELETE</v-btn>
+						<v-checkbox label="Ориентированный" v-model="isDirect"></v-checkbox>
+					</v-col>
 				</v-card>
 			</v-col>
 		</v-row>
@@ -21,13 +22,14 @@ import { defineComponent, computed } from 'vue'
 
 export default defineComponent({
 	setup() {
-		const { constructorGraphState } = storeToRefs(useGraphStore())
+		const { constructorGraphState, activeGraph } = storeToRefs(useGraphStore())
 		const isDirect = computed({
 			get() {
 				return constructorGraphState.value.isDirect
 			},
 			set(value) {
 				constructorGraphState.value.isDirect = value
+				activeGraph.value.isDirect = value
 			}
 		})
 
@@ -43,10 +45,6 @@ export default defineComponent({
 		setDrawMode() {
 			const { constructorGraphState } = storeToRefs(useGraphStore())
 			constructorGraphState.value.mode = ConstructionMode.DRAW
-		},
-		setEditMode() {
-			const { constructorGraphState } = storeToRefs(useGraphStore())
-			constructorGraphState.value.mode = ConstructionMode.EDIT
 		},
 		setDeleteMode() {
 			const { constructorGraphState } = storeToRefs(useGraphStore())

@@ -6,6 +6,7 @@ export const useGraphStore = defineStore('graph', {
         return {
             graphLibrary: [] as Graph[],
             activeGraph: {
+                isDirect: false,
                 edges: {},
                 nodes: {},
                 layouts: { nodes: {} }
@@ -19,7 +20,8 @@ export const useGraphStore = defineStore('graph', {
 })
 
 
-interface Graph {
+export interface Graph {
+    id: Maybe<string>,
     name: Maybe<string> | undefined,
     isDirect: boolean,
     edges: any,

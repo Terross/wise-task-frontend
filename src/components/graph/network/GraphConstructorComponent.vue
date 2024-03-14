@@ -141,8 +141,7 @@ export default defineComponent({
 		const { nodeHandlers, linkModeState, temporaryLinkLinePos } = useLinkMode(
 			graph,
 			isLinkMode,
-			activeGraph.value.edges,
-			activeGraph.value.layouts,
+			activeGraph,
 			generateEdgeIdFuncFactory(activeGraph.value.edges)
 		);
 
