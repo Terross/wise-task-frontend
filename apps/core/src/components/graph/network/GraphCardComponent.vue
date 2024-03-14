@@ -1,6 +1,5 @@
 <template>
-	<v-card max-width="444">
-		<v-card-title>{{ graph.name }}</v-card-title>
+	<v-card>
 		<v-card-text>
 			<v-network-graph
 				:style="graphStyle"
@@ -55,6 +54,7 @@
 <script lang="ts">
 import { computed, defineComponent, reactive, ref, toRefs } from 'vue'
 import { directGraphConfigs, undirectGraphConfigs } from "@/components/graph/network/helper/graphConfig"
+import * as vNG from "v-network-graph"
 
 export default defineComponent({
 	props: {
@@ -74,12 +74,12 @@ export default defineComponent({
 				return directGraphConfigs
 			}
 			return undirectGraphConfigs
-		}) 
+		})
 		return {
 			graph,
 			configs,
 			graphStyle
 		}
-	},
+	}
 })
 </script>

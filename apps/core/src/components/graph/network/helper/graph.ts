@@ -1,4 +1,6 @@
-import { Graph } from "@/__generated__/graphql"
+import { Graph, Vertex, Edge as BackendEdge } from "@/__generated__/graphql"
+import { Graph as StoreGraph } from "@/store/graph"
+import { randomUUID } from "crypto"
 import * as vNG from "v-network-graph"
 
 export interface Node extends vNG.Node {
@@ -29,7 +31,7 @@ export function toVGraph(graph: Graph) {
     const generateEdgeId = generateEdgeIdFuncFactory(edges)
     graph.vertexList.forEach(node => {
         addNode({ 
-            id: node?.id,
+            id: `node${node?.id}`,
             color: node?.color,
             label: node?.label,
             weight: node?.weight,
@@ -47,11 +49,12 @@ export function toVGraph(graph: Graph) {
             color: edge?.color,
             label: edge?.label,
             weight: edge?.weight,
-            source: edge?.source,
-            target: edge?.target 
+            source: `node${edge?.source}`,
+            target: `node${edge?.target}`
         }, edges)
     })
     return {
+        id: graph.id,
 		name: graph.name,
         isDirect: graph.isDirect,
 		edges: edges,
@@ -60,22 +63,58 @@ export function toVGraph(graph: Graph) {
 	}
 }
 
-export function toGraph(nodes: Node[], edges: Edge[], layouts: Layout[]) {
-    
+export function toGraph(graph: StoreGraph) : Graph {
+    console.log(graph)
+    const vertexCount = Object.entries(graph.nodes).length
+    const edgeCount = Object.entries(graph.nodes).length
+    const isDirect = graph.isDirect
+    const isNamed = (graph.name && graph.name.length > 1) ? true : false
+    const name = graph.name
+    const vertexList = new Array<Vertex>
+    const edgeList = new Array<BackendEdge>
+    Object.entries(graph.layouts).forEach(([key, layout]) => {
+        Object.entries(layout).forEach(([k, nodeLayout]) => {
+            const node = graph.nodes[`node${nodeLayout.nodeId}`]
+            vertexList.push({
+                id: +(node.id as String).substring(4),
+                weight: +node.weight,
+                xCoordinate: +nodeLayout.x,
+                yCoordinate: +nodeLayout.y,
+                color: node.color,
+                label: node.label
+            })
+        })
+    })
+    Object.entries(graph.edges).forEach(([key, edge]) => {
+        edgeList.push({
+            source: +(edge.source as String).substring(4),
+            target: +(edge.target as String).substring(4),
+            weight: edge.weight === "" ? null : +edge.weight,
+            label: edge.label,
+            color: edge.color
+        })
+    })
+
+    return {
+        id: graph.id,
+        vertexCount: vertexCount,
+        edgeCount: edgeCount,
+        isDirect: isDirect,
+        vertexList: vertexList,
+        edgeList: edgeList,
+        isNamed: isNamed,
+        name: name
+    }
 }
 
 export function addNode(node: Omit<Node, "name">, nodes: any) {
-    const nodeId = `node${node.id}`
     const name = node.id
-    node.id = nodeId
-    nodes[nodeId] = { name, ...node } as Node
+    nodes[node.id] = { name, ...node } as Node
 }
 
 export function addEdge(edge: Omit<Edge, "source" | "target">, edges: any) {
-    const source = `node${edge.source}`
-    const target = `node${edge.target}`
-    edge.source = source
-    edge.target = target
+    const source = edge.source
+    const target = edge.target
     edges[edge.id] = { source, target, ...edge } as Edge
 }
 

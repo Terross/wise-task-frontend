@@ -66,29 +66,28 @@ export default defineComponent({
 	},
 	methods: {
 		updateProfile() {
-      const { mutate, onDone, onError } = useMutation(UPDATE_PROFILE)
-      const request = {
-        profile: this.profile
-      }
-      mutate(request)
+			const { mutate, onDone, onError } = useMutation(UPDATE_PROFILE)
+			const request = {
+				profile: this.profile
+			}
+			mutate(request)
 
-      onDone(response => {
-        const profile = response.data.updateProfile
-        this.$emit("hideDialog", false)
-        this.currentUser = profile
-        const index = this.userList.findIndex(x => x.id == profile.id);
-        this.userList[index] = profile
-      })
+			onDone(response => {
+				const profile = response.data.updateProfile
+				this.$emit("hideDialog", false)
+				this.currentUser = profile
+				const index = this.userList.findIndex(x => x.id == profile.id);
+				this.userList[index] = profile
+			})
 
-      onError(({graphQLErrors}) => {
-        this.$emit("hideDialog", false)
-        if (graphQLErrors) {
-          graphQLErrors.map(({message}) => {
-            console.error(message)
-          })
-        } 
-      })
-
+			onError(({graphQLErrors}) => {
+				this.$emit("hideDialog", false)
+				if (graphQLErrors) {
+				graphQLErrors.map(({message}) => {
+					console.error(message)
+				})
+				} 
+			})
 		},
 		hideDialog() {
 			this.$emit("hideDialog", false)

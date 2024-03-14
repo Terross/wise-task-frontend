@@ -30,3 +30,37 @@ export const UPDATE_PROFILE = gql`
         }
     }
 `
+
+export const CREATE_GRAPH = gql`
+    mutation createGraph ($graph: GraphInput!) {
+        createGraph (graph: $graph) {
+            id
+            vertexCount
+            edgeCount
+            isDirect
+            vertexList {
+                id
+                weight
+                label
+                xCoordinate
+                yCoordinate
+                color
+            }
+            edgeList {
+                source
+                target
+                weight
+                label
+                color
+            }
+            isNamed
+            name
+        }
+    }
+`
+
+export const DELETE_GRAPH = gql`
+    mutation deleteGraph ($id: ID!) {
+        deleteGraph (id: $id)
+    }
+`

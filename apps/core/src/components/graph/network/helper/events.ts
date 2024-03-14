@@ -23,7 +23,7 @@ export function createEventHandlers(
 				const point = { x: event.offsetX, y: event.offsetY }
 				const svgPoint = graph.value.translateFromDomToSvgCoordinates(point)
 				addNode({
-						id: nextNodeIndex.value,
+						id: `node${nextNodeIndex.value}`,
 						color: "BLUE",
 						label: '',
 						weight: ''

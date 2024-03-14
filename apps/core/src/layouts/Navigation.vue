@@ -26,6 +26,11 @@
           title="Пользователи" 
           value="profile"
           @click="showProfileList"></v-list-item>
+        <v-list-item
+          prepend-icon="mdi-library" 
+          title="Библиотека графов" 
+          value="graphLibrary"
+          @click="showGraphLibrary"></v-list-item>
       </v-list>
     </v-navigation-drawer>
 </template>
@@ -50,6 +55,10 @@ export default defineComponent({
     },
     showProfileList() {
       this.$router.push('/profiles')
+      this.$emit('hideMenu')
+    },
+    showGraphLibrary() {
+      this.$router.push('/graph/library')
       this.$emit('hideMenu')
     }
   }
