@@ -1,6 +1,6 @@
 <template>
   <v-card>
-		<template v-slot:text>
+	<template v-slot:text>
       <v-text-field
         v-model="search"
         label="Поиск"
@@ -88,8 +88,8 @@ export default defineComponent({
 		},
 		editItem(graph: Graph) {
 			this.activeGraph = {
-								name: null,
-								isDirect: false,
+				name: null,
+				isDirect: false,
                 edges: {},
                 nodes: {},
                 layouts: { nodes: {} }

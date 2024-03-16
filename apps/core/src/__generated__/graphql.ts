@@ -125,6 +125,12 @@ export type GraphTestResult = {
   timeResult: Scalars['Int']['output'];
 };
 
+export enum GraphType {
+  Any = 'ANY',
+  Direct = 'DIRECT',
+  Undirect = 'UNDIRECT'
+}
+
 export type ImplementationResult = {
   __typename?: 'ImplementationResult';
   graphTestResults: Array<Maybe<GraphTestResult>>;
@@ -140,6 +146,7 @@ export type Mutation = {
   /** plugin */
   createPlugin?: Maybe<Plugin>;
   createTask: Task;
+  deleteGraph: Scalars['String']['output'];
   deletePlugin: Scalars['String']['output'];
   deleteProfile: Scalars['String']['output'];
   /** task */
@@ -152,6 +159,7 @@ export type Mutation = {
   updatePlugin?: Maybe<Plugin>;
   updateProfile: Profile;
   updateTask: Task;
+  validatePlugin: Scalars['String']['output'];
 };
 
 
@@ -178,6 +186,11 @@ export type MutationCreatePluginArgs = {
 
 export type MutationCreateTaskArgs = {
   task: TaskInput;
+};
+
+
+export type MutationDeleteGraphArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -230,6 +243,11 @@ export type MutationUpdateTaskArgs = {
   task: TaskInput;
 };
 
+
+export type MutationValidatePluginArgs = {
+  id: Scalars['ID']['input'];
+};
+
 export type Payload = {
   discriminator: PayloadType;
   graph?: InputMaybe<GraphInput>;
@@ -245,8 +263,10 @@ export type Plugin = {
   beanName?: Maybe<Scalars['String']['output']>;
   category: Scalars['String']['output'];
   description: Scalars['String']['output'];
+  graphType: GraphType;
   id: Scalars['ID']['output'];
   isInternal: Scalars['Boolean']['output'];
+  isValid: Scalars['Boolean']['output'];
   jarFile?: Maybe<Scalars['String']['output']>;
   jarName?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
@@ -258,8 +278,10 @@ export type PluginInput = {
   beanName?: InputMaybe<Scalars['String']['input']>;
   category: Scalars['String']['input'];
   description: Scalars['String']['input'];
+  graphType: GraphType;
   id: Scalars['ID']['input'];
   isInternal: Scalars['Boolean']['input'];
+  isValid: Scalars['Boolean']['input'];
   jarFile?: InputMaybe<Scalars['String']['input']>;
   jarName?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];

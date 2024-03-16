@@ -32,28 +32,47 @@ query getProfile ($id: ID!) {
 
 export const GET_GRAPH_LIBRARY = gql`
 {
-    getGraphLibrary {
+  getGraphLibrary {
+    id
+    vertexCount
+    edgeCount
+    isDirect
+    vertexList {
       id
-      vertexCount
-      edgeCount
-      isDirect
-      vertexList {
-        id
-        weight
-        label
-        xCoordinate
-        yCoordinate
-        color
-      }
-      edgeList {
-        source
-        target
-        weight
-        label
-        color
-      }
-      isNamed
-      name
+      weight
+      label
+      xCoordinate
+      yCoordinate
+      color
     }
+    edgeList {
+      source
+      target
+      weight
+      label
+      color
+    }
+    isNamed
+    name
+  }
+}
+`
+
+export const GET_ALL_PLUGINS = gql`
+{
+  getAllPlugins {
+    id
+    name
+    description
+    category
+    jarName
+    jarFile
+    authorId
+    graphType
+    isValid
+    beanName
+    pluginType
+    isInternal
+  }
 }
 `

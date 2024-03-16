@@ -18,9 +18,9 @@
           @click="showTaskList"></v-list-item>
         <v-list-item 
           prepend-icon="mdi-toy-brick-plus"
-          title="Модули"
-          value="module"
-          @click="showModuleList"></v-list-item>
+          title="Плагины"
+          value="plugin"
+          @click="showPluginPage"></v-list-item>
         <v-list-item
           prepend-icon="mdi-face-man-profile" 
           title="Пользователи" 
@@ -49,8 +49,8 @@ export default defineComponent({
       this.$router.push('/tasks')
       this.$emit('hideMenu')
     },
-    showModuleList() {
-      this.$router.push('/modules')
+    showPluginPage() {
+      this.$router.push('/plugins')
       this.$emit('hideMenu')
     },
     showProfileList() {
