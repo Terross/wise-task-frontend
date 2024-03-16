@@ -64,3 +64,53 @@ export const DELETE_GRAPH = gql`
         deleteGraph (id: $id)
     }
 `
+
+export const CREATE_PLUGIN = gql`
+    mutation createPlugin ($plugin: PluginInput!) {
+        createPlugin (plugin: $plugin) {
+            id
+            name
+            description
+            category
+            jarName
+            jarFile
+            authorId
+            graphType
+            isValid
+            beanName
+            pluginType
+            isInternal
+        }
+    }
+`
+
+export const UPDATE_PLUGIN = gql`
+    mutation updatePlugin ($plugin: PluginInput!) {
+        updatePlugin (plugin: $plugin) {
+            id
+            name
+            description
+            category
+            jarName
+            jarFile
+            authorId
+            graphType
+            isValid
+            beanName
+            pluginType
+            isInternal
+        }
+    }
+`
+
+export const DELETE_PLUGIN = gql`
+    mutation deletePlugin ($id: ID!) {
+        deletePlugin (id: $id)
+    }
+`
+
+export const VALIDATE_PLUGIN = gql`
+    mutation validatePlugin ($id: ID!) {
+        validatePlugin (id: $id)
+    }
+`

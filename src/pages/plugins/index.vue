@@ -1,5 +1,5 @@
 <template>
-    <ModuleList />
+    <plugin-component />
 </template>
   
 <script lang="ts">
