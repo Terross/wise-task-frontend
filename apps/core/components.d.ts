@@ -7,6 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    CommonGraphTaskConsturctor: typeof import('./src/components/task/constructor/common/CommonGraphTaskConsturctor.vue')['default']
     ControlPanelComponent: typeof import('./src/components/graph/network/ControlPanelComponent.vue')['default']
     GraphCardComponent: typeof import('./src/components/graph/network/GraphCardComponent.vue')['default']
     GraphConstructorComponent: typeof import('./src/components/graph/network/GraphConstructorComponent.vue')['default']
@@ -16,6 +17,7 @@ declare module 'vue' {
     GraphNetworkComponent: typeof import('./src/components/graph/network/GraphNetworkComponent.vue')['default']
     GraphTableComponent: typeof import('./src/components/graph/GraphTableComponent.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
+    ImplementationTaskConstructor: typeof import('./src/components/task/constructor/implementation/ImplementationTaskConstructor.vue')['default']
     ModuleComponent: typeof import('./src/components/plugins/ModuleComponent.vue')['default']
     ModuleFilterComponent: typeof import('./src/components/plugins/ModuleFilterComponent.vue')['default']
     ModuleInputComponent: typeof import('./src/components/plugins/ModuleInputComponent.vue')['default']
@@ -44,5 +46,6 @@ declare module 'vue' {
     SignUpComponent: typeof import('./src/components/auth/SignUpComponent.vue')['default']
     TaskConstructor: typeof import('./src/components/task/constructor/TaskConstructor.vue')['default']
     TaskList: typeof import('./src/components/task/TaskList.vue')['default']
+    WithGraphTaskConstructor: typeof import('./src/components/task/constructor/graph/WithGraphTaskConstructor.vue')['default']
   }
 }
