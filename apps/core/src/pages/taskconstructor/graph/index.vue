@@ -1,5 +1,5 @@
 <template>
-    <WithGraphTaskConstructor />
+    <GraphTaskConstructorComponent />
 </template>
   
 <script lang="ts">

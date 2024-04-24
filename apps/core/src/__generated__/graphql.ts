@@ -26,44 +26,12 @@ export type AdditionalPayload = {
   otherGraph?: InputMaybe<GraphInput>;
 };
 
-export type Answer = {
-  __typename?: 'Answer';
-  id: Scalars['ID']['output'];
-  pluginType: PluginType;
-  value: Scalars['String']['output'];
-};
-
-export type AnswerInput = {
-  id: Scalars['ID']['input'];
-  pluginType: PluginType;
-  value: Scalars['String']['input'];
-};
-
-export enum Category {
-  Basic = 'BASIC'
-}
-
 export enum Color {
   Blue = 'BLUE',
   Gray = 'GRAY',
   Green = 'GREEN',
   Red = 'RED'
 }
-
-export type Condition = {
-  __typename?: 'Condition';
-  answer: Answer;
-  id: Scalars['ID']['output'];
-  pluginId: Scalars['ID']['output'];
-  taskId: Scalars['ID']['output'];
-};
-
-export type ConditionInput = {
-  answer: AnswerInput;
-  id: Scalars['ID']['input'];
-  pluginId: Scalars['ID']['input'];
-  taskId: Scalars['ID']['input'];
-};
 
 export type CreateGraphRequest = {
   graph: GraphInput;
@@ -116,6 +84,15 @@ export type GraphInput = {
   vertexList: Array<InputMaybe<VertexInput>>;
 };
 
+export type GraphResult = {
+  __typename?: 'GraphResult';
+  id: Scalars['String']['output'];
+  originalResult: Scalars['String']['output'];
+  originalTimeResult: Scalars['Float']['output'];
+  result: Scalars['String']['output'];
+  timeResult: Scalars['Float']['output'];
+};
+
 export type GraphTestResult = {
   __typename?: 'GraphTestResult';
   graphId: Scalars['ID']['output'];
@@ -145,7 +122,8 @@ export type Mutation = {
   createGraph: Graph;
   /** plugin */
   createPlugin?: Maybe<Plugin>;
-  createTask: Task;
+  createTaskGraph: TaskGraph;
+  createTaskImplementation: TaskImplementation;
   deleteGraph: Scalars['String']['output'];
   deletePlugin: Scalars['String']['output'];
   deleteProfile: Scalars['String']['output'];
@@ -155,10 +133,12 @@ export type Mutation = {
   signIn: Token;
   /** profile */
   signUp: Token;
-  solveTask: TaskSolution;
+  solveTaskGraph: SolutionGraph;
+  solveTaskImplementation: SolutionImplementation;
   updatePlugin?: Maybe<Plugin>;
   updateProfile: Profile;
-  updateTask: Task;
+  updateTaskGraph: TaskGraph;
+  updateTaskImplementation: TaskImplementation;
   validatePlugin: Scalars['String']['output'];
 };
 
@@ -184,8 +164,13 @@ export type MutationCreatePluginArgs = {
 };
 
 
-export type MutationCreateTaskArgs = {
-  task: TaskInput;
+export type MutationCreateTaskGraphArgs = {
+  task: TaskGraphInput;
+};
+
+
+export type MutationCreateTaskImplementationArgs = {
+  task: TaskImplementationInput;
 };
 
 
@@ -224,8 +209,13 @@ export type MutationSignUpArgs = {
 };
 
 
-export type MutationSolveTaskArgs = {
-  solution: TaskSolutionInput;
+export type MutationSolveTaskGraphArgs = {
+  solution: SolutionGraphInput;
+};
+
+
+export type MutationSolveTaskImplementationArgs = {
+  solution: SolutionImplementationInput;
 };
 
 
@@ -239,8 +229,13 @@ export type MutationUpdateProfileArgs = {
 };
 
 
-export type MutationUpdateTaskArgs = {
-  task: TaskInput;
+export type MutationUpdateTaskGraphArgs = {
+  task: TaskGraphInput;
+};
+
+
+export type MutationUpdateTaskImplementationArgs = {
+  task: TaskImplementationInput;
 };
 
 
@@ -273,6 +268,24 @@ export type Plugin = {
   pluginType: PluginType;
 };
 
+export type PluginInfo = {
+  __typename?: 'PluginInfo';
+  mistakeText?: Maybe<Scalars['String']['output']>;
+  pluginId: Scalars['String']['output'];
+  pluginType: PluginType;
+  sign?: Maybe<Scalars['String']['output']>;
+  value: Scalars['String']['output'];
+};
+
+export type PluginInfoInput = {
+  mistakeText?: InputMaybe<Scalars['String']['input']>;
+  order: Scalars['Int']['input'];
+  pluginId: Scalars['String']['input'];
+  pluginType: PluginType;
+  sign?: InputMaybe<Scalars['String']['input']>;
+  value: Scalars['String']['input'];
+};
+
 export type PluginInput = {
   authorId: Scalars['ID']['input'];
   beanName?: InputMaybe<Scalars['String']['input']>;
@@ -290,11 +303,10 @@ export type PluginInput = {
 
 export type PluginResult = {
   __typename?: 'PluginResult';
-  answer: Answer;
-  exceptedAnswer: Answer;
-  id: Scalars['ID']['output'];
   isCorrect: Scalars['Boolean']['output'];
-  pluginId: Scalars['ID']['output'];
+  pluginId: Scalars['String']['output'];
+  trueValue: Scalars['String']['output'];
+  value: Scalars['String']['output'];
 };
 
 export enum PluginType {
@@ -333,7 +345,7 @@ export type Query = {
   getAllPlugins: Array<Maybe<Plugin>>;
   /** profile */
   getAllProfiles: Array<Maybe<Profile>>;
-  getAllTaskSolutions: Array<Maybe<TaskSolution>>;
+  getAllTaskSolutions: Array<Maybe<Solution>>;
   getAllTasks: Array<Maybe<Task>>;
   /** graph */
   getGraphById: Graph;
@@ -342,8 +354,8 @@ export type Query = {
   getProfile: Profile;
   /** task */
   getTask: Task;
-  getTaskSolution: TaskSolution;
-  getUserSolutionStatistic: Array<Maybe<TaskSolution>>;
+  getTaskSolution: Solution;
+  getUserSolutionStatistic: Array<Maybe<Solution>>;
 };
 
 
@@ -389,6 +401,21 @@ export enum Role {
   Teacher = 'TEACHER'
 }
 
+export type Rule = {
+  __typename?: 'Rule';
+  isColor: Scalars['Boolean']['output'];
+  isDelete: Scalars['Boolean']['output'];
+  isEdit: Scalars['Boolean']['output'];
+  isMove: Scalars['Boolean']['output'];
+};
+
+export type RuleInput = {
+  isColor: Scalars['Boolean']['input'];
+  isDelete: Scalars['Boolean']['input'];
+  isEdit: Scalars['Boolean']['input'];
+  isMove: Scalars['Boolean']['input'];
+};
+
 export type SignInRequest = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
@@ -398,6 +425,48 @@ export type SignUpRequest = {
   profile: ProfileInput;
 };
 
+/**  --------------------------------------------------------------------------------- */
+export type Solution = {
+  authorId: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  isCorrect: Scalars['Boolean']['output'];
+  taskId: Scalars['String']['output'];
+};
+
+export type SolutionGraph = Solution & {
+  __typename?: 'SolutionGraph';
+  authorId: Scalars['String']['output'];
+  graph: Graph;
+  id: Scalars['ID']['output'];
+  isCorrect: Scalars['Boolean']['output'];
+  pluginResults: Array<Maybe<PluginResult>>;
+  taskId: Scalars['String']['output'];
+};
+
+/**  --------------------------------------------------------------------------------- */
+export type SolutionGraphInput = {
+  authorId: Scalars['String']['input'];
+  graph: GraphInput;
+  id: Scalars['ID']['input'];
+  taskId: Scalars['String']['input'];
+};
+
+export type SolutionImplementation = Solution & {
+  __typename?: 'SolutionImplementation';
+  authorId: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  implementationResult: Array<Maybe<GraphResult>>;
+  isCorrect: Scalars['Boolean']['output'];
+  taskId: Scalars['String']['output'];
+};
+
+export type SolutionImplementationInput = {
+  authorId: Scalars['String']['input'];
+  code: Scalars['String']['input'];
+  id: Scalars['ID']['input'];
+  taskId: Scalars['String']['input'];
+};
+
 export type SolutionInput = {
   additionalPayload?: InputMaybe<AdditionalPayload>;
   payload: Payload;
@@ -405,43 +474,73 @@ export type SolutionInput = {
   pluginType: PluginType;
 };
 
+/**  ------------------------------------------------------------------------- */
 export type Task = {
-  __typename?: 'Task';
-  authorId: Scalars['ID']['output'];
-  category: Category;
-  conditionList?: Maybe<Array<Maybe<Condition>>>;
+  authorId: Scalars['String']['output'];
+  category: Scalars['String']['output'];
+  description: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  isPublic: Scalars['Boolean']['output'];
+  name: Scalars['String']['output'];
+  taskType: TaskType;
+};
+
+export type TaskGraph = Task & {
+  __typename?: 'TaskGraph';
+  authorId: Scalars['String']['output'];
+  category: Scalars['String']['output'];
+  condition: Array<Maybe<PluginInfo>>;
   description: Scalars['String']['output'];
   graph?: Maybe<Graph>;
   id: Scalars['ID']['output'];
+  isHiddenMistake: Scalars['Boolean']['output'];
+  isPublic: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
+  rule: Rule;
+  taskType: TaskType;
 };
 
-export type TaskInput = {
-  authorId: Scalars['ID']['input'];
-  category: Category;
-  conditionList: Array<InputMaybe<ConditionInput>>;
+export type TaskGraphInput = {
+  authorId: Scalars['String']['input'];
+  category: Scalars['String']['input'];
+  condition: Array<InputMaybe<PluginInfoInput>>;
   description: Scalars['String']['input'];
   graph?: InputMaybe<GraphInput>;
-  id: Scalars['ID']['input'];
+  id?: InputMaybe<Scalars['ID']['input']>;
+  isHiddenMistake: Scalars['Boolean']['input'];
+  isPublic: Scalars['Boolean']['input'];
   name: Scalars['String']['input'];
+  rule: RuleInput;
+  taskType: TaskType;
 };
 
-export type TaskSolution = {
-  __typename?: 'TaskSolution';
-  authorId: Scalars['ID']['output'];
-  graph?: Maybe<Graph>;
+export type TaskImplementation = Task & {
+  __typename?: 'TaskImplementation';
+  authorId: Scalars['String']['output'];
+  category: Scalars['String']['output'];
+  description: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  isCorrect: Scalars['Boolean']['output'];
-  pluginResultList?: Maybe<Array<Maybe<PluginResult>>>;
-  taskId: Scalars['ID']['output'];
+  isPublic: Scalars['Boolean']['output'];
+  name: Scalars['String']['output'];
+  pluginId: Scalars['String']['output'];
+  taskType: TaskType;
 };
 
-export type TaskSolutionInput = {
-  authorId: Scalars['ID']['input'];
-  graph: GraphInput;
+export type TaskImplementationInput = {
+  authorId: Scalars['String']['input'];
+  category: Scalars['String']['input'];
+  description: Scalars['String']['input'];
   id: Scalars['ID']['input'];
-  taskId: Scalars['ID']['input'];
+  isPublic: Scalars['Boolean']['input'];
+  name: Scalars['String']['input'];
+  pluginId: Scalars['String']['input'];
+  taskType: TaskType;
 };
+
+export enum TaskType {
+  Graph = 'GRAPH',
+  Implementation = 'IMPLEMENTATION'
+}
 
 export type Token = {
   __typename?: 'Token';

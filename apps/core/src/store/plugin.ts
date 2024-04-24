@@ -17,7 +17,8 @@ export const usePluginStore = defineStore('plugin', {
                 category: "",
                 isValid: false,
                 isFiltered: false
-            } as PluginFilter
+            } as PluginFilter,
+            persist: true
         }
     },
     getters: {

@@ -7,6 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    CommonGraphTaskConstructor: typeof import('./src/components/task/constructor/common/CommonGraphTaskConstructor.vue')['default']
     CommonGraphTaskConsturctor: typeof import('./src/components/task/constructor/common/CommonGraphTaskConsturctor.vue')['default']
     ControlPanelComponent: typeof import('./src/components/graph/network/ControlPanelComponent.vue')['default']
     GraphCardComponent: typeof import('./src/components/graph/network/GraphCardComponent.vue')['default']
@@ -16,6 +17,8 @@ declare module 'vue' {
     GraphLibraryComponent: typeof import('./src/components/graph/GraphLibraryComponent.vue')['default']
     GraphNetworkComponent: typeof import('./src/components/graph/network/GraphNetworkComponent.vue')['default']
     GraphTableComponent: typeof import('./src/components/graph/GraphTableComponent.vue')['default']
+    GraphTaskConstructor: typeof import('./src/components/task/constructor/graph/GraphTaskConstructor.vue')['default']
+    GraphTaskConstructorComponent: typeof import('./src/components/task/constructor/graph/GraphTaskConstructorComponent.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     ImplementationTaskConstructor: typeof import('./src/components/task/constructor/implementation/ImplementationTaskConstructor.vue')['default']
     ModuleComponent: typeof import('./src/components/plugins/ModuleComponent.vue')['default']
@@ -44,8 +47,20 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     SignInComponent: typeof import('./src/components/auth/SignInComponent.vue')['default']
     SignUpComponent: typeof import('./src/components/auth/SignUpComponent.vue')['default']
+    TaskConditionComponent: typeof import('./src/components/task/constructor/graph/TaskConditionComponent.vue')['default']
+    TaskConditionList: typeof import('./src/components/task/constructor/graph/TaskConditionList.vue')['default']
+    TaskConditionListComponent: typeof import('./src/components/task/constructor/graph/TaskConditionListComponent.vue')['default']
+    TaskConditionTable: typeof import('./src/components/task/constructor/graph/TaskConditionTable.vue')['default']
+    TaskConditionTableComponent: typeof import('./src/components/task/constructor/graph/TaskConditionTableComponent.vue')['default']
     TaskConstructor: typeof import('./src/components/task/constructor/TaskConstructor.vue')['default']
+    TaskConstructorComponent: typeof import('./src/components/task/constructor/TaskConstructorComponent.vue')['default']
+    TaskGraphLibrary: typeof import('./src/components/task/constructor/graph/TaskGraphLibrary.vue')['default']
+    TaskGraphLibraryComponent: typeof import('./src/components/task/constructor/graph/TaskGraphLibraryComponent.vue')['default']
     TaskList: typeof import('./src/components/task/TaskList.vue')['default']
+    TaskListComponent: typeof import('./src/components/task/TaskListComponent.vue')['default']
+    TaskPluginList: typeof import('./src/components/task/constructor/graph/TaskPluginList.vue')['default']
+    TaskPluginListComponent: typeof import('./src/components/task/constructor/graph/TaskPluginListComponent.vue')['default']
+    TaskPluginTableComponent: typeof import('./src/components/task/constructor/graph/TaskPluginTableComponent.vue')['default']
     WithGraphTaskConstructor: typeof import('./src/components/task/constructor/graph/WithGraphTaskConstructor.vue')['default']
   }
 }
