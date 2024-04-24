@@ -15,7 +15,8 @@
                             <v-col>
                                 <v-select
                                     :items="['Выполняется', 'Не выполняется']"
-                                    variant="underlined">
+                                    variant="underlined"
+                                    v-model="element.value">
                                 </v-select>
                             </v-col>
                         </v-row>
@@ -34,11 +35,16 @@
                                 <v-select
                                     :items="['=', '>', '<']"
                                     variant="underlined"
+                                    v-model="element.sign"
                                     >                                  
                                 </v-select>           
                             </v-col>
                             <v-col>
-                                <v-text-field variant="underlined" class="ma-1" label="Значение"></v-text-field>
+                                <v-text-field 
+                                    variant="underlined"
+                                    class="ma-1" 
+                                    label="Значение"
+                                    v-model="element.value"></v-text-field>
                             </v-col>
                         </v-row>
                     </v-container>
@@ -67,7 +73,7 @@ import { PluginType } from '@/__generated__/graphql';
 import { usePluginStore } from '@/store/plugin';
 import { useTaskStore } from '@/store/task';
 import { storeToRefs } from 'pinia';
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, watch } from 'vue'
 import draggable from 'vuedraggable'
 
 export default defineComponent({
@@ -87,6 +93,22 @@ export default defineComponent({
                 taskGraphInput.value.condition = value
             }
         })
+        
+        useTaskStore().$subscribe((mutation, state) => {
+            if (mutation.events.key !== 'description') {
+                const condition = state.taskGraphInput.condition
+                let description = "Постройте граф, который удовлетворяет следующим условиям"
+                for (let i = 0; i < condition.length; i++) {
+                    const c = condition[i];
+                    const conditionDescription = c?.pluginType === PluginType.GraphCharacteristic 
+                    ? '"' + c?.mistakeText + '"' + " " + c?.sign + " " + c?.value
+                    : c?.value + ' "' + c?.mistakeText + '"'
+                    description += '\n' + (i + 1) + ". " + conditionDescription
+                }
+                taskGraphInput.value.description = description
+            }
+            
+        })
 
         return {
             condition,
@@ -102,7 +124,6 @@ export default defineComponent({
             }
         },
         deletePlugin(order: any) {
-            console.log(order)
             const tmpCondition = this.taskGraphInput.condition.filter(c => c?.order !== order)
             for (let i = 0; i < tmpCondition.length; i++) {
                     tmpCondition[i].order = i + 1

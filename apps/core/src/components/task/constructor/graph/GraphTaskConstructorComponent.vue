@@ -7,8 +7,8 @@
             </v-col>
             <v-col>
                 <v-textarea variant="outlined" auto-grow v-model="taskTextModel"></v-textarea>
-                <task-condition-component ></task-condition-component>
-                <task-plugin-table-component ></task-plugin-table-component>
+                <task-condition-component></task-condition-component>
+                <task-graph-plugin-table-component></task-graph-plugin-table-component>
             </v-col>
         </v-row>
     </v-container>
