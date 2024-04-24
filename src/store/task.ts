@@ -1,4 +1,4 @@
-import { Maybe, RuleInput, Task, TaskGraphInput, TaskType, PluginInfoInput, GraphType } from "@/__generated__/graphql";
+import { Maybe, RuleInput, Task, TaskGraphInput, TaskType, PluginInfoInput, GraphType, PluginType, TaskImplementationInput } from "@/__generated__/graphql";
 import { defineStore } from "pinia";
 
 export const useTaskStore = defineStore('task', {
@@ -8,11 +8,11 @@ export const useTaskStore = defineStore('task', {
             taskGraphInput: {
                 name: "",
                 description: "Постройте граф, который удовлетворяет следующим условиям",
+                category: "",
                 taskType: TaskType.Graph as TaskType,
                 authorId: "",
                 isPublic: false,
                 isHiddenMistake: false,
-                graph: {},
                 rule: {
                     isColor: true,
                     isEdit: true,
@@ -21,6 +21,15 @@ export const useTaskStore = defineStore('task', {
                 } as RuleInput,
                 condition: [] as PluginInfoInput[]
             } as TaskGraphInput,
+            taskImplementationInput: {
+                name: "",
+                description: "Постройте граф, который удовлетворяет следующим условиям",
+                category: "",
+                taskType: TaskType.Implementation as TaskType,
+                authorId: "",
+                isPublic: false,
+                pluginId: ""
+            } as TaskImplementationInput,
             taskGraphConstructorInfo: {
                 isGraphPresent: false,
                 graphType: GraphType.Direct

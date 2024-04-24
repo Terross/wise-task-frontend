@@ -65,6 +65,49 @@ export const DELETE_GRAPH = gql`
     }
 `
 
+export const CREATE_TASK_GRAPH = gql`
+    mutation createTaskGraph ($task: TaskGraphInput!) {
+        createTaskGraph (task: $task) {
+            id
+            name
+            description
+            category
+            taskType
+            authorId
+            isPublic
+            isHiddenMistake
+            rule {
+                isColor
+                isEdit
+                isMove
+                isDelete
+            }
+            condition {
+                pluginId
+                value
+                mistakeText
+                sign
+                pluginType
+            }
+        }
+    }
+`
+
+export const CREATE_TASK_IMPLEMENTATION = gql`
+    mutation createTaskImplementation ($task: TaskImplementationInput!) {
+        createTaskImplementation (task: $task) {
+            id
+            name
+            description
+            category
+            taskType
+            authorId
+            isPublic
+            pluginId
+        }
+    }
+`
+
 export const CREATE_PLUGIN = gql`
     mutation createPlugin ($plugin: PluginInput!) {
         createPlugin (plugin: $plugin) {

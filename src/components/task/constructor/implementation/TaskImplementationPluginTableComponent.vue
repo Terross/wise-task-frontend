@@ -32,11 +32,12 @@
 </template>
 
 <script lang="ts">
-import { Plugin } from '@/__generated__/graphql';
+import { Plugin, PluginType } from '@/__generated__/graphql';
 import { DELETE_PLUGIN, VALIDATE_PLUGIN } from '@/api/Mutations';
 import { usePluginStore } from '@/store/plugin';
 import { useTaskStore } from '@/store/task';
 import { useMutation } from '@vue/apollo-composable';
+import { sign } from 'crypto';
 import { storeToRefs } from 'pinia';
 import { defineComponent, ref } from 'vue'
 
@@ -44,7 +45,7 @@ import { defineComponent, ref } from 'vue'
 export default defineComponent({
 	setup() {
 		const { getFilteredPlugins, plugins, dialog, pluginInput } = storeToRefs(usePluginStore())
-		const { taskGraphInput } = storeToRefs(useTaskStore())
+		const { taskImplementationInput } = storeToRefs(useTaskStore())
 		const headers = [
 			{ key: 'name', title: 'Название'},
 			{ key: 'description', title: 'Описание'},
@@ -65,19 +66,13 @@ export default defineComponent({
 			dialog,
 			pluginInput,
 			plugins,
-			taskGraphInput
+			taskImplementationInput
 		}
 	},
 	methods: {
 		addPluginToCondition(plugin: Plugin) {
-            this.taskGraphInput.condition.push({
-				pluginId: plugin.id,
-				value: "true",
-				mistakeText: plugin.description,
-				pluginType: plugin.pluginType,
-				sign: "=",
-				order:  this.taskGraphInput.condition.length + 1
-			})
+			this.taskImplementationInput.pluginId = plugin.id
+            this.taskImplementationInput.description = "Реализуйте модуль " + '" ' + plugin.description + ' "'
 		}
 	}
 })
