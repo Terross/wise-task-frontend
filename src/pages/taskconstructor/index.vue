@@ -1,5 +1,5 @@
 <template>
-    <TaskConstructor />
+    <TaskConstructorComponent />
 </template>
   
 <script lang="ts">

@@ -1,7 +1,7 @@
 <template>
-    <div>
-        Страница по созданию задачи без графа
-    </div>
+    <v-card>
+        <v-card-title>Библиотека графов</v-card-title>
+    </v-card>
 </template>
 
 <script lang="ts">

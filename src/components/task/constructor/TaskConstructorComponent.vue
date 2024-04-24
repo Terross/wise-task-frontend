@@ -6,9 +6,8 @@
 					<v-card-title>Выберете тип задачи</v-card-title>
 					<v-card-text>
 						<v-radio-group v-model="radios">
-							<v-radio label="Задача на строительство графа" value="1"></v-radio>
-							<v-radio label="Задача на редактирование графа" value="2"></v-radio>
-							<v-radio label="Задача на реализацию алгоритма" value="3"></v-radio>
+							<v-radio label="Задача на редактирование графа" value="1"></v-radio>
+							<v-radio label="Задача на реализацию алгоритма" value="2"></v-radio>
 						</v-radio-group>
 					</v-card-text>
 					<v-card-actions>
@@ -30,9 +29,10 @@
 <script lang="ts">
 import { defineComponent, computed } from 'vue'
 
+
 export default defineComponent({
 	setup() {
-
+		
 	},
 	data () {
 		return {
@@ -41,10 +41,14 @@ export default defineComponent({
 	},
 	methods: {
 		openTaskConstructor() {
+			console.log(this.radios)
 			switch (this.radios) {
-				case '1': this.$router.push('/taskconstructor/common')
-				case '2': this.$router.push('/taskconstructor/graph')
-				case '3': this.$router.push('/taskconstructor/implementation')
+				case '1': 
+					this.$router.push('/taskconstructor/graph')
+					break
+				case '2': 
+					this.$router.push('/taskconstructor/implementation')
+					break
 			}
 		}
 	}
