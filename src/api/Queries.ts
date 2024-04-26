@@ -30,6 +30,29 @@ query getProfile ($id: ID!) {
 }
 `
 
+
+export const GET_TASK = gql`
+query getTask($id: ID!) {
+  getTask(id: $id) {
+    id
+    name
+    description
+    category
+    taskType
+    authorId
+    isPublic
+    __typename
+    ... on TaskGraph {
+      isHiddenMistake
+      condition {
+        pluginId
+        mistakeText
+      }
+    }
+  }
+}
+`
+
 export const GET_GRAPH_LIBRARY = gql`
 {
   getGraphLibrary {
@@ -75,4 +98,18 @@ export const GET_ALL_PLUGINS = gql`
     isInternal
   }
 }
+`
+
+export const GET_ALL_TASKS = gql`
+    {
+        getAllTasks {
+            id
+            name
+            description
+            category
+            taskType
+            authorId
+            isPublic
+        }
+    }
 `

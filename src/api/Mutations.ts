@@ -157,3 +157,20 @@ export const VALIDATE_PLUGIN = gql`
         validatePlugin (id: $id)
     }
 `
+
+export const SOLVE_TASK_GRAPH = gql`
+    mutation solveTaskGraph ($solution: SolutionGraphInput!) {
+        solveTaskGraph (solution: $solution) {
+            id
+            taskId
+            authorId
+            isCorrect
+            pluginResults {
+                pluginId
+                isCorrect
+                value
+                trueValue
+            }
+        }
+    }
+`
