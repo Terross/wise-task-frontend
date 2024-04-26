@@ -66,7 +66,7 @@ export function toVGraph(graph: Graph) {
 export function toGraph(graph: StoreGraph) : Graph {
     console.log(graph)
     const vertexCount = Object.entries(graph.nodes).length
-    const edgeCount = Object.entries(graph.nodes).length
+    const edgeCount = Object.entries(graph.edges).length
     const isDirect = graph.isDirect
     const isNamed = (graph.name && graph.name.length > 1) ? true : false
     const name = graph.name

@@ -1,5 +1,5 @@
 <template>
-    <TaskList />
+    <TaskTableComponent />
 </template>
   
 <script lang="ts">
