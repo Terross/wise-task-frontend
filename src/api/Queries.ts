@@ -49,6 +49,9 @@ query getTask($id: ID!) {
         mistakeText
       }
     }
+    ... on TaskImplementation {
+      pluginId
+    }
   }
 }
 `
