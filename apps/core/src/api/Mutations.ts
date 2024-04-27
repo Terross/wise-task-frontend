@@ -174,3 +174,21 @@ export const SOLVE_TASK_GRAPH = gql`
         }
     }
 `
+
+export const SOLVE_TASK_IMPLEMENTATION = gql`
+    mutation solveTaskImplementation ($solution: SolutionImplementationInput!) {
+        solveTaskImplementation (solution: $solution) {
+            id
+            taskId
+            authorId
+            isCorrect
+            implementationResult {
+                id
+                originalTimeResult
+                timeResult
+                originalResult
+                result
+            }
+        }
+    }
+`
