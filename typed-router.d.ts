@@ -47,11 +47,13 @@ declare module 'vue-router/auto/routes' {
     '/profile/': RouteRecordInfo<'/profile/', '/profile', Record<never, never>, Record<never, never>>,
     '/profiles/': RouteRecordInfo<'/profiles/', '/profiles', Record<never, never>, Record<never, never>>,
     '/profiles/[id]': RouteRecordInfo<'/profiles/[id]', '/profiles/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
+    '/solution/graph/[id]': RouteRecordInfo<'/solution/graph/[id]', '/solution/graph/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     '/taskconstructor/': RouteRecordInfo<'/taskconstructor/', '/taskconstructor', Record<never, never>, Record<never, never>>,
     '/taskconstructor/graph/': RouteRecordInfo<'/taskconstructor/graph/', '/taskconstructor/graph', Record<never, never>, Record<never, never>>,
     '/taskconstructor/implementation/': RouteRecordInfo<'/taskconstructor/implementation/', '/taskconstructor/implementation', Record<never, never>, Record<never, never>>,
     '/tasks/': RouteRecordInfo<'/tasks/', '/tasks', Record<never, never>, Record<never, never>>,
     '/tasks/graph/[id]': RouteRecordInfo<'/tasks/graph/[id]', '/tasks/graph/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
+    '/tasks/graph/[taskId]/solution/[id]': RouteRecordInfo<'/tasks/graph/[taskId]/solution/[id]', '/tasks/graph/:taskId/solution/:id', { taskId: ParamValue<true>, id: ParamValue<true> }, { taskId: ParamValue<false>, id: ParamValue<false> }>,
     '/tasks/implementation/[id]': RouteRecordInfo<'/tasks/implementation/[id]', '/tasks/implementation/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
   }
 }

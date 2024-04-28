@@ -56,6 +56,63 @@ query getTask($id: ID!) {
 }
 `
 
+export const GET_USER_SOLUTION_STATISTIC = gql`
+query getUserSolutionStatistic($userId: ID!) {
+  getUserSolutionStatistic(userId: $userId) {
+    id
+    taskId
+    authorId
+    isCorrect
+    __typename
+  }
+}
+`
+
+export const GET_SOLUTION_WITH_TASK_DESCRIPTION = gql`
+query getSolutionWithTaskDescription($taskId: ID!, $solutionId: ID!) {
+  getTaskSolution(id: $solutionId) {
+    id
+    taskId
+    authorId
+    isCorrect
+    __typename
+    ... on SolutionGraph {
+      graph {
+        id
+        vertexCount
+        edgeCount
+        isDirect
+        vertexList {
+          id
+          weight
+          label
+          xCoordinate
+          yCoordinate
+          color
+        }
+        edgeList {
+          source
+          target
+          weight
+          label
+          color
+        }
+      }
+      pluginResults {
+        pluginId
+        isCorrect
+        value
+        trueValue
+        pluginMessage
+      }
+    }
+  }
+  getTask(id: $taskId) {
+    description
+  }
+}
+`
+
 export const GET_GRAPH_LIBRARY = gql`
 {
   getGraphLibrary {
@@ -116,3 +173,4 @@ export const GET_ALL_TASKS = gql`
         }
     }
 `
+

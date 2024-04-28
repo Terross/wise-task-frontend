@@ -2,22 +2,37 @@
 	<v-container class="fill-height" fluid>
     <v-row>
       <v-col>
-        <v-card class="mx-auto pa-4 pb-4 justify-center" max-width="548" rounded="lg">
+        <v-img
+          class="mx-auto my-6"
+          max-width="228"
+          src="https://etu.ru/assets/files/ru/universitet/korporativnyj-stil/logo-leti-sin-rus-2017.png"
+        ></v-img>
+        <v-card class="mx-auto pa-12 pb-8"
+            elevation="8"
+            max-width="448"
+            rounded="lg">
           <v-card-title>Вход</v-card-title>
           <v-card-text>
             <v-form validate-on="submit lazy" @submit.prevent="signIn">
               <v-text-field
-                label="Email"
+                density="compact"
+                placeholder="Введите email"
+                prepend-inner-icon="mdi-email-outline"
+                variant="outlined"
                 color="primary"
                 v-model="email"
-                        variant="solo-filled"
               >
               </v-text-field>
               <v-text-field
-                label="Пароль"
+                :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
+                :type="visible ? 'text' : 'password'"
+                density="compact"
+                variant="outlined"
+                placeholder="Введите пароль"
+                prepend-inner-icon="mdi-lock-outline"
+                @click:append-inner="visible = !visible"
                 color="primary"
                 v-model="password"
-                variant="solo-filled"
               >
               </v-text-field>
               <v-row>
@@ -63,7 +78,8 @@ export default defineComponent({
 					loading: false,
 					email: '',
 					password: '',
-          profileStore: useProfileStore()
+          profileStore: useProfileStore(),
+          visible: false
 			}
     },
     methods: {

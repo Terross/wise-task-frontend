@@ -55,7 +55,7 @@
                                         {{i + 1}}
                                     </v-chip>
                                 </template>
-                                <v-list-item-title v-text="'Результат = ' + item.result + ', время = ' + item.timeResult + ', результат эталона = ' + item.originalResult + ', время эталона = ' + item.originalTimeResult"></v-list-item-title>
+                                <v-list-item-title v-text="'Результат = ' + item.result + ', время = ' + item.timeResult + 'ns, результат эталона = ' + item.originalResult + ', время эталона = ' + item.originalTimeResult + 'ns'"></v-list-item-title>
                             </v-list-item>
                         </v-list>
                     </v-card-text>
@@ -124,10 +124,14 @@ export default defineComponent({
                 if (response.data) {
                     if (response.data.solveTaskImplementation.isCorrect) {
                         this.successAlert = true
-                    } else {
                         this.errorAlert = false
+                    } else {
+                        this.errorAlert = true
+                        this.successAlert = false
+
                     }
                     this.result = response.data.solveTaskImplementation.implementationResult
+                    console.log(response.data)
                 }
             })
 
