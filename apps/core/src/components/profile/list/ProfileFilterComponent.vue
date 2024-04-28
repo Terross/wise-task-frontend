@@ -4,24 +4,27 @@
       <v-card-text>
         <v-form validate-on="submit lazy" @submit.prevent="search">
           <v-text-field
+            density="compact"
+            variant="outlined"
             label="Имя"
             color="primary"
             v-model="firstName"
-            variant="solo-filled"
           >
           </v-text-field>
           <v-text-field
             label="Фамилия"
             color="primary"
             v-model="lastName"
-            variant="solo-filled"
+            density="compact"
+            variant="outlined"
           >
           </v-text-field>
           <v-text-field
             label="Email"
             color="primary"
             v-model="email"
-            variant="solo-filled"
+            density="compact"
+            variant="outlined"
           >
           </v-text-field>
           <v-select
@@ -34,7 +37,8 @@
             label="Группа"
             color="primary"
             v-model="group"
-            variant="solo-filled"
+            density="compact"
+            variant="outlined"
           >
           </v-text-field>
           <v-row>

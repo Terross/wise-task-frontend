@@ -2,67 +2,99 @@
   <v-container class="fill-height" fluid>
     <v-row>
       <v-col>
-        <v-card class="mx-auto pa-4 pb-4 justify-center" max-width="548" rounded="lg">
+        <v-img
+          class="mx-auto my-6"
+          max-width="228"
+          src="https://etu.ru/assets/files/ru/universitet/korporativnyj-stil/logo-leti-sin-rus-2017.png"
+        ></v-img>
+        <v-card class="mx-auto pa-12 pb-8"
+            elevation="8"
+            max-width="448"
+            rounded="lg">
           <v-card-title>Регистрация</v-card-title>
           <v-card-text>
             <v-form validate-on="submit lazy" @submit.prevent="signUp">
               <v-text-field
-                label="Имя"
+                density="compact"
+                placeholder="Имя"
+                prepend-inner-icon="mdi-account"
+                variant="outlined"
                 color="primary"
                 v-model="firstName"
-                variant="solo-filled"
                 :rules="firstNameRules"
               >
               </v-text-field>
               <v-text-field
-                label="Фамилия"
+                density="compact"
+                placeholder="Фамилия"
+                prepend-inner-icon="mdi-account"
+                variant="outlined"
                 color="primary"
                 v-model="lastName"
-                variant="solo-filled"
               >
               </v-text-field>
               <v-text-field
-                label="Отчество"
+                density="compact"
+                placeholder="Отчество"
+                prepend-inner-icon="mdi-account"
+                variant="outlined"
                 color="primary"
                 v-model="patronymic">
               </v-text-field>
               <v-text-field
-                label="Email"
+                density="compact"
+                placeholder="Введите email"
+                prepend-inner-icon="mdi-email-outline"
+                variant="outlined"
                 color="primary"
                 v-model="email"
-                variant="solo-filled"
               >
               </v-text-field>
               <v-text-field
-                label="Пароль"
+                :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
+                :type="visible ? 'text' : 'password'"
+                density="compact"
+                placeholder="Введите пароль"
+                prepend-inner-icon="mdi-lock-outline"
+                variant="outlined"
+                @click:append-inner="visible = !visible"
                 color="primary"
                 v-model="password"
-                variant="solo-filled"
               >
               </v-text-field>
               <v-text-field
-                label="Повторите пароль"
+                :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
+                :type="visible ? 'text' : 'password'"
+                density="compact"
+                placeholder="Повторите пароль"
+                prepend-inner-icon="mdi-lock-outline"
+                variant="outlined"
+                @click:append-inner="visible = !visible"
                 color="primary"
                 v-model="repeatedPassword"
-                variant="solo-filled"
               >
               </v-text-field>
               <v-select
                 label="Роль"
                 :items="['Студент', 'Преподаватель']"
                 v-model="role"
-                variant="solo-filled"
+                density="compact"
+                variant="outlined"
+                color="primary"
               ></v-select>
               <v-text-field v-if="role=='Студент'"
-                label="Группа"
+                placeholder="Введите группу"
+                prepend-inner-icon="mdi-account-group"
                 color="primary"
                 v-model="group"
-                variant="solo-filled"
+                density="compact"
+                variant="outlined"
               >
               </v-text-field>
               <v-row>
-                <v-col cols="6">
+                <v-col>
                   <v-btn
+                    class="my-4"
                     :loading="loading"
                     type="submit"
                     block
@@ -71,8 +103,6 @@
                     text="Зарегистрироваться"
                     variant="outlined"
                   ></v-btn>
-                </v-col>
-                <v-col cols="6">
                   <v-btn
                     :loading="loading"
                     type="submit"
@@ -110,6 +140,7 @@ export default defineComponent({
       password: '',
       repeatedPassword: '',
       role: 'Студент',
+      visible: false,
       group: '',
       profileStore: useProfileStore(),
       firstNameRules: [

@@ -62,6 +62,7 @@ import { useMutation, useQuery } from '@vue/apollo-composable';
 import { storeToRefs } from 'pinia';
 import { defineComponent } from 'vue'
 import { toGraph } from '../graph/network/helper/graph';
+import { PluginResult } from '@/__generated__/graphql';
 
 export default defineComponent({
     setup(props) {
@@ -109,16 +110,18 @@ export default defineComponent({
                 } else {
                     this.errorAlert = true
                     this.successAlert = false
+                    const pluginResults = response.data.solveTaskGraph.pluginResults.filter((item: PluginResult) => {
+                        return !item.isCorrect
+                    })
                     if (this.activeTask.isHiddenMistake) {
-                        this.result = response.data.solveTaskGraph.pluginResults[0]
+                        this.result = pluginResults[0]
                     } else {
-                        this.result = response.data.solveTaskGraph.pluginResults
+                        this.result = pluginResults
                     }
                     for (let i = 0; i < this.result.length; i++) {
                         const mistakeText = this.activeTask.condition.find((element: string) => {
                             return element.pluginId === this.result[i].pluginId
                         }).mistakeText
-                        console.log(mistakeText)
                         this.result[i]['mistakeText'] = mistakeText
                     }
                 }
