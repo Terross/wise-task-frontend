@@ -1,11 +1,11 @@
-import {defineStore} from "pinia";
-import {Node} from "@/features/graph/types/Node";
-
+import { defineStore } from "pinia";
+import type { Node } from "@/features/graph/types/Node";
+import type { Edge, Connection } from "@vue-flow/core"
 
 interface NodesStoreState {
     nodes: Node[]
+    edges: Edge[]
 }
-
 
 export const useNodeStore = defineStore("nodes", {
     state: (): NodesStoreState => ({
@@ -14,13 +14,34 @@ export const useNodeStore = defineStore("nodes", {
             position: { x: 250, y: 5 },
             data: { label: 'Node 1' },
             type: "special"
-        }]
+        }],
+        edges: []
     }),
     actions: {
         addNode(): void {
-            setTimeout(() => {}, 1)
             const id: string = Date.now().toString()
-            this.nodes.push({id: id, position: {x: 0, y: 0}, type: "special", data: {label: "Новая вершина"}})
+            this.nodes.push({
+                id: id,
+                position: { x: Math.random() * 400, y: Math.random() * 400 }, // Случайная позиция
+                type: "special",
+                data: { label: "Новая вершина" }
+            })
         },
+        addEdge(edge: Edge): void {
+            // Проверка на существующее соединение
+            const exists = this.edges.some(
+                e => e.source === edge.source && e.target === edge.target
+            )
+
+            if (!exists) {
+                this.edges.push(edge)
+            }
+        },
+        renameNode(id: string, name: string): void {
+            const node = this.nodes.find(x => x.id === id)
+            if (node) {
+                node.data.label = name
+            }
+        }
     }
 })

@@ -2,15 +2,18 @@
 import { ref } from 'vue'
 import { Position, Handle, useVueFlow } from '@vue-flow/core'
 import type { NodeProps } from '@vue-flow/core'
+import {useNodeStore} from "@/features/graph/stores/nodes";
 
 const props = defineProps<NodeProps>()
 
 const { updateNode, removeNodes } = useVueFlow()
+const nodeStore = useNodeStore()
 
-// Начальный размер узла
 const size = ref(100)
 
-// Функция для уменьшения размера
+const isEditing = ref(false)
+const newTitle = ref(props.data.label || '')
+
 const decreaseSize = () => {
   if (size.value > 50) {
     size.value -= 10
@@ -18,7 +21,6 @@ const decreaseSize = () => {
   }
 }
 
-// Функция для увеличения размера
 const increaseSize = () => {
   if (size.value < 300) {
     size.value += 10
@@ -26,10 +28,21 @@ const increaseSize = () => {
   }
 }
 
-// Функция для удаления узла
 const deleteNode = () => {
   console.log(`Удалили узел с id: ${props.id}`)
   removeNodes(props.id)
+}
+
+const startEditing = () => {
+  isEditing.value = true
+  newTitle.value = props.data.label || ''
+}
+
+const finishEditing = () => {
+  if (newTitle.value.trim()) {
+    nodeStore.renameNode(props.id, newTitle.value) // Обновляем заголовок в хранилище
+  }
+  isEditing.value = false
 }
 </script>
 
@@ -48,11 +61,24 @@ const deleteNode = () => {
       position: 'relative',
     }"
   >
-    <!-- Контент узла -->
-    <div>{{ data.title }}</div>
-    <div>{{ data.label }}</div>
+    <div v-if="!isEditing">
+      <div>{{ data.title }}</div>
+      <div>{{ data.label }}</div>
+    </div>
+    <input
+        v-else
+        v-model="newTitle"
+        @blur="finishEditing"
+        @keyup.enter="finishEditing"
+        :style="{
+        background: 'transparent',
+        border: 'none',
+        outline: 'none',
+        textAlign: 'center',
+      }"
+        autofocus
+    />
 
-    <!-- Иконки управления (появляются при наведении) -->
     <div
         class="controls"
         :style="{
@@ -101,6 +127,19 @@ const deleteNode = () => {
         }"
       >
         ×
+      </button>
+      <button
+          @click.stop="startEditing"
+          :style="{
+          background: 'white',
+          border: '1px solid #333',
+          borderRadius: '50%',
+          width: '20px',
+          height: '20px',
+          cursor: 'pointer',
+        }"
+      >
+        ✎
       </button>
     </div>
 
