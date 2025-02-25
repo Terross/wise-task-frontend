@@ -40,6 +40,7 @@ const downloadJson = () => {
   <button @click="printNodesAndEdges">Вывести ноды и ребра</button>
   <button @click="downloadJson">Скачать JSON</button>
   <VueFlow
+    :connection-radius="30"
     v-model:nodes="nodeStore.nodes"
     v-model:edges="nodeStore.edges"
     class="pinia-flow"
