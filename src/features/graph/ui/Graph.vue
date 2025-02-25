@@ -5,64 +5,19 @@ import { VueFlow } from '@vue-flow/core'
 
 import SpecialNode from './SpecialNode.vue'
 import SpecialEdge from './SpecialEdge.vue'
+import {useNodeStore} from "@/features/graph/stores/nodes";
 
-const nodes = ref<Node[]>([
-  {
-    id: '1',
-    type: 'input',
-    position: { x: 250, y: 5 },
-    data: { label: 'Node 1' },
-  },
-  {
-    id: '2',
-    position: { x: 100, y: 100 },
-    data: { label: 'Node 2' },
-  },
-  {
-    id: '3',
-    type: 'special',
-    position: { x: 400, y: 200 },
-    data: { label: "Node 3",
-      title: "CUSTOM TItLE"
-    }
-  },
 
-  {
-    id: '4',
-    type: 'special',
-    position: { x: 400, y: 200 },
-    data: {
-      label: 'Node 4',
-      hello: 'world',
-    },
-  },
-])
+const nodeStore = useNodeStore()
 
-const edges = ref<Edge[]>([
-  {
-    id: 'e1->2',
-    source: '1',
-    target: '2',
-  },
 
-  {
-    id: 'e2->3',
-    source: '2',
-    target: '3',
-    animated: true,
-  },
+const edges = ref<Edge[]>([])
 
-  {
-    id: 'e3->4',
-    type: 'special',
-    source: '3',
-    target: '4',
-  },
-])
 </script>
 
 <template>
-  <VueFlow :nodes="nodes" :edges="edges">
+  <button @click="nodeStore.addNode">Добавить вершину</button>
+  <VueFlow v-model:nodes="nodeStore.nodes" v-model:edges="edges" class="pinia-flow">
     <template #node-special="specialNodeProps">
       <SpecialNode v-bind="specialNodeProps" />
     </template>
