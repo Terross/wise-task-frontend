@@ -14,10 +14,8 @@ export default {
 </script>
 
 <template>
-  <!-- You can use the `BaseEdge` component to create your own custom edge more easily -->
   <BaseEdge :path="path[0]" />
 
-  <!-- Use the `EdgeLabelRenderer` to escape the SVG world of edges and render your own custom label in a `<div>` ctx -->
   <EdgeLabelRenderer>
     <div
         :style="{
@@ -28,6 +26,7 @@ export default {
         class="nodrag nopan"
     >
       {{ data.hello }}
+      {{ data.title }}
     </div>
   </EdgeLabelRenderer>
 </template>

@@ -20,9 +20,11 @@ const nodes = ref<Node[]>([
   },
   {
     id: '3',
-    type: 'output',
+    type: 'special',
     position: { x: 400, y: 200 },
-    data: { label: 'Node 3' },
+    data: { label: "Node 3",
+      title: "CUSTOM TItLE"
+    }
   },
 
   {
@@ -55,9 +57,6 @@ const edges = ref<Edge[]>([
     type: 'special',
     source: '3',
     target: '4',
-    data: {
-      hello: 'world',
-    }
   },
 ])
 </script>
