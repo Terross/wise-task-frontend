@@ -1,23 +1,30 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { Node, Edge } from '@vue-flow/core'
+import {Node, Edge, useVueFlow} from '@vue-flow/core'
 import { VueFlow } from '@vue-flow/core'
 
 import SpecialNode from './SpecialNode.vue'
 import SpecialEdge from './SpecialEdge.vue'
 import {useNodeStore} from "@/features/graph/stores/nodes";
 
-
 const nodeStore = useNodeStore()
 
+const {onConnect, addEdges} = useVueFlow()
 
-const edges = ref<Edge[]>([])
+onConnect((connection) => {
+  addEdges(connection)
+})
 
+const printNodesAndEdges = () => {
+  console.log('Nodes:', nodeStore.nodes)
+  console.log('Edges:', nodeStore.edges)
+}
 </script>
 
 <template>
   <button @click="nodeStore.addNode">Добавить вершину</button>
-  <VueFlow v-model:nodes="nodeStore.nodes" v-model:edges="edges" class="pinia-flow">
+  <button @click="printNodesAndEdges">Вывести ноды и ребра</button>
+  <VueFlow v-model:nodes="nodeStore.nodes"  v-model:edges="nodeStore.edges" class="pinia-flow">
     <template #node-special="specialNodeProps">
       <SpecialNode v-bind="specialNodeProps" />
     </template>
