@@ -36,9 +36,11 @@ const downloadJson = () => {
 </script>
 
 <template>
-  <button @click="nodeStore.addNode">Добавить вершину</button>
-  <button @click="printNodesAndEdges">Вывести ноды и ребра</button>
-  <button @click="downloadJson">Скачать JSON</button>
+  <div class="buttons-container">
+    <v-btn @click="nodeStore.addNode">Добавить вершину</v-btn>
+    <v-btn @click="printNodesAndEdges">Вывести ноды и ребра</v-btn>
+    <v-btn @click="downloadJson">Скачать JSON</v-btn>
+  </div>
   <VueFlow
     :connection-radius="30"
     v-model:nodes="nodeStore.nodes"
@@ -57,4 +59,9 @@ const downloadJson = () => {
 <style>
 @import "@vue-flow/core/dist/style.css";
 @import "@vue-flow/core/dist/theme-default.css";
+
+.buttons-container {
+  display: flex;
+  column-gap: 10px;
+}
 </style>
