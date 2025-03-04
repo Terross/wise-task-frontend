@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { BaseEdge, EdgeLabelRenderer, getBezierPath, type EdgeProps } from '@vue-flow/core'
+import { BaseEdge, EdgeLabelRenderer, getStraightPath, type EdgeProps } from '@vue-flow/core'
 import { computed } from 'vue'
 
 const props = defineProps<EdgeProps>()
 
-const path = computed(() => getBezierPath(props))
+const path = computed(() => getStraightPath(props))
 </script>
 
 <script lang="ts">
