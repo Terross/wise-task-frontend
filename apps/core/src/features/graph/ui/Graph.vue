@@ -9,6 +9,7 @@ const nodeStore = useNodeStore();
 const { onConnect, addEdges } = useVueFlow();
 
 onConnect((connection) => {
+  connection.type="special"
   addEdges(connection);
 });
 
