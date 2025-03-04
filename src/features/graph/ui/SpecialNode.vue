@@ -70,14 +70,58 @@ const finishEditing = () => {
 
     <Handle
         type="source"
+        id="source-a"
         :position="Position.Right"
+        :is-valid-connection="() => !isEditing"
+        class="full-node-handle"
+    />
+    <Handle
+        type="source"
+        id="source-b"
+        :position="Position.Left"
+        :is-valid-connection="() => !isEditing"
+        class="full-node-handle"
+    />
+    <Handle
+        type="source"
+        id="source-c"
+        :position="Position.Top"
+        :is-valid-connection="() => !isEditing"
+        class="full-node-handle"
+    />
+    <Handle
+        type="source"
+        id="source-d"
+        :position="Position.Bottom"
         :is-valid-connection="() => !isEditing"
         class="full-node-handle"
     />
 
     <Handle
         type="target"
+        id="target-a"
+        :position="Position.Right"
+        :is-valid-connection="() => !isEditing"
+        class="full-node-handle"
+    />
+    <Handle
+        type="target"
+        id="target-b"
         :position="Position.Left"
+        :is-valid-connection="() => !isEditing"
+        class="full-node-handle"
+    />
+    <Handle
+        type="target"
+        id="target-c"
+        :position="Position.Top"
+        :is-valid-connection="() => !isEditing"
+        class="full-node-handle"
+    />
+    <Handle
+        type="target"
+        id="target-d"
+        :position="Position.Bottom"
         :is-valid-connection="() => !isEditing"
         class="full-node-handle"
     />
