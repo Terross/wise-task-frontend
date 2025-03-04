@@ -59,6 +59,8 @@ const finishEditing = () => {
         @keyup.enter="finishEditing"
         :style="{
         background: 'transparent',
+        fontSize: '16px',
+        textDecoration: 'underline',
         border: 'none',
         outline: 'none',
         textAlign: 'center',
@@ -66,110 +68,18 @@ const finishEditing = () => {
         autofocus
     />
 
-    <!-- Source Handles -->
     <Handle
-        id="top-source"
-        type="source"
-        :position="Position.Top"
-        :style="{
-        z: -1,
-        opacity: 0,
-        width: `${size / 4}px`,
-        height: `${size / 4}px`,
-        position: 'absolute',
-        top: `20px`,
-      }"
-    />
-    <Handle
-        id="bottom-source"
-        type="source"
-        :position="Position.Bottom"
-        :style="{
-        opacity: 0,
-        width: `${size / 4}px`,
-        height: `${size / 4}px`,
-        position: 'absolute',
-        top: `50px`,
-      }"
-    />
-    <Handle
-        id="left-source"
-        type="source"
-        :position="Position.Left"
-        :style="{
-        opacity: 0,
-        z: -1,
-        width: `${size / 4}px`,
-        height: `${size / 4}px`,
-        position: 'absolute',
-        top: `40px`,
-      }"
-    />
-    <Handle
-        id="right-source"
         type="source"
         :position="Position.Right"
-        :style="{
-        opacity: 0,
-        z: -1,
-        width: `${size / 4}px`,
-        height: `${size / 4}px`,
-        position: 'absolute',
-        top: `40px`,
-      }"
+        :is-valid-connection="() => !isEditing"
+        class="full-node-handle"
     />
 
-    <!-- Target Handles -->
     <Handle
-        id="top-target"
-        type="target"
-        :position="Position.Top"
-        :style="{
-        z: -1,
-        opacity: 0,
-        width: `${size / 4}px`,
-        height: `${size / 4}px`,
-        position: 'absolute',
-        top: `20px`,
-      }"
-    />
-    <Handle
-        id="bottom-target"
-        type="target"
-        :position="Position.Bottom"
-        :style="{
-        opacity: 0,
-        width: `${size / 4}px`,
-        height: `${size / 4}px`,
-        position: 'absolute',
-        top: `50px`,
-      }"
-    />
-    <Handle
-        id="left-target"
         type="target"
         :position="Position.Left"
-        :style="{
-        opacity: 0,
-        z: -1,
-        width: `${size / 4}px`,
-        height: `${size / 4}px`,
-        position: 'absolute',
-        top: `40px`,
-      }"
-    />
-    <Handle
-        id="right-target"
-        type="target"
-        :position="Position.Right"
-        :style="{
-        opacity: 0,
-        z: -1,
-        width: `${size / 4}px`,
-        height: `${size / 4}px`,
-        position: 'absolute',
-        top: `40px`,
-      }"
+        :is-valid-connection="() => !isEditing"
+        class="full-node-handle"
     />
 
     <NodeControls
