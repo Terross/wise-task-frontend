@@ -24,7 +24,7 @@ export const useNodeStore = defineStore("nodes", {
       const id: string = Date.now().toString();
       this.nodes.push({
         id: id,
-        position: { x: Math.random() * 400, y: Math.random() * 400 }, // Случайная позиция
+        position: { x: Math.random() * 400, y: Math.random() * 400 },
         type: "special",
         data: { label: "Новая вершина" },
       });
@@ -35,5 +35,14 @@ export const useNodeStore = defineStore("nodes", {
         node.data.label = name;
       }
     },
+    removeEdge(id: string): void {
+      this.edges = this.edges.filter(edge => edge.id !== id);
+    },
+    updateEdge(id: string, updates: Partial<Edge>): void {
+      const edge = this.edges.find(edge => edge.id === id);
+      if (edge) {
+        Object.assign(edge, updates);
+      }
+    }
   },
 });
