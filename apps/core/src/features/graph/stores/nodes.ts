@@ -22,11 +22,13 @@ export const useNodeStore = defineStore("nodes", {
   actions: {
     addNode(): void {
       const id: string = Date.now().toString();
+      const maxNum = this.getMaximumLabel()
+      const label = maxNum === -1 ? "1" : maxNum.toString()
       this.nodes.push({
         id: id,
         position: { x: Math.random() * 400, y: Math.random() * 400 },
         type: "special",
-        data: { label: "Новая вершина" },
+        data: { label},
       });
     },
     renameNode(id: string, name: string): void {
@@ -43,6 +45,27 @@ export const useNodeStore = defineStore("nodes", {
       if (edge) {
         Object.assign(edge, updates);
       }
+    },
+    getMaximumLabel(): number {
+      if (this.nodes.length === 0) {
+        return 1;
+      }
+
+      let maxNumber = -1;
+
+      for (const node of this.nodes) {
+        const label = node.data.label;
+        if (!label || isNaN(+label)) {
+          continue;
+        }
+
+        const labelNumber = +label;
+        if (labelNumber > maxNumber) {
+          maxNumber = labelNumber;
+        }
+      }
+
+      return maxNumber === -1 ? 1 : maxNumber + 1;
     }
   },
 });
