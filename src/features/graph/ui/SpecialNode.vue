@@ -10,8 +10,6 @@ const props = defineProps<NodeProps>();
 const { updateNode, removeNodes } = useVueFlow();
 const nodeStore = useNodeStore();
 
-const size = ref(100);
-
 const isEditing = ref(false);
 const newTitle = ref(props.data.label || "");
 
@@ -31,27 +29,58 @@ const finishEditing = () => {
   }
   isEditing.value = false;
 };
+
+const handleSizeUpdate = (newSize: number) => {
+  updateNode(props.id, (node) => ({
+    ...node,
+    data: {
+      ...node.data,
+      size: newSize,
+    },
+  }));
+};
+
+const handleWeightUpdate = (newWeight: number) => {
+  updateNode(props.id, (node) => ({
+    ...node,
+    data: {
+      ...node.data,
+      weight: newWeight,
+    },
+  }));
+};
+
+const handleColorUpdate = (newColor: string) => {
+  updateNode(props.id, (node) => ({
+    ...node,
+    data: {
+      ...node.data,
+      color: newColor,
+    },
+  }));
+};
 </script>
 
 <template>
   <div
       class="vue-flow__node-default"
       :style="{
-      width: `${size}px`,
-      height: `${size}px`,
+      width: `${data.size || 100}px`,
+      height: `${data.size || 100}px`,
+      border: `2px solid ${'#333'}`,
       borderRadius: '50%',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: 'lightblue',
-      border: '2px solid #333',
+      backgroundColor: data.color || '#00FFFF',
       position: 'relative',
     }"
   >
-    <div v-if="!isEditing">
-      <div>{{ data.title }}</div>
+    <div v-if="!isEditing" :style="{color: 'white'}">
       <div>{{ data.label }}</div>
+      <div v-if="data.weight !== undefined">Weight: {{ data.weight }}</div>
     </div>
+
     <input
         v-else
         v-model="newTitle"
@@ -128,9 +157,13 @@ const finishEditing = () => {
 
     <NodeControls
         :nodeId="props.id"
-        :size="size"
-        :label="props.data.label"
-        @update:size="(newSize) => (size = newSize)"
+        :size="data.size || 100"
+        :label="data.label"
+        :weight="data.weight || 0"
+        :color="data.color || '#333'"
+        @update:size="handleSizeUpdate"
+        @update:weight="handleWeightUpdate"
+        @update:color="handleColorUpdate"
         @delete="deleteNode"
         @startEditing="startEditing"
     />
