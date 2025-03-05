@@ -6,7 +6,8 @@
 
 // Plugins
 import { registerPlugins } from '@/plugins'
-
+import '@vue-flow/core/dist/style.css';
+import '@vue-flow/core/dist/theme-default.css';
 // Components
 import App from './App.vue'
 
