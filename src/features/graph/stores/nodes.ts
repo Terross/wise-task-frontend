@@ -5,6 +5,7 @@ import type { Edge } from "@vue-flow/core";
 interface NodesStoreState {
   nodes: Node[];
   edges: Edge[];
+  isDirected: boolean;
 }
 
 export const useNodeStore = defineStore("nodes", {
@@ -18,17 +19,18 @@ export const useNodeStore = defineStore("nodes", {
       },
     ],
     edges: [],
+    isDirected: true,
   }),
   actions: {
     addNode(): void {
       const id: string = Date.now().toString();
-      const maxNum = this.getMaximumLabel()
-      const label = maxNum === -1 ? "1" : maxNum.toString()
+      const maxNum = this.getMaximumLabel();
+      const label = maxNum === -1 ? "1" : maxNum.toString();
       this.nodes.push({
         id: id,
         position: { x: Math.random() * 400, y: Math.random() * 400 },
         type: "special",
-        data: { label},
+        data: { label },
       });
     },
     renameNode(id: string, name: string): void {
@@ -38,10 +40,10 @@ export const useNodeStore = defineStore("nodes", {
       }
     },
     removeEdge(id: string): void {
-      this.edges = this.edges.filter(edge => edge.id !== id);
+      this.edges = this.edges.filter((edge) => edge.id !== id);
     },
     updateEdge(id: string, updates: Partial<Edge>): void {
-      const edge = this.edges.find(edge => edge.id === id);
+      const edge = this.edges.find((edge) => edge.id === id);
       if (edge) {
         Object.assign(edge, updates);
       }
@@ -66,6 +68,9 @@ export const useNodeStore = defineStore("nodes", {
       }
 
       return maxNumber === -1 ? 1 : maxNumber + 1;
-    }
+    },
+    toggleIsDirected(): void {
+      this.isDirected = !this.isDirected;
+    },
   },
 });

@@ -9,7 +9,7 @@ const nodeStore = useNodeStore();
 const { onConnect, addEdges } = useVueFlow();
 
 onConnect((connection) => {
-  connection.type="special"
+  connection.type = "special";
   addEdges(connection);
 });
 
@@ -41,6 +41,7 @@ const downloadJson = () => {
     <v-btn @click="nodeStore.addNode">Добавить вершину</v-btn>
     <v-btn @click="printNodesAndEdges">Вывести ноды и ребра</v-btn>
     <v-btn @click="downloadJson">Скачать JSON</v-btn>
+    <v-btn @click="nodeStore.toggleIsDirected">Сменить мод</v-btn>
   </div>
   <VueFlow
     :connection-radius="30"
