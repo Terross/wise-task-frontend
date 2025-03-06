@@ -50,74 +50,75 @@ const selectColor = (color: string) => {
 
 <template>
   <div
-      class="controls"
-      :style="{
+    class="controls"
+    :style="{
       position: 'absolute',
       top: '-90px',
       right: '-20px',
-      display: 'flex',
+      // display: 'flex',
       flexDirection: 'column',
       gap: '5px',
     }"
   >
-
-    <div class="controls" :style="{
-      position: 'absolute',
-      top: '-30px',
-      right: '-20px',
-      display: 'flex',
-      gap: '5px',
-    }"
+    <div
+      class="controls"
+      :style="{
+        position: 'absolute',
+        top: '-30px',
+        right: '-20px',
+        display: 'flex',
+        gap: '5px',
+      }"
     >
       <button
-          @click.stop="decreaseSize"
-          :style="{
-        background: 'white',
-        border: '1px solid #333',
-        borderRadius: '50%',
-        width: '20px',
-        height: '20px',
-        cursor: 'pointer',
-      }"
+        @click.stop="decreaseSize"
+        :style="{
+          background: 'white',
+          border: '1px solid #333',
+          borderRadius: '50%',
+          width: '20px',
+          height: '20px',
+          cursor: 'pointer',
+        }"
       >
         -
       </button>
       <button
-          @click.stop="increaseSize"
-          :style="{
-        background: 'white',
-        border: '1px solid #333',
-        borderRadius: '50%',
-        width: '20px',
-        height: '20px',
-        cursor: 'pointer',
-      }"
+        @click.stop="increaseSize"
+        :style="{
+          background: 'white',
+          border: '1px solid #333',
+          borderRadius: '50%',
+          width: '20px',
+          height: '20px',
+          cursor: 'pointer',
+        }"
       >
         +
       </button>
       <button
-          @click.stop="deleteNode"
-          :style="{
-        background: 'white',
-        border: '1px solid #333',
-        borderRadius: '50%',
-        width: '20px',
-        height: '20px',
-        cursor: 'pointer',
-      }"
+        @click.stop="deleteNode"
+        :style="{
+          background: 'white',
+          border: '1px solid #333',
+          borderRadius: '50%',
+          width: '20px',
+          height: '20px',
+          cursor: 'pointer',
+        }"
       >
         ×
       </button>
       <button
-          @click.stop="startEditing"
-          :style="{
-        background: 'white',
-        border: '1px solid #333',
-        borderRadius: '50%',
-        width: '20px',
-        height: '20px',
-        cursor: 'pointer',
-      }"
+        @click.stop="startEditing"
+        :style="{
+          background: 'white',
+          border: '1px solid #333',
+          borderRadius: '50%',
+          width: '20px',
+          height: '20px',
+          cursor: 'pointer',
+        }"
       >
         ✎
       </button>
@@ -126,11 +127,11 @@ const selectColor = (color: string) => {
     <!-- Ввод веса -->
     <div style="display: flex; gap: 5px; align-items: center">
       <input
-          type="number"
-          :value="weight"
-          @input="updateWeight"
-          min="0"
-          :style="{
+        type="number"
+        :value="weight"
+        @input="updateWeight"
+        min="0"
+        :style="{
           width: '50px',
           padding: '2px',
           textAlign: 'center',
@@ -142,10 +143,10 @@ const selectColor = (color: string) => {
 
     <div style="display: flex; gap: 5px">
       <button
-          v-for="col in ['#ff0000', '#00ff00', '#0000ff']"
-          :key="col"
-          @click.stop="selectColor(col)"
-          :style="{
+        v-for="col in ['#ff0000', '#00ff00', '#0000ff']"
+        :key="col"
+        @click.stop="selectColor(col)"
+        :style="{
           background: col,
           border: col === color ? '2px solid black' : '1px solid #ccc',
           borderRadius: '50%',
@@ -161,6 +162,7 @@ const selectColor = (color: string) => {
 <style scoped>
 .controls {
   opacity: 0;
+  display: flex;
   transition: opacity 0.2s ease;
   background: white;
   padding: 8px;
