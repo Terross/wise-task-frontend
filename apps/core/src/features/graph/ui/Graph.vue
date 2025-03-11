@@ -6,7 +6,7 @@ import SpecialEdge from "./SpecialEdge.vue";
 import { useNodeStore } from "@/features/graph/stores/nodes";
 
 const nodeStore = useNodeStore();
-const { onConnect, addEdges } = useVueFlow();
+const { onConnect, addEdges, onConnectEnd } = useVueFlow();
 
 onConnect((connection) => {
   connection.type = "special";
@@ -34,6 +34,14 @@ const downloadJson = () => {
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 };
+
+onConnectEnd((event: MouseEvent | TouchEvent | undefined) => {
+  if (!event) {
+    return;
+  }
+  console.log(event);
+  nodeStore.addNode({ x: event.clientX, y: event.clientY });
+});
 </script>
 
 <template>

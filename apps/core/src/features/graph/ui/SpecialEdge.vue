@@ -25,6 +25,10 @@ const updateEdgeData = () => {
   });
 };
 
+const isSelfConnected = (): boolean => {
+  return props.targetNode.id === props.sourceNode.id;
+};
+
 const path = computed(() => {
   if (!(props.targetNode.id === props.sourceNode.id)) {
     return getBezierPath(props);
@@ -63,6 +67,12 @@ const deleteEdge = () => {
   nodeStore.removeEdge(props.id);
 };
 
+const removeSelfEdge = () => {
+  if (isSelfConnected) {
+    deleteEdge();
+  }
+};
+
 const setColor = (color: string) => {
   selectedColor.value = color;
   updateEdgeData();
@@ -86,7 +96,11 @@ const setColor = (color: string) => {
     </defs>
   </svg>
 
-  <g @mouseenter="isHovered = true" @mouseleave="isHovered = false">
+  <g
+    @mouseenter="isHovered = true"
+    @click="removeSelfEdge"
+    @mouseleave="isHovered = false"
+  >
     <BaseEdge
       :path="path"
       :style="{ stroke: selectedColor, strokeWidth: 3 }"
@@ -108,7 +122,7 @@ const setColor = (color: string) => {
       </EdgeLabelRenderer>
     </div>
 
-    <EdgeLabelRenderer v-if="isHovered || isPanelHovered">
+    <EdgeLabelRenderer v-if="(isHovered || isPanelHovered) && !isSelfConnected">
       <div
         @mouseenter="isPanelHovered = true"
         @mouseleave="isPanelHovered = false"
@@ -118,7 +132,8 @@ const setColor = (color: string) => {
         class="edge-panel"
       >
         <input
-          type="number"
+          type="text"
+          inputmode="numeric"
           v-model="weight"
           min="1"
           max="100"
