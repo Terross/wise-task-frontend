@@ -25,9 +25,7 @@ const updateEdgeData = () => {
   });
 };
 
-const isSelfConnected = (): boolean => {
-  return props.targetNode.id === props.sourceNode.id;
-};
+const isSelfConnected: boolean = props.targetNode.id === props.sourceNode.id;
 
 const path = computed(() => {
   if (!(props.targetNode.id === props.sourceNode.id)) {
