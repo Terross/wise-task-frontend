@@ -1,55 +1,76 @@
 import { defineStore } from "pinia";
 import type { Node } from "@/features/graph/types/Node";
 import type { Edge } from "@vue-flow/core";
+import { cloneDeep } from "@apollo/client/utilities";
 
-interface NodesStoreState {
+export interface NodesStoreState {
   nodes: Node[];
   edges: Edge[];
   isDirected: boolean;
+  history: { nodes: Node[]; edges: Edge[] }[];
+  historyIndex: number;
 }
 
 export const useNodeStore = defineStore("nodes", {
   state: (): NodesStoreState => ({
-    nodes: [
-      {
-        id: "1",
-        position: { x: 250, y: 5 },
-        data: { label: "Node 1" },
-        type: "special",
-      },
-    ],
+    nodes: [],
     edges: [],
     isDirected: true,
+    history: [],
+    historyIndex: -1,
   }),
   actions: {
+    saveState(): void {
+      if (this.history.length >= 10) {
+        this.history.shift();
+        this.historyIndex--;
+      }
+
+      this.history = this.history.slice(0, this.historyIndex + 1);
+      this.history.push({
+        nodes: cloneDeep(this.nodes),
+        edges: cloneDeep(this.edges),
+      });
+      this.historyIndex = this.history.length - 1;
+    },
+    undo(): void {
+      if (this.historyIndex > 0) {
+        this.historyIndex--;
+        const state = this.history[this.historyIndex];
+        this.nodes = cloneDeep(state.nodes);
+        this.edges = cloneDeep(state.edges);
+      }
+    },
+    redo(): void {
+      if (this.historyIndex < this.history.length - 1) {
+        this.historyIndex++;
+        const state = this.history[this.historyIndex];
+        this.nodes = cloneDeep(state.nodes);
+        this.edges = cloneDeep(state.edges);
+      }
+    },
     addNode(params?: { x?: number; y?: number }): void {
       const id: string = Date.now().toString();
       const maxNum = this.getMaximumLabel();
       const label = maxNum === -1 ? "1" : maxNum.toString();
-      const position: { x: number; y: number } = (() => {
-        if (!params) {
-          return { x: Math.random() * 400, y: Math.random() * 400 };
-        }
-        if (!params.x || !params.y) {
-          return { x: Math.random() * 400, y: Math.random() * 400 };
-        }
-        return { x: params.x, y: params.y };
-      })();
       this.nodes.push({
-        id: id,
-        position: position,
+        id,
+        position: { x: Math.random() * 400, y: Math.random() * 400 },
         type: "special",
         data: { label },
       });
+      this.saveState();
     },
     renameNode(id: string, name: string): void {
-      const node = this.nodes.find((x) => x.id === id);
+      const node = this.nodes.find((node) => node.id === id);
       if (node) {
         node.data.label = name;
+        this.saveState();
       }
     },
     removeEdge(id: string): void {
       this.edges = this.edges.filter((edge) => edge.id !== id);
+      this.saveState();
     },
     updateEdge(id: string, updates: Partial<Edge>): void {
       const edge = this.edges.find((edge) => edge.id === id);
@@ -58,28 +79,18 @@ export const useNodeStore = defineStore("nodes", {
       }
     },
     getMaximumLabel(): number {
-      if (this.nodes.length === 0) {
-        return 1;
-      }
-
       let maxNumber = -1;
-
       for (const node of this.nodes) {
         const label = node.data.label;
-        if (!label || isNaN(+label)) {
-          continue;
-        }
-
-        const labelNumber = +label;
-        if (labelNumber > maxNumber) {
-          maxNumber = labelNumber;
+        if (label && !isNaN(+label)) {
+          maxNumber = Math.max(maxNumber, +label);
         }
       }
-
       return maxNumber === -1 ? 1 : maxNumber + 1;
     },
     toggleIsDirected(): void {
       this.isDirected = !this.isDirected;
+      this.saveState();
     },
   },
 });

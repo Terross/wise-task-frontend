@@ -6,11 +6,20 @@ import SpecialEdge from "./SpecialEdge.vue";
 import { useNodeStore } from "@/features/graph/stores/nodes";
 
 const nodeStore = useNodeStore();
-const { onConnect, addEdges, onConnectEnd, project } = useVueFlow();
+
+const { onConnect, addEdges, onNodeDragStop, onConnectEnd } = useVueFlow();
 
 onConnect((connection) => {
   connection.type = "special";
   addEdges(connection);
+});
+
+onNodeDragStop(() => {
+  nodeStore.saveState();
+});
+
+onConnectEnd(() => {
+  nodeStore.saveState();
 });
 
 const printNodesAndEdges = () => {
@@ -34,24 +43,12 @@ const downloadJson = () => {
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 };
-
-onConnectEnd((event: MouseEvent | TouchEvent | undefined) => {
-  onConnectEnd((event: MouseEvent | TouchEvent | undefined) => {
-    if (!event || !(event instanceof MouseEvent)) {
-      return;
-    }
-
-    const { clientX, clientY } = event;
-    const { x, y } = project({ x: clientX, y: clientY });
-
-    nodeStore.addNode({ x, y });
-  });
-});
 </script>
 
 <template>
   <div class="buttons-container">
     <v-btn @click="nodeStore.addNode">Добавить вершину</v-btn>
+    <v-btn @click="nodeStore.undo">UNDO</v-btn>
     <v-btn @click="printNodesAndEdges">Вывести ноды и ребра</v-btn>
     <v-btn @click="downloadJson">Скачать JSON</v-btn>
     <v-btn @click="nodeStore.toggleIsDirected">Сменить мод</v-btn>

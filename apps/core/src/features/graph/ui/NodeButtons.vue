@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useNodeStore } from "@/features/graph/stores/nodes";
+
 const props = defineProps<{
   nodeId: string;
   size: number;
@@ -6,6 +8,8 @@ const props = defineProps<{
   weight: number;
   color: string;
 }>();
+
+const nodeStore = useNodeStore();
 
 const emit = defineEmits<{
   (e: "update:size", value: number): void;
@@ -29,6 +33,7 @@ const increaseSize = () => {
 
 const deleteNode = () => {
   emit("delete");
+  nodeStore.saveState();
 };
 
 const startEditing = () => {
@@ -41,10 +46,12 @@ const updateWeight = (event: Event) => {
   if (!isNaN(value) && value >= 0) {
     emit("update:weight", value);
   }
+  nodeStore.saveState();
 };
 
 const selectColor = (color: string) => {
   emit("update:color", color);
+  nodeStore.saveState();
 };
 </script>
 
