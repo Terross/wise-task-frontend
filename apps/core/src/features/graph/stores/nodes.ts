@@ -70,7 +70,6 @@ export const useNodeStore = defineStore("nodes", {
     },
     removeEdge(id: string): void {
       this.edges = this.edges.filter((edge) => edge.id !== id);
-      this.saveState();
     },
     updateEdge(id: string, updates: Partial<Edge>): void {
       const edge = this.edges.find((edge) => edge.id === id);
@@ -90,7 +89,6 @@ export const useNodeStore = defineStore("nodes", {
     },
     toggleIsDirected(): void {
       this.isDirected = !this.isDirected;
-      this.saveState();
     },
   },
 });
