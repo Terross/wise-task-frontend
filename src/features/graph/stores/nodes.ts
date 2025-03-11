@@ -22,13 +22,22 @@ export const useNodeStore = defineStore("nodes", {
     isDirected: true,
   }),
   actions: {
-    addNode(): void {
+    addNode(params?: { x?: number; y?: number }): void {
       const id: string = Date.now().toString();
       const maxNum = this.getMaximumLabel();
       const label = maxNum === -1 ? "1" : maxNum.toString();
+      const position: { x: number; y: number } = (() => {
+        if (!params) {
+          return { x: Math.random() * 400, y: Math.random() * 400 };
+        }
+        if (!params.x || !params.y) {
+          return { x: Math.random() * 400, y: Math.random() * 400 };
+        }
+        return { x: params.x, y: params.y };
+      })();
       this.nodes.push({
         id: id,
-        position: { x: Math.random() * 400, y: Math.random() * 400 },
+        position: position,
         type: "special",
         data: { label },
       });
