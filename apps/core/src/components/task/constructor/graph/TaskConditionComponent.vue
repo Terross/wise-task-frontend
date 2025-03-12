@@ -73,6 +73,10 @@ import { toGraph } from "@/components/graph/network/helper/graph";
 import { useGraphStore } from "@/store/graph";
 import { CREATE_TASK_GRAPH } from "@/api/Mutations";
 import { useMutation } from "@vue/apollo-composable";
+import { useNodeStore } from "@/features/graph/stores/nodes";
+import { convertToGqlFormat } from "@/features/graph/lib/convertToGqlFormat";
+
+const nodeStore = useNodeStore();
 
 export default defineComponent({
   setup() {
@@ -192,12 +196,10 @@ export default defineComponent({
       if (!this.activeGraph.id) {
         this.activeGraph.id = self.crypto.randomUUID();
       }
-      const graph =
-        Object.keys(this.activeGraph.nodes).length > 0
-          ? toGraph(this.activeGraph)
-          : null;
+      const graph = convertToGqlFormat(nodeStore.$state);
+      console.log(nodeStore.$state);
       const { mutate, onDone, onError } = useMutation(CREATE_TASK_GRAPH);
-      console.log(graph);
+      console.log("GRAPH", graph);
       if (graph) {
         this.taskGraphInput.graph = graph;
       }
