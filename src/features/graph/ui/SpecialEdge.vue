@@ -10,6 +10,9 @@ import {
 import { computed, ref, onMounted, onUnmounted } from "vue";
 import { useNodeStore } from "@/features/graph/stores/nodes";
 import { COLORS } from "@/features/graph/config/colors";
+import { storeToRefs } from "pinia";
+import { useTaskStore } from "@/store/task";
+import { GraphType } from "@/__generated__/graphql";
 
 const props = defineProps<EdgeProps>();
 
@@ -17,6 +20,8 @@ const nodeStore = useNodeStore();
 const isPanelVisible = ref(false);
 const selectedColor = ref(props.data?.color || "#555555");
 const weight = ref(props.data?.weight || "");
+
+const taskGraphConstructorInfo = useTaskStore();
 
 const updateEdgeData = () => {
   nodeStore.updateEdge(props.id, {
@@ -123,7 +128,10 @@ onUnmounted(() => {
       :path="path"
       :style="{ stroke: selectedColor, strokeWidth: 3 }"
       :marker-start="
-        nodeStore.isDirected ? `url(#${MarkerType.Arrow})` : undefined
+        taskGraphConstructorInfo.taskGraphConstructorInfo.graphType !==
+        GraphType.Undirect
+          ? `url(#${MarkerType.Arrow})`
+          : undefined
       "
     />
 

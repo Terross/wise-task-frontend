@@ -58,7 +58,6 @@ const downloadJson = () => {
       <v-btn @click="nodeStore.undo">UNDO</v-btn>
       <v-btn @click="printNodesAndEdges">Вывести ноды и ребра</v-btn>
       <v-btn @click="downloadJson">Скачать JSON</v-btn>
-      <v-btn @click="nodeStore.toggleIsDirected">Сменить мод</v-btn>
     </div>
     <VueFlow
       :connection-radius="30"
@@ -76,6 +75,7 @@ const downloadJson = () => {
   </div>
 </template>
 
+<!--//TODO: сделать нормально высоту-->
 <style>
 @import "@vue-flow/core/dist/style.css";
 @import "@vue-flow/core/dist/theme-default.css";
@@ -90,7 +90,7 @@ const downloadJson = () => {
 .pinia-flow {
   position: relative;
   width: 100%;
-  height: calc(100% - 45px); // TODO: сделать нормально высоту
+  height: calc(100% - 45px);
   overflow: hidden;
 }
 </style>
