@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useNodeStore } from "@/features/graph/stores/nodes";
+import { COLORS } from "@/features/graph/config/colors";
 
 const props = defineProps<{
   nodeId: string;
@@ -56,111 +57,33 @@ const selectColor = (color: string) => {
 </script>
 
 <template>
-  <div
-    class="controls"
-    :style="{
-      position: 'absolute',
-      top: '-90px',
-      right: '-20px',
-      // display: 'flex',
-      flexDirection: 'column',
-      gap: '5px',
-    }"
-  >
-    <div
-      class="controls"
-      :style="{
-        position: 'absolute',
-        top: '-30px',
-        right: '-20px',
-        display: 'flex',
-        gap: '5px',
-      }"
-    >
-      <button
-        @click.stop="decreaseSize"
-        :style="{
-          background: 'white',
-          border: '1px solid #333',
-          borderRadius: '50%',
-          width: '20px',
-          height: '20px',
-          cursor: 'pointer',
-        }"
-      >
-        -
-      </button>
-      <button
-        @click.stop="increaseSize"
-        :style="{
-          background: 'white',
-          border: '1px solid #333',
-          borderRadius: '50%',
-          width: '20px',
-          height: '20px',
-          cursor: 'pointer',
-        }"
-      >
-        +
-      </button>
-      <button
-        @click.stop="deleteNode"
-        :style="{
-          background: 'white',
-          border: '1px solid #333',
-          borderRadius: '50%',
-          width: '20px',
-          height: '20px',
-          cursor: 'pointer',
-        }"
-      >
-        ×
-      </button>
-      <button
-        @click.stop="startEditing"
-        :style="{
-          background: 'white',
-          border: '1px solid #333',
-          borderRadius: '50%',
-          width: '20px',
-          height: '20px',
-          cursor: 'pointer',
-        }"
-      >
-        ✎
-      </button>
+  <div class="controls">
+    <div class="controls-row">
+      <button class="control-button" @click.stop="decreaseSize">-</button>
+      <button class="control-button" @click.stop="increaseSize">+</button>
+      <button class="control-button" @click.stop="deleteNode">×</button>
+      <button class="control-button" @click.stop="startEditing">✎</button>
     </div>
 
-    <!-- Ввод веса -->
-    <div style="display: flex; gap: 5px; align-items: center">
+    <div class="controls-row">
+      <div class="weight-label">Вес:</div>
       <input
-        type="number"
+        type="text"
         :value="weight"
         @input="updateWeight"
+        @click.stop
         min="0"
-        :style="{
-          width: '50px',
-          padding: '2px',
-          textAlign: 'center',
-          border: '1px solid #ccc',
-          borderRadius: '4px',
-        }"
+        class="weight-input"
       />
     </div>
 
-    <div style="display: flex; gap: 5px">
+    <div class="controls-row">
       <button
-        v-for="col in ['#ff0000', '#00ff00', '#0000ff']"
-        :key="col"
-        @click.stop="selectColor(col)"
-        :style="{
-          background: col,
-          border: col === color ? '2px solid black' : '1px solid #ccc',
-          borderRadius: '50%',
-          width: '20px',
-          height: '20px',
-          cursor: 'pointer',
-        }"
+        v-for="(key, value) in COLORS"
+        :key="props.nodeId + 'color_picker' + key"
+        @click.stop="selectColor(value)"
+        :class="['color-button', { active: value === color }]"
+        :style="{ background: value }"
       />
     </div>
   </div>
@@ -168,15 +91,66 @@ const selectColor = (color: string) => {
 
 <style scoped>
 .controls {
-  opacity: 0;
   display: flex;
-  transition: opacity 0.2s ease;
+  position: absolute;
+  bottom: 110%;
+  left: 30px;
+  flex-direction: column;
+  gap: 10px;
   background: white;
-  padding: 8px;
-  border-radius: 4px;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
-.vue-flow__node-default:hover .controls {
-  opacity: 1;
+.controls-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.control-button {
+  background: white;
+  border: 1px solid #333;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: background 0.2s ease;
+}
+
+.control-button:hover {
+  background: #f0f0f0;
+}
+
+.weight-label {
+  margin-right: 5px;
+  font-size: 14px;
+}
+
+.weight-input {
+  width: 50px;
+  padding: 4px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.color-button {
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.color-button.active {
+  border: 2px solid black;
 }
 </style>

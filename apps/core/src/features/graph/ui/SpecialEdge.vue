@@ -7,14 +7,14 @@ import {
   MarkerType,
   Position,
 } from "@vue-flow/core";
-import { computed, ref } from "vue";
+import { computed, ref, onMounted, onUnmounted } from "vue";
 import { useNodeStore } from "@/features/graph/stores/nodes";
+import { COLORS } from "@/features/graph/config/colors";
 
 const props = defineProps<EdgeProps>();
 
 const nodeStore = useNodeStore();
-const isHovered = ref(false);
-const isPanelHovered = ref(false);
+const isPanelVisible = ref(false);
 const selectedColor = ref(props.data?.color || "#555555");
 const weight = ref(props.data?.weight || "");
 
@@ -76,6 +76,29 @@ const setColor = (color: string) => {
   selectedColor.value = color;
   updateEdgeData();
 };
+
+const handleClickOutside = (event: MouseEvent) => {
+  const edgePanel = document.querySelector(".edge-panel");
+  if (edgePanel && !edgePanel.contains(event.target as Node)) {
+    isPanelVisible.value = false;
+  }
+};
+
+const handleEdgeClick = () => {
+  if (isSelfConnected) {
+    removeSelfEdge();
+  } else {
+    isPanelVisible.value = !isPanelVisible.value;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener("click", handleClickOutside);
+});
+
+onUnmounted(() => {
+  document.removeEventListener("click", handleClickOutside);
+});
 </script>
 
 <template>
@@ -95,11 +118,7 @@ const setColor = (color: string) => {
     </defs>
   </svg>
 
-  <g
-    @mouseenter="isHovered = true"
-    @click="removeSelfEdge"
-    @mouseleave="isHovered = false"
-  >
+  <g @click.stop="handleEdgeClick">
     <BaseEdge
       :path="path"
       :style="{ stroke: selectedColor, strokeWidth: 3 }"
@@ -121,10 +140,8 @@ const setColor = (color: string) => {
       </EdgeLabelRenderer>
     </div>
 
-    <EdgeLabelRenderer v-if="(isHovered || isPanelHovered) && !isSelfConnected">
+    <EdgeLabelRenderer v-if="isPanelVisible && !isSelfConnected">
       <div
-        @mouseenter="isPanelHovered = true"
-        @mouseleave="isPanelHovered = false"
         :style="{
           transform: `translate(-50%, -50%) translate(${midX}px,${midY - 30}px)`,
         }"
@@ -139,13 +156,14 @@ const setColor = (color: string) => {
           @change="updateEdgeData"
           class="edge-input"
         />
-
-        <button @click="setColor('#ff0000')" class="color-button red"></button>
         <button
-          @click="setColor('#00ff00')"
-          class="color-button green"
+          v-for="(colorValue, colorName) in COLORS"
+          :key="colorName"
+          @click="setColor(colorValue)"
+          :style="{ backgroundColor: colorValue }"
+          class="color-button"
         ></button>
-        <button @click="setColor('#0000ff')" class="color-button blue"></button>
+
         <button @click="deleteEdge" class="delete-button">✖</button>
       </div>
     </EdgeLabelRenderer>
@@ -193,18 +211,6 @@ const setColor = (color: string) => {
   height: 20px;
   border: none;
   cursor: pointer;
-}
-
-.red {
-  background-color: #ff0000;
-}
-
-.green {
-  background-color: #00ff00;
-}
-
-.blue {
-  background-color: #0000ff;
 }
 
 .delete-button {

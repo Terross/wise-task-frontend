@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { Position, Handle, useVueFlow } from "@vue-flow/core";
 import type { NodeProps } from "@vue-flow/core";
 import { useNodeStore } from "@/features/graph/stores/nodes";
@@ -12,6 +12,7 @@ const nodeStore = useNodeStore();
 
 const isEditing = ref(false);
 const newTitle = ref(props.data.label || "");
+const isControlsVisible = ref(false);
 
 const deleteNode = () => {
   console.log(`Удалили узел с id: ${props.id}`);
@@ -59,34 +60,56 @@ const handleColorUpdate = (newColor: string) => {
     },
   }));
 };
+
+const toggleControls = () => {
+  isControlsVisible.value = !isControlsVisible.value;
+};
+
+const handleClickOutside = (event: MouseEvent) => {
+  const nodeElement = document.getElementById(props.id);
+  if (nodeElement && !nodeElement.contains(event.target as Node)) {
+    isControlsVisible.value = false;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener("click", handleClickOutside);
+});
+
+onUnmounted(() => {
+  document.removeEventListener("click", handleClickOutside);
+});
 </script>
 
 <template>
   <div
-      class="vue-flow__node-default"
-      :style="{
+    :id="props.id"
+    class="vue-flow__node-default"
+    :style="{
       width: `${data.size || 100}px`,
       height: `${data.size || 100}px`,
       border: `2px solid ${'#333'}`,
       borderRadius: '50%',
       display: 'flex',
+      cursor: 'pointer',
       alignItems: 'center',
       justifyContent: 'center',
       backgroundColor: data.color || '#00FFFF',
       position: 'relative',
     }"
+    @click.stop="toggleControls"
   >
-    <div v-if="!isEditing" :style="{color: 'white'}">
+    <div v-if="!isEditing" :style="{ color: 'white' }">
       <div>{{ data.label }}</div>
       <div v-if="data.weight !== undefined">Weight: {{ data.weight }}</div>
     </div>
 
     <input
-        v-else
-        v-model="newTitle"
-        @blur="finishEditing"
-        @keyup.enter="finishEditing"
-        :style="{
+      v-else
+      v-model="newTitle"
+      @blur="finishEditing"
+      @keyup.enter="finishEditing"
+      :style="{
         background: 'transparent',
         fontSize: '16px',
         textDecoration: 'underline',
@@ -94,78 +117,79 @@ const handleColorUpdate = (newColor: string) => {
         outline: 'none',
         textAlign: 'center',
       }"
-        autofocus
+      autofocus
     />
 
     <Handle
-        type="source"
-        id="source-a"
-        :position="Position.Right"
-        :is-valid-connection="() => !isEditing"
-        class="full-node-handle"
+      type="source"
+      id="source-a"
+      :position="Position.Right"
+      :is-valid-connection="() => !isEditing"
+      class="full-node-handle"
     />
     <Handle
-        type="source"
-        id="source-b"
-        :position="Position.Left"
-        :is-valid-connection="() => !isEditing"
-        class="full-node-handle"
+      type="source"
+      id="source-b"
+      :position="Position.Left"
+      :is-valid-connection="() => !isEditing"
+      class="full-node-handle"
     />
     <Handle
-        type="source"
-        id="source-c"
-        :position="Position.Top"
-        :is-valid-connection="() => !isEditing"
-        class="full-node-handle"
+      type="source"
+      id="source-c"
+      :position="Position.Top"
+      :is-valid-connection="() => !isEditing"
+      class="full-node-handle"
     />
     <Handle
-        type="source"
-        id="source-d"
-        :position="Position.Bottom"
-        :is-valid-connection="() => !isEditing"
-        class="full-node-handle"
+      type="source"
+      id="source-d"
+      :position="Position.Bottom"
+      :is-valid-connection="() => !isEditing"
+      class="full-node-handle"
     />
 
     <Handle
-        type="target"
-        id="target-a"
-        :position="Position.Right"
-        :is-valid-connection="() => !isEditing"
-        class="full-node-handle"
+      type="target"
+      id="target-a"
+      :position="Position.Right"
+      :is-valid-connection="() => !isEditing"
+      class="full-node-handle"
     />
     <Handle
-        type="target"
-        id="target-b"
-        :position="Position.Left"
-        :is-valid-connection="() => !isEditing"
-        class="full-node-handle"
+      type="target"
+      id="target-b"
+      :position="Position.Left"
+      :is-valid-connection="() => !isEditing"
+      class="full-node-handle"
     />
     <Handle
-        type="target"
-        id="target-c"
-        :position="Position.Top"
-        :is-valid-connection="() => !isEditing"
-        class="full-node-handle"
+      type="target"
+      id="target-c"
+      :position="Position.Top"
+      :is-valid-connection="() => !isEditing"
+      class="full-node-handle"
     />
     <Handle
-        type="target"
-        id="target-d"
-        :position="Position.Bottom"
-        :is-valid-connection="() => !isEditing"
-        class="full-node-handle"
+      type="target"
+      id="target-d"
+      :position="Position.Bottom"
+      :is-valid-connection="() => !isEditing"
+      class="full-node-handle"
     />
 
     <NodeControls
-        :nodeId="props.id"
-        :size="data.size || 100"
-        :label="data.label"
-        :weight="data.weight || 0"
-        :color="data.color || '#333'"
-        @update:size="handleSizeUpdate"
-        @update:weight="handleWeightUpdate"
-        @update:color="handleColorUpdate"
-        @delete="deleteNode"
-        @startEditing="startEditing"
+      v-if="isControlsVisible"
+      :nodeId="props.id"
+      :size="data.size || 100"
+      :label="data.label"
+      :weight="data.weight || 0"
+      :color="data.color || '#333'"
+      @update:size="handleSizeUpdate"
+      @update:weight="handleWeightUpdate"
+      @update:color="handleColorUpdate"
+      @delete="deleteNode"
+      @startEditing="startEditing"
     />
   </div>
 </template>
