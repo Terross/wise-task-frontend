@@ -5,6 +5,12 @@ import SpecialNode from "./SpecialNode.vue";
 import SpecialEdge from "./SpecialEdge.vue";
 import { useNodeStore } from "@/features/graph/stores/nodes";
 
+interface Props {
+  style?: Record<string, string | number>;
+}
+
+const props = defineProps<Props>();
+
 const nodeStore = useNodeStore();
 
 const { onConnect, addEdges, onNodeDragStop, onConnectEnd } = useVueFlow();
@@ -46,26 +52,28 @@ const downloadJson = () => {
 </script>
 
 <template>
-  <div class="buttons-container">
-    <v-btn @click="nodeStore.addNode">Добавить вершину</v-btn>
-    <v-btn @click="nodeStore.undo">UNDO</v-btn>
-    <v-btn @click="printNodesAndEdges">Вывести ноды и ребра</v-btn>
-    <v-btn @click="downloadJson">Скачать JSON</v-btn>
-    <v-btn @click="nodeStore.toggleIsDirected">Сменить мод</v-btn>
+  <div :style="props.style">
+    <div class="buttons-container">
+      <v-btn @click="nodeStore.addNode">Добавить вершину</v-btn>
+      <v-btn @click="nodeStore.undo">UNDO</v-btn>
+      <v-btn @click="printNodesAndEdges">Вывести ноды и ребра</v-btn>
+      <v-btn @click="downloadJson">Скачать JSON</v-btn>
+      <v-btn @click="nodeStore.toggleIsDirected">Сменить мод</v-btn>
+    </div>
+    <VueFlow
+      :connection-radius="30"
+      v-model:nodes="nodeStore.nodes"
+      v-model:edges="nodeStore.edges"
+      class="pinia-flow"
+    >
+      <template #node-special="specialNodeProps">
+        <SpecialNode v-bind="specialNodeProps" />
+      </template>
+      <template #edge-special="specialEdgeProps">
+        <SpecialEdge v-bind="specialEdgeProps" />
+      </template>
+    </VueFlow>
   </div>
-  <VueFlow
-    :connection-radius="30"
-    v-model:nodes="nodeStore.nodes"
-    v-model:edges="nodeStore.edges"
-    class="pinia-flow"
-  >
-    <template #node-special="specialNodeProps">
-      <SpecialNode v-bind="specialNodeProps" />
-    </template>
-    <template #edge-special="specialEdgeProps">
-      <SpecialEdge v-bind="specialEdgeProps" />
-    </template>
-  </VueFlow>
 </template>
 
 <style>
@@ -73,7 +81,16 @@ const downloadJson = () => {
 @import "@vue-flow/core/dist/theme-default.css";
 
 .buttons-container {
+  background-color: blue;
+  padding: 5px 10px;
   display: flex;
   column-gap: 10px;
+}
+
+.pinia-flow {
+  position: relative;
+  width: 100%;
+  height: calc(100% - 45px); // TODO: сделать нормально высоту
+  overflow: hidden;
 }
 </style>
