@@ -12,6 +12,7 @@
     "@apollo/client": "^3.8.8",
     "@mdi/font": "7.0.96",
     "@vue-flow/core": "^1.42.1",
+    "@vue-flow/node-toolbar": "^1.1.1",
     "@vue/apollo-composable": "^4.0.0-beta.12",
     "core-js": "^3.34.0",
     "graphql": "^16.8.1",
