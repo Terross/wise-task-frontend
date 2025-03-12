@@ -1,23 +1,26 @@
 import { defineStore } from "pinia";
-import type { Node } from "@/features/graph/types/Node";
+import type { CustomNode } from "@/features/graph/types/CustomNode";
 import type { Edge } from "@vue-flow/core";
 import { cloneDeep } from "@apollo/client/utilities";
+import { CustomEdge } from "@/features/graph/types/Edge";
 
 export interface NodesStoreState {
-  nodes: Node[];
-  edges: Edge[];
-  isDirected: boolean;
-  history: { nodes: Node[]; edges: Edge[] }[];
+  nodes: CustomNode[];
+  edges: CustomEdge[];
+  history: { nodes: CustomNode[]; edges: CustomEdge[] }[];
   historyIndex: number;
+  isDirected: boolean;
+  name: string;
 }
 
 export const useNodeStore = defineStore("nodes", {
   state: (): NodesStoreState => ({
     nodes: [],
     edges: [],
-    isDirected: true,
     history: [],
     historyIndex: -1,
+    isDirected: true,
+    name: "",
   }),
   actions: {
     saveState(): void {
@@ -86,9 +89,6 @@ export const useNodeStore = defineStore("nodes", {
         }
       }
       return maxNumber === -1 ? 1 : maxNumber + 1;
-    },
-    toggleIsDirected(): void {
-      this.isDirected = !this.isDirected;
     },
   },
 });
