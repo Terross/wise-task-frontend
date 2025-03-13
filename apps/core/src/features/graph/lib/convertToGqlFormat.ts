@@ -9,6 +9,11 @@ import {
 import { CustomEdge } from "@/features/graph/types/Edge";
 import { CustomNode } from "@/features/graph/types/CustomNode";
 
+const convertToInt = (number: number): number => {
+  const str = number.toString();
+  return +str.slice(str.length - 5, str.length);
+};
+
 const generateEdgesList = (
   edges: CustomEdge[],
 ): Array<InputMaybe<EdgeInput>> => {
@@ -33,8 +38,8 @@ const generateEdgesList = (
     edgeList.push({
       color: color,
       label: "",
-      source: +edge.sourceNode.id,
-      target: +edge.targetNode.id,
+      source: convertToInt(+edge.sourceNode.id),
+      target: convertToInt(+edge.targetNode.id),
       weight: +(edge.data?.weight || "") || 0,
     });
   }
@@ -50,24 +55,25 @@ const generateNodesList = (nodes: CustomNode[]): Vertex[] => {
       if (!node.data || !node.data.color) {
         return Color.Gray;
       }
-      if (node.data.color === "#ff0000") {
+      console.log(node.data.color);
+      if (node.data.color === "red") {
         return Color.Red;
       }
-      if (node.data.color === "#00FF00") {
+      if (node.data.color === "green") {
         return Color.Green;
       }
-      if (node.data.color === "#0000FF") {
+      if (node.data.color === "blue") {
         return Color.Blue;
       }
       return Color.Gray;
     })();
     vertexList.push({
       color: color,
-      id: +node.id,
+      id: convertToInt(+node.id),
       label: node.data.label || "",
       weight: node.data.weight || 0,
-      xCoordinate: node.position.x,
-      yCoordinate: node.position.y,
+      xCoordinate: Math.floor(node.position.x),
+      yCoordinate: Math.floor(node.position.y),
     });
   }
 
