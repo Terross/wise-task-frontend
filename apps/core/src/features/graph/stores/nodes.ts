@@ -46,13 +46,8 @@ export const useNodeStore = defineStore("nodes", {
         this.edges = cloneDeep(state.edges);
       }
     },
-    redo(): void {
-      if (this.historyIndex < this.history.length - 1) {
-        this.historyIndex++;
-        const state = this.history[this.historyIndex];
-        this.nodes = cloneDeep(state.nodes);
-        this.edges = cloneDeep(state.edges);
-      }
+    toggleIsDirected(): void {
+      this.isDirected = !this.isDirected;
     },
     addNode(params?: { x?: number; y?: number }): void {
       const id: string = Date.now().toString();

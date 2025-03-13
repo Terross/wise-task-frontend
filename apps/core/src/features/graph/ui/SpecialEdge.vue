@@ -21,8 +21,6 @@ const isPanelVisible = ref(false);
 const selectedColor = ref(props.data?.color || "#555555");
 const weight = ref(props.data?.weight || "");
 
-const taskGraphConstructorInfo = useTaskStore();
-
 const updateEdgeData = () => {
   nodeStore.updateEdge(props.id, {
     color: selectedColor.value,
@@ -128,10 +126,7 @@ onUnmounted(() => {
       :path="path"
       :style="{ stroke: selectedColor, strokeWidth: 3 }"
       :marker-start="
-        taskGraphConstructorInfo.taskGraphConstructorInfo.graphType !==
-        GraphType.Undirect
-          ? `url(#${MarkerType.Arrow})`
-          : undefined
+        nodeStore.isDirected ? `url(#${MarkerType.Arrow})` : undefined
       "
     />
 
