@@ -11,6 +11,7 @@ export interface NodesStoreState {
   historyIndex: number;
   isDirected: boolean;
   name: string;
+  id?: string;
 }
 
 export const useNodeStore = defineStore("nodes", {
@@ -20,6 +21,7 @@ export const useNodeStore = defineStore("nodes", {
     history: [],
     historyIndex: -1,
     isDirected: true,
+    id: undefined,
     name: "",
   }),
   actions: {
