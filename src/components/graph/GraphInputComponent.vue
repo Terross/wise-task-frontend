@@ -14,7 +14,6 @@
 import { useGraphStore } from "@/store/graph";
 import { storeToRefs } from "pinia";
 import { defineComponent, computed, onMounted } from "vue";
-import { toGraph } from "./network/helper/graph";
 import { CREATE_GRAPH } from "@/api/Mutations";
 import { useMutation } from "@vue/apollo-composable";
 import { useNodeStore } from "@/features/graph/stores/nodes";

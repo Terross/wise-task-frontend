@@ -58,6 +58,7 @@ const downloadJson = () => {
       <v-btn @click="nodeStore.undo">UNDO</v-btn>
       <v-btn @click="printNodesAndEdges">Вывести ноды и ребра</v-btn>
       <v-btn @click="downloadJson">Скачать JSON</v-btn>
+      <v-btn @click="nodeStore.toggleIsDirected">Сменить направленность</v-btn>
     </div>
     <VueFlow
       :connection-radius="30"
