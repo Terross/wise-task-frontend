@@ -49,6 +49,25 @@ const downloadJson = () => {
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 };
+
+const uploadJson = (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  if (input.files && input.files[0]) {
+    const file = input.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target?.result as string;
+      try {
+        const data = JSON.parse(content);
+        nodeStore.nodes = data.nodes;
+        nodeStore.edges = data.edges;
+      } catch (error) {
+        console.error("Ошибка при чтении файла:", error);
+      }
+    };
+    reader.readAsText(file);
+  }
+};
 </script>
 
 <template>
@@ -59,6 +78,16 @@ const downloadJson = () => {
       <v-btn @click="printNodesAndEdges">Вывести ноды и ребра</v-btn>
       <v-btn @click="downloadJson">Скачать JSON</v-btn>
       <v-btn @click="nodeStore.toggleIsDirected">Сменить направленность</v-btn>
+      <v-btn>
+        <label for="upload-json" style="cursor: pointer">Загрузить JSON</label>
+        <input
+          id="upload-json"
+          type="file"
+          accept=".json"
+          style="display: none"
+          @change="uploadJson"
+        />
+      </v-btn>
     </div>
     <VueFlow
       :connection-radius="30"
