@@ -58,11 +58,6 @@ onConnectEnd(() => {
   nodeStore.saveState();
 });
 
-const printNodesAndEdges = () => {
-  console.log("Nodes:", nodeStore.nodes);
-  console.log("Edges:", nodeStore.edges);
-};
-
 const downloadJson = () => {
   const data = {
     nodes: nodeStore.nodes,
@@ -118,7 +113,6 @@ const addNodeToCenter = () => {
     <div class="buttons-container">
       <v-btn @click="addNodeToCenter">Добавить вершину</v-btn>
       <v-btn @click="nodeStore.undo">UNDO</v-btn>
-      <v-btn @click="printNodesAndEdges">Вывести ноды и ребра</v-btn>
       <v-btn @click="downloadJson">Скачать JSON</v-btn>
       <v-btn @click="nodeStore.toggleIsDirected">Сменить направленность</v-btn>
       <v-btn>
