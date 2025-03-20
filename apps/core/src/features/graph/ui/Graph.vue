@@ -120,6 +120,7 @@ const uploadJson = (event: Event) => {
 .pinia-flow {
   position: relative;
   width: 100%;
+  min-height: 500px;
   height: calc(100% - 45px);
   overflow: hidden;
 }

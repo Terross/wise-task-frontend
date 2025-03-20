@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
-import { Position, Handle, useVueFlow } from "@vue-flow/core";
+import { useVueFlow } from "@vue-flow/core";
 import type { NodeProps } from "@vue-flow/core";
 import { useNodeStore } from "@/features/graph/stores/nodes";
 import NodeControls from "./NodeButtons.vue";
+import NodeHandles from "@/features/graph/ui/NodeHandles.vue";
 
 const props = defineProps<NodeProps>();
 
@@ -120,63 +121,7 @@ onUnmounted(() => {
       autofocus
     />
 
-    <Handle
-      type="source"
-      id="source-a"
-      :position="Position.Right"
-      :is-valid-connection="() => !isEditing"
-      class="full-node-handle"
-    />
-    <Handle
-      type="source"
-      id="source-b"
-      :position="Position.Left"
-      :is-valid-connection="() => !isEditing"
-      class="full-node-handle"
-    />
-    <Handle
-      type="source"
-      id="source-c"
-      :position="Position.Top"
-      :is-valid-connection="() => !isEditing"
-      class="full-node-handle"
-    />
-    <Handle
-      type="source"
-      id="source-d"
-      :position="Position.Bottom"
-      :is-valid-connection="() => !isEditing"
-      class="full-node-handle"
-    />
-
-    <Handle
-      type="target"
-      id="target-a"
-      :position="Position.Right"
-      :is-valid-connection="() => !isEditing"
-      class="full-node-handle"
-    />
-    <Handle
-      type="target"
-      id="target-b"
-      :position="Position.Left"
-      :is-valid-connection="() => !isEditing"
-      class="full-node-handle"
-    />
-    <Handle
-      type="target"
-      id="target-c"
-      :position="Position.Top"
-      :is-valid-connection="() => !isEditing"
-      class="full-node-handle"
-    />
-    <Handle
-      type="target"
-      id="target-d"
-      :position="Position.Bottom"
-      :is-valid-connection="() => !isEditing"
-      class="full-node-handle"
-    />
+    <NodeHandles :isEditing="isEditing" />
 
     <NodeControls
       v-if="isControlsVisible"
