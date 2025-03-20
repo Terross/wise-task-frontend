@@ -60,13 +60,15 @@ import { defineComponent } from "vue";
 import { toGraph } from "../graph/network/helper/graph";
 import { PluginResult } from "@/__generated__/graphql";
 import Graph from "@/features/graph/ui/Graph.vue";
+import { useNodeStore } from "@/features/graph/stores/nodes";
+import { convertToGqlFormat } from "@/features/graph/lib/convertToGqlFormat";
 
 export default defineComponent({
   components: { Graph },
   setup(props) {
     const { activeTask } = storeToRefs(useTaskStore());
     const { onResult } = useQuery(GET_TASK, { id: props.id });
-    const { activeGraph } = storeToRefs(useGraphStore());
+    const activeGraph = useNodeStore();
     onResult((response) => {
       if (response.data) {
         activeTask.value = response.data.getTask;
@@ -89,7 +91,7 @@ export default defineComponent({
   methods: {
     solveTask() {
       const { mutate, onDone, onError } = useMutation(SOLVE_TASK_GRAPH);
-      const graph = toGraph(this.activeGraph);
+      const graph = convertToGqlFormat(this.activeGraph);
       graph.id = self.crypto.randomUUID();
       const request = {
         solution: {

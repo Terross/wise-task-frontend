@@ -49,13 +49,16 @@ export const useNodeStore = defineStore("nodes", {
     toggleIsDirected(): void {
       this.isDirected = !this.isDirected;
     },
-    addNode(params?: { x?: number; y?: number }): void {
+    addNode(params?: { x: number; y: number }): void {
       const id: string = Date.now().toString();
       const maxNum = this.getMaximumLabel();
       const label = maxNum === -1 ? "1" : maxNum.toString();
+      const position = params
+        ? { x: params.x, y: params.y }
+        : { x: Math.random() * 400, y: Math.random() * 400 };
       this.nodes.push({
         id,
-        position: { x: Math.random() * 400, y: Math.random() * 400 },
+        position: position,
         type: "special",
         data: { label },
       });
