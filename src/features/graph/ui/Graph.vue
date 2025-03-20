@@ -4,6 +4,8 @@ import { VueFlow } from "@vue-flow/core";
 import SpecialNode from "./SpecialNode.vue";
 import SpecialEdge from "./SpecialEdge.vue";
 import { useNodeStore } from "@/features/graph/stores/nodes";
+import { ref } from "vue";
+import HelpingModal from "@/features/graph/ui/HelpingModal.vue";
 
 interface Props {
   style?: Record<string, string | number>;
@@ -13,7 +15,35 @@ const props = defineProps<Props>();
 
 const nodeStore = useNodeStore();
 
-const { onConnect, addEdges, onNodeDragStop, onConnectEnd } = useVueFlow();
+const {
+  onConnect,
+  addEdges,
+  onNodeDragStop,
+  onConnectEnd,
+  onPaneContextMenu,
+  project,
+} = useVueFlow();
+
+onPaneContextMenu((event) => {
+  event.preventDefault();
+
+  const bounds = (event.currentTarget as HTMLElement).getBoundingClientRect();
+  const x = event.clientX - bounds.left;
+  const y = event.clientY - bounds.top;
+
+  const pos = project({ x, y });
+  nodeStore.addNode({ x: pos.x - 40, y: pos.y - 40 });
+});
+
+const isHelpModalOpen = ref(false);
+
+const openHelpModal = () => {
+  isHelpModalOpen.value = true;
+};
+
+const closeHelpModal = () => {
+  isHelpModalOpen.value = false;
+};
 
 onConnect((connection) => {
   connection.type = "special";
@@ -68,12 +98,25 @@ const uploadJson = (event: Event) => {
     reader.readAsText(file);
   }
 };
+
+const addNodeToCenter = () => {
+  const { width, height } = document
+    .querySelector(".pinia-flow")!
+    .getBoundingClientRect();
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const pos = project({ x: centerX, y: centerY });
+  nodeStore.addNode({
+    x: pos.x + Math.random() * 100,
+    y: pos.y + Math.random() * 100,
+  });
+};
 </script>
 
 <template>
   <div :style="props.style">
     <div class="buttons-container">
-      <v-btn @click="nodeStore.addNode">Добавить вершину</v-btn>
+      <v-btn @click="addNodeToCenter">Добавить вершину</v-btn>
       <v-btn @click="nodeStore.undo">UNDO</v-btn>
       <v-btn @click="printNodesAndEdges">Вывести ноды и ребра</v-btn>
       <v-btn @click="downloadJson">Скачать JSON</v-btn>
@@ -88,6 +131,7 @@ const uploadJson = (event: Event) => {
           @change="uploadJson"
         />
       </v-btn>
+      <v-btn @click="openHelpModal">Как работать с графом?</v-btn>
     </div>
     <VueFlow
       :connection-radius="30"
@@ -102,10 +146,13 @@ const uploadJson = (event: Event) => {
         <SpecialEdge v-bind="specialEdgeProps" />
       </template>
     </VueFlow>
+    <HelpingModal
+      :isHelpModalOpen="isHelpModalOpen"
+      :closeHelpModal="closeHelpModal"
+    />
   </div>
 </template>
 
-<!--//TODO: сделать нормально высоту-->
 <style>
 @import "@vue-flow/core/dist/style.css";
 @import "@vue-flow/core/dist/theme-default.css";

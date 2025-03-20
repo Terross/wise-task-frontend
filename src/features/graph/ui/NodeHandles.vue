@@ -68,7 +68,7 @@ const props = defineProps<{
 
 <style>
 .full-node-handle {
-  width: 10px;
-  height: 10px;
+  width: 20px;
+  height: 20px;
 }
 </style>
