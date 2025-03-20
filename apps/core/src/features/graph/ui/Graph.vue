@@ -113,8 +113,11 @@ const uploadJson = (event: Event) => {
 .buttons-container {
   background-color: blue;
   padding: 5px 10px;
+  width: 100%;
   display: flex;
+  flex-wrap: wrap;
   column-gap: 10px;
+  row-gap: 10px;
 }
 
 .pinia-flow {
