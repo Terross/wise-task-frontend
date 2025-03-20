@@ -1,146 +1,146 @@
 <template>
-    <v-container>
-        <v-row>
-            <v-col>
-                <control-panel-component></control-panel-component>
-				<graph-constructor-component></graph-constructor-component>
-            </v-col>
-            <v-col>
-                <v-card>
-                    <v-card-title>{{ activeTask.name }}</v-card-title>
-                    <v-card-text class="text-pre-wrap">
-                        {{ activeTask.description }}
-                    </v-card-text>
-                    <v-card-actions>
-                        <v-btn
-                            color="primary"
-                            variant="outlined"
-                            @click="solveTask">
-                            Отправить решение
-                        </v-btn>
-                    </v-card-actions>
-                </v-card>
-                <v-alert
-                    v-model="successAlert"
-                    text="Задача решена верно"
-                    title="Успех!"
-                    type="success"
-                    closable
-                    variant="tonal"
-                ></v-alert>
-                <v-alert
-                    v-model="errorAlert"
-                    text="В решении есть ошибка"
-                    title="Ошибка!"
-                    type="error"
-                    closable
-                    variant="tonal"
-                ></v-alert>
-                <v-card v-if="errorAlert">
-                    <v-card-title>Ошибки в модулях</v-card-title>
-                    <v-card-text>
-                        <v-list lines="one">
-                            <v-list-item
-                                v-for="(item, i) in result"
-                                :key="i"
-                                :title="(i + 1) + '. ' + item.mistakeText + ' = ' + item.value"
-                            ></v-list-item>
-                            </v-list>
-                    </v-card-text>
-                </v-card>
-            </v-col>
-        </v-row>
-    </v-container>
+  <v-container>
+    <v-row>
+      <v-col>
+        <Graph :style="{ width: '100%', border: '1px solid black' }" />
+      </v-col>
+      <v-col>
+        <v-card>
+          <v-card-title>{{ activeTask.name }}</v-card-title>
+          <v-card-text class="text-pre-wrap">
+            {{ activeTask.description }}
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="primary" variant="outlined" @click="solveTask">
+              Отправить решение
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+        <v-alert
+          v-model="successAlert"
+          text="Задача решена верно"
+          title="Успех!"
+          type="success"
+          closable
+          variant="tonal"
+        ></v-alert>
+        <v-alert
+          v-model="errorAlert"
+          text="В решении есть ошибка"
+          title="Ошибка!"
+          type="error"
+          closable
+          variant="tonal"
+        ></v-alert>
+        <v-card v-if="errorAlert">
+          <v-card-title>Ошибки в модулях</v-card-title>
+          <v-card-text>
+            <v-list lines="one">
+              <v-list-item
+                v-for="(item, i) in result"
+                :key="i"
+                :title="i + 1 + '. ' + item.mistakeText + ' = ' + item.value"
+              ></v-list-item>
+            </v-list>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script lang="ts">
-import { SOLVE_TASK_GRAPH } from '@/api/Mutations';
-import { GET_TASK } from '@/api/Queries';
-import { useGraphStore } from '@/store/graph';
-import { useTaskStore } from '@/store/task';
-import { useMutation, useQuery } from '@vue/apollo-composable';
-import { storeToRefs } from 'pinia';
-import { defineComponent } from 'vue'
-import { toGraph } from '../graph/network/helper/graph';
-import { PluginResult } from '@/__generated__/graphql';
+import { SOLVE_TASK_GRAPH } from "@/api/Mutations";
+import { GET_TASK } from "@/api/Queries";
+import { useGraphStore } from "@/store/graph";
+import { useTaskStore } from "@/store/task";
+import { useMutation, useQuery } from "@vue/apollo-composable";
+import { storeToRefs } from "pinia";
+import { defineComponent } from "vue";
+import { toGraph } from "../graph/network/helper/graph";
+import { PluginResult } from "@/__generated__/graphql";
+import Graph from "@/features/graph/ui/Graph.vue";
 
 export default defineComponent({
-    setup(props) {
-        const { activeTask } = storeToRefs(useTaskStore())
-        const { onResult } = useQuery(GET_TASK, { id: props.id })
-        const { activeGraph } = storeToRefs(useGraphStore())
-        onResult(response => {
-            if(response.data) {
-                activeTask.value = response.data.getTask
-            }
-        })
+  components: { Graph },
+  setup(props) {
+    const { activeTask } = storeToRefs(useTaskStore());
+    const { onResult } = useQuery(GET_TASK, { id: props.id });
+    const { activeGraph } = storeToRefs(useGraphStore());
+    onResult((response) => {
+      if (response.data) {
+        activeTask.value = response.data.getTask;
+      }
+    });
 
-        return {
-            activeTask,
-            activeGraph
+    return {
+      activeTask,
+      activeGraph,
+    };
+  },
+  data() {
+    return {
+      successAlert: false,
+      errorAlert: false,
+      result: [],
+    };
+  },
+  props: ["id"],
+  methods: {
+    solveTask() {
+      const { mutate, onDone, onError } = useMutation(SOLVE_TASK_GRAPH);
+      const graph = toGraph(this.activeGraph);
+      graph.id = self.crypto.randomUUID();
+      const request = {
+        solution: {
+          id: self.crypto.randomUUID(),
+          taskId: this.activeTask.id,
+          authorId: "00000000-0000-0000-0000-000000000000",
+          graph: graph,
+        },
+      };
+      mutate(request);
+
+      onDone((response) => {
+        if (response.data.solveTaskGraph.isCorrect) {
+          this.successAlert = true;
+          this.errorAlert = false;
+        } else {
+          this.errorAlert = true;
+          this.successAlert = false;
+          const pluginResults =
+            response.data.solveTaskGraph.pluginResults.filter(
+              (item: PluginResult) => {
+                return !item.isCorrect;
+              },
+            );
+          if (this.activeTask.isHiddenMistake) {
+            this.result = pluginResults[0];
+          } else {
+            this.result = pluginResults;
+          }
+          for (let i = 0; i < this.result.length; i++) {
+            const mistakeText = this.activeTask.condition.find(
+              (element: string) => {
+                return element.pluginId === this.result[i].pluginId;
+              },
+            ).mistakeText;
+            this.result[i]["mistakeText"] = mistakeText;
+          }
         }
+        // this.alert = true
+      });
+
+      onError(({ graphQLErrors }) => {
+        if (graphQLErrors) {
+          graphQLErrors.map(({ message }) => {
+            console.error(message);
+          });
+        }
+      });
     },
-    data() {
-        return {
-            successAlert: false,
-            errorAlert: false,
-            result: []
-        }
-    },
-    props: ["id"],
-    methods: {
-        solveTask() {
-            const { mutate, onDone, onError } = useMutation(SOLVE_TASK_GRAPH)
-            const graph = toGraph(this.activeGraph)
-            graph.id = self.crypto.randomUUID()
-            const request = {
-                solution: {
-                    id: self.crypto.randomUUID(),
-                    taskId: this.activeTask.id,
-                    authorId: '00000000-0000-0000-0000-000000000000',
-                    graph: graph
-                }
-            }
-            mutate(request)
-
-            onDone(response => {
-                if (response.data.solveTaskGraph.isCorrect) {
-                    this.successAlert = true
-                    this.errorAlert = false
-                } else {
-                    this.errorAlert = true
-                    this.successAlert = false
-                    const pluginResults = response.data.solveTaskGraph.pluginResults.filter((item: PluginResult) => {
-                        return !item.isCorrect
-                    })
-                    if (this.activeTask.isHiddenMistake) {
-                        this.result = pluginResults[0]
-                    } else {
-                        this.result = pluginResults
-                    }
-                    for (let i = 0; i < this.result.length; i++) {
-                        const mistakeText = this.activeTask.condition.find((element: string) => {
-                            return element.pluginId === this.result[i].pluginId
-                        }).mistakeText
-                        this.result[i]['mistakeText'] = mistakeText
-                    }
-                }
-                // this.alert = true
-            })
-
-            onError(({graphQLErrors}) => {
-                if (graphQLErrors) {
-                graphQLErrors.map(({message}) => {
-                    console.error(message)
-                })
-                } 
-            })
-        }
-    }
-})
+  },
+});
 </script>
 
-
-<style scoped>
-
-</style>
+<style scoped></style>
