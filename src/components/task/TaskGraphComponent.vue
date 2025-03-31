@@ -107,6 +107,7 @@ export default defineComponent({
         if (response.data.solveTaskGraph.isCorrect) {
           this.successAlert = true;
           this.errorAlert = false;
+          this.$emit("isCorrect", true);
         } else {
           this.errorAlert = true;
           this.successAlert = false;
@@ -114,7 +115,7 @@ export default defineComponent({
             response.data.solveTaskGraph.pluginResults.filter(
               (item: PluginResult) => {
                 return !item.isCorrect;
-              },
+              }
             );
           if (this.activeTask.isHiddenMistake) {
             this.result = pluginResults[0];
@@ -125,7 +126,7 @@ export default defineComponent({
             const mistakeText = this.activeTask.condition.find(
               (element: string) => {
                 return element.pluginId === this.result[i].pluginId;
-              },
+              }
             ).mistakeText;
             this.result[i]["mistakeText"] = mistakeText;
           }
