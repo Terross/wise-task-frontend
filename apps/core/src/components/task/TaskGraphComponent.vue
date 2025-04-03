@@ -7,8 +7,10 @@
       <v-col>
         <v-card>
           <v-card-title>{{ activeTask.name }}</v-card-title>
-          <v-card-text class="text-pre-wrap">
-            {{ activeTask.description }}
+          <v-card-text
+            class="text-pre-wrap"
+            v-html="formatDescription(activeTask.description)"
+          >
           </v-card-text>
           <v-card-actions>
             <v-btn color="primary" variant="outlined" @click="solveTask">
@@ -140,6 +142,21 @@ export default defineComponent({
             console.error(message);
           });
         }
+      });
+    },
+    formatDescription(description: string) {
+      if (!description) return "";
+
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+      return description.replace(urlRegex, (url) => {
+        const escapedUrl = url
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+
+        return `<a href="${escapedUrl}" target="_blank" rel="noopener noreferrer">${escapedUrl}</a>`;
       });
     },
   },
