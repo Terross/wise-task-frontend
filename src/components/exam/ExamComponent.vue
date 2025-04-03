@@ -25,7 +25,9 @@
           <v-card-text v-else>
             <div class="text-center">
               <v-card-title class="text-h5">Экзамен завершен</v-card-title>
-              <p>Правильных ответов: {{ correctCount }} из 10</p>
+              <p>
+                Правильных ответов: {{ correctCount }} из {{ tasks.length }}
+              </p>
               <v-btn color="primary" block class="mt-4" @click="resetExam">
                 Начать снова
               </v-btn>
@@ -37,12 +39,11 @@
 
     <v-row class="fill-height" v-else>
       <v-col cols="10" v-if="!isLoading">
-        <!-- Отображаем текущую задачу -->
         <TaskGraphComponent
           v-if="tasks.length > 0"
           :key="tasks[currentTaskIndex]?.id"
           :id="tasks[currentTaskIndex]?.id"
-          @isCorrect="correctCount += 1"
+          @isCorrect="handleCorrectAnswer"
         />
       </v-col>
 
@@ -65,16 +66,31 @@
             }}
           </v-progress-circular>
         </v-row>
-        <v-row class="d-flex align-center justify-center">
+
+        <v-row class="d-flex align-center justify-center mb-4">
+          <v-chip color="primary">
+            Задача {{ currentTaskIndex + 1 }} из {{ tasks.length }}
+          </v-chip>
+        </v-row>
+
+        <v-row class="d-flex align-center justify-center mb-4">
           <v-btn
             color="primary"
-            class="mb-4"
+            class="mr-2"
+            @click="goToPreviousTask"
+            :disabled="currentTaskIndex <= 0"
+          >
+            Назад
+          </v-btn>
+          <v-btn
+            color="primary"
             @click="goToNextTask"
             :disabled="currentTaskIndex >= tasks.length - 1"
           >
-            Следующая задача
+            Вперед
           </v-btn>
         </v-row>
+
         <v-row class="d-flex align-start justify-center">
           <v-btn color="orange" @click="endExam"> Завершить экзамен </v-btn>
         </v-row>
@@ -96,15 +112,14 @@ export default {
     const timeLeft = ref(1800);
     const totalTime = ref(1800);
     const tasks = ref([]);
-    const currentTaskIndex = ref(0); // Индекс текущей задачи
+    const currentTaskIndex = ref(0);
     const isLoading = ref(true);
     const correctCount = ref(0);
+    const correctAnswers = ref<Record<number, boolean>>({});
     let timer: NodeJS.Timer | null = null;
 
     const { onResult } = useQuery(GET_ALL_TASKS);
     onResult((response) => {
-      console.log(response);
-
       if (response.data) {
         isLoading.value = false;
         tasks.value = response.data.getAllTasks;
@@ -115,11 +130,21 @@ export default {
       () => (timeLeft.value / totalTime.value) * 100
     );
 
+    const handleCorrectAnswer = (isCorrect: boolean) => {
+      correctAnswers.value[currentTaskIndex.value] = isCorrect;
+
+      correctCount.value = Object.values(correctAnswers.value).filter(
+        Boolean
+      ).length;
+    };
+
     const startExam = () => {
       examStarted.value = true;
       examFinished.value = false;
       correctCount.value = 0;
+      correctAnswers.value = {};
       timeLeft.value = totalTime.value;
+      currentTaskIndex.value = 0;
       timer = setInterval(() => {
         if (timeLeft.value > 0) {
           timeLeft.value--;
@@ -132,7 +157,6 @@ export default {
     const endExam = () => {
       clearInterval(timer);
       examFinished.value = true;
-      console.log("Количество правильных ответов:", correctCount.value);
     };
 
     const resetExam = () => {
@@ -140,13 +164,20 @@ export default {
       examStarted.value = false;
       examFinished.value = false;
       timeLeft.value = totalTime.value;
-      currentTaskIndex.value = 0; // Сбрасываем индекс на первую задачу
+      currentTaskIndex.value = 0;
+      correctCount.value = 0;
+      correctAnswers.value = {};
     };
 
-    // Переход к следующей задаче
     const goToNextTask = () => {
       if (currentTaskIndex.value < tasks.value.length - 1) {
         currentTaskIndex.value++;
+      }
+    };
+
+    const goToPreviousTask = () => {
+      if (currentTaskIndex.value > 0) {
+        currentTaskIndex.value--;
       }
     };
 
@@ -167,7 +198,9 @@ export default {
       isLoading,
       currentTaskIndex,
       goToNextTask,
+      goToPreviousTask,
       correctCount,
+      handleCorrectAnswer,
     };
   },
 };
