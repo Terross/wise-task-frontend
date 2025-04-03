@@ -1,4 +1,4 @@
-import { NodesStoreState } from "../stores/nodes";
+import { NodesStoreState } from "../../stores/nodes";
 import {
   Color,
   EdgeInput,

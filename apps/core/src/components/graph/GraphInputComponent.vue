@@ -17,7 +17,7 @@ import { defineComponent, computed, onMounted } from "vue";
 import { CREATE_GRAPH } from "@/api/Mutations";
 import { useMutation } from "@vue/apollo-composable";
 import { useNodeStore } from "@/features/graph/stores/nodes";
-import { convertToGqlFormat } from "@/features/graph/lib/convertToGqlFormat";
+import { convertToGqlFormat } from "@/features/graph/lib/helpers/convertToGqlFormat";
 
 export default defineComponent({
   setup() {

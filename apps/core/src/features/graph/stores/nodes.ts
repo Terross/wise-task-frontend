@@ -1,18 +1,7 @@
 import { defineStore } from "pinia";
-import type { CustomNode } from "@/features/graph/types/CustomNode";
-import type { Edge } from "@vue-flow/core";
 import { cloneDeep } from "@apollo/client/utilities";
-import { CustomEdge } from "@/features/graph/types/Edge";
-
-export interface NodesStoreState {
-  nodes: CustomNode[];
-  edges: CustomEdge[];
-  history: { nodes: CustomNode[]; edges: CustomEdge[] }[];
-  historyIndex: number;
-  isDirected: boolean;
-  name: string;
-  id?: string;
-}
+import {NodesStoreState} from "../types/NodesStore";
+import {Edge} from "@vue-flow/core";
 
 export const useNodeStore = defineStore("nodes", {
   state: (): NodesStoreState => ({

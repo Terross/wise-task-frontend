@@ -61,7 +61,7 @@ import { toGraph } from "../graph/network/helper/graph";
 import { PluginResult } from "@/__generated__/graphql";
 import Graph from "@/features/graph/ui/Graph.vue";
 import { useNodeStore } from "@/features/graph/stores/nodes";
-import { convertToGqlFormat } from "@/features/graph/lib/convertToGqlFormat";
+import { convertToGqlFormat } from "@/features/graph/lib/helpers/convertToGqlFormat";
 
 export default defineComponent({
   components: { Graph },
