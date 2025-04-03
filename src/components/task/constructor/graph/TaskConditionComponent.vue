@@ -74,7 +74,7 @@ import { useGraphStore } from "@/store/graph";
 import { CREATE_TASK_GRAPH } from "@/api/Mutations";
 import { useMutation } from "@vue/apollo-composable";
 import { useNodeStore } from "@/features/graph/stores/nodes";
-import { convertToGqlFormat } from "@/features/graph/lib/convertToGqlFormat";
+import { convertToGqlFormat } from "@/features/graph/lib/helpers/convertToGqlFormat";
 
 const nodeStore = useNodeStore();
 
