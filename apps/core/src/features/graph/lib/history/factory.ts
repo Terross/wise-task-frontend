@@ -3,6 +3,7 @@ import { RestoreObject } from "@/features/graph/types/RestoreObject";
 import { NodeAddRestoreObject } from "@/features/graph/lib/history/NodeAddRestore";
 import { NodeRemoveRestoreObject } from "@/features/graph/lib/history/NodeRemoveRestoreObject";
 import { NodeSizeRestoreObject } from "@/features/graph/lib/history/NodeResizeRestore";
+import { NodeShiftRestoreObjet } from "@/features/graph/lib/history/NodeShiftRestore";
 
 export class RestoreObjectFactory {
   public static create(restore: Restore): RestoreObject {
@@ -13,6 +14,8 @@ export class RestoreObjectFactory {
         return new NodeRemoveRestoreObject(restore);
       case "node:change_size":
         return new NodeSizeRestoreObject(restore);
+      case "node:change_shift":
+        return new NodeShiftRestoreObjet(restore);
       default:
         throw new Error(`Unknown restore type: ${(restore as any).type}`);
     }

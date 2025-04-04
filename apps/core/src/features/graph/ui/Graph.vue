@@ -18,8 +18,8 @@ const nodeStore = useNodeStore();
 const {
   onConnect,
   addEdges,
-  onNodeDragStop,
   onConnectEnd,
+  onNodeDragStart,
   onPaneContextMenu,
   project,
 } = useVueFlow();
@@ -50,8 +50,10 @@ onConnect((connection) => {
   addEdges(connection);
 });
 
-onNodeDragStop(() => {
-  // nodeStore.saveState();
+onNodeDragStart((event) => {
+  nodeStore.nodeShift(event.node.id, event.node.computedPosition);
+  console.log("NODE:", event.node);
+  console.log("EVENT:", event.event);
 });
 
 onConnectEnd(() => {
@@ -130,7 +132,7 @@ const addNodeToCenter = () => {
     <VueFlow
       :connection-radius="30"
       v-model:nodes="nodeStore.nodes"
-      v-model:edges="nodeStore.edges"
+      v-model:edges="nodeStore.edges as any"
       class="pinia-flow"
     >
       <template #node-special="specialNodeProps">
