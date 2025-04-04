@@ -29,4 +29,16 @@ export interface NodeSizeRestore extends BaseRestore {
   };
 }
 
-export type Restore = NodeAddRestore | NodeRemoveRestore | NodeSizeRestore;
+export interface NodeShiftRestore extends BaseRestore {
+  type: "node:change_shift";
+  properties: {
+    nodeId: string;
+    coords: { x: number; y: number };
+  };
+}
+
+export type Restore =
+  | NodeAddRestore
+  | NodeRemoveRestore
+  | NodeSizeRestore
+  | NodeShiftRestore;
