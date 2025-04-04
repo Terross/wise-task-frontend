@@ -65,7 +65,14 @@ const handleWeightChange = () => {
 };
 
 const selectColor = (color: string) => {
-  emit("update:color", color);
+  const data = nodeStore.getNodeData(props.nodeId);
+  if (!data) {
+    return;
+  }
+  nodeStore.updateNodeData(props.nodeId, {
+    ...data,
+    color: color,
+  });
 };
 </script>
 
