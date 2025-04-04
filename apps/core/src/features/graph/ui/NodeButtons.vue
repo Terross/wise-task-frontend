@@ -4,7 +4,7 @@ import { COLORS } from "@/features/graph/config/colors";
 
 const props = defineProps<{
   nodeId: string;
-  size: number;
+  size: { width: number; height: number };
   label: string;
   weight: number;
   color: string;
@@ -21,19 +21,15 @@ const emit = defineEmits<{
 }>();
 
 const decreaseSize = () => {
-  if (props.size > 50) {
-    emit("update:size", props.size - 10);
-  }
+  nodeStore.changeNodeSize(false, props.nodeId);
 };
 
 const increaseSize = () => {
-  if (props.size < 300) {
-    emit("update:size", props.size + 10);
-  }
+  nodeStore.changeNodeSize(true, props.nodeId);
 };
 
 const deleteNode = () => {
-  nodeStore.removeNode(props.nodeId)
+  nodeStore.removeNode(props.nodeId);
 };
 
 const startEditing = () => {
