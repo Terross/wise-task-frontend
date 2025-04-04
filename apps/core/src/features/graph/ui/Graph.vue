@@ -17,14 +17,7 @@ const props = defineProps<Props>();
 
 const nodeStore = useNodeStore();
 
-const {
-  onConnect,
-  addEdges,
-  onConnectEnd,
-  onNodeDragStart,
-  onPaneContextMenu,
-  project,
-} = useVueFlow();
+const { onConnect, onNodeDragStart, onPaneContextMenu, project } = useVueFlow();
 
 onPaneContextMenu((event) => {
   event.preventDefault();
@@ -54,12 +47,6 @@ onConnect((connection) => {
 
 onNodeDragStart((event) => {
   nodeStore.nodeShift(event.node.id, event.node.computedPosition);
-  console.log("NODE:", event.node);
-  console.log("EVENT:", event.event);
-});
-
-onConnectEnd(() => {
-  // nodeStore.saveState();
 });
 
 const downloadJson = () => {
@@ -134,7 +121,7 @@ const addNodeToCenter = () => {
     <VueFlow
       :connection-radius="30"
       v-model:nodes="nodeStore.nodes"
-      v-model:edges="nodeStore.edges as any"
+      v-model:edges="nodeStore.edges"
       class="pinia-flow"
     >
       <template #node-special="specialNodeProps">

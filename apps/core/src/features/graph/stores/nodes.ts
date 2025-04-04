@@ -36,9 +36,7 @@ export const useNodeStore = defineStore("nodes", {
     },
 
     undo() {
-      console.log("state before", this.$state);
       this.$state = history.undo(this.$state);
-      console.log("state after", this.$state);
     },
 
     removeNode(id: string) {
@@ -122,33 +120,27 @@ export const useNodeStore = defineStore("nodes", {
       this.edges = this.edges.filter((edge) => edge.id !== id);
     },
 
-    // В методе updateEdge
-    updateEdge(id: string, updates: { color: string; weight: string }): void {
-      const edge = this.edges.find((edge) => edge.id === id);
-      if (edge) {
-        // Сохраняем ТЕКУЩИЕ данные перед изменением (для отмены)
-        const currentData = {
-          color: edge.data.color,
-          weight: edge.data.weight,
-        };
+    updateEdge(
+      id: string,
+      updates: { color: string; weight: string | number },
+    ): void {
+      const edgeIndex: number = this.edges.findIndex((edge) => edge.id === id);
+      if (edgeIndex === -1) return;
 
-        // Обновляем edge
-        edge.data = {
-          ...edge.data,
-          ...updates,
-        };
+      history.onStateUpdate({
+        type: "edge:change_data",
+        properties: {
+          edgeId: id,
+          data: this.edges[edgeIndex].data,
+        },
+      });
 
-        // Передаём в историю ПРЕДЫДУЩИЕ данные
-        history.onStateUpdate({
-          type: "edge:change_data",
-          properties: {
-            edgeId: id,
-            data: currentData, // То, что было ДО изменения
-          },
-        });
-      }
+      this.edges[edgeIndex].data = updates;
     },
+
     addEdge(edge: CustomEdge) {
+      edge.data.color = "#949494";
+      edge.data.weight = 0;
       this.edges.push(edge);
       history.onStateUpdate({
         type: "edge:add",
