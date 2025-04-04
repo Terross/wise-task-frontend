@@ -17,7 +17,6 @@ const isControlsVisible = ref(false);
 
 const deleteNode = () => {
   console.log(`Удалили узел с id: ${props.id}`);
-  removeNodes(props.id);
 };
 
 const startEditing = () => {
@@ -25,9 +24,17 @@ const startEditing = () => {
   newTitle.value = props.data.label || "";
 };
 
-const finishEditing = () => {
+const finishEditing = (e: Event) => {
+  e.stopPropagation();
   if (newTitle.value.trim()) {
-    nodeStore.renameNode(props.id, newTitle.value);
+    const data = nodeStore.getNodeData(props.id);
+    if (!data) {
+      return;
+    }
+    nodeStore.updateNodeData(props.id, {
+      ...data,
+      label: newTitle.value,
+    });
   }
   isEditing.value = false;
 };
@@ -109,7 +116,6 @@ onUnmounted(() => {
       v-else
       v-model="newTitle"
       @blur="finishEditing"
-      @keyup.enter="finishEditing"
       :style="{
         background: 'transparent',
         fontSize: '16px',
