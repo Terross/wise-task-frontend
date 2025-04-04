@@ -37,8 +37,14 @@ export interface NodeShiftRestore extends BaseRestore {
   };
 }
 
+export interface NodeDataRestore extends BaseRestore {
+  type: "node:change_data";
+  properties: { data: CustomNode["data"]; nodeId: string };
+}
+
 export type Restore =
   | NodeAddRestore
   | NodeRemoveRestore
   | NodeSizeRestore
-  | NodeShiftRestore;
+  | NodeShiftRestore
+  | NodeDataRestore;

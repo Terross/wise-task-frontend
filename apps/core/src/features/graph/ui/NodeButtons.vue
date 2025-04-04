@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref, watch } from "vue";
 import { useNodeStore } from "@/features/graph/stores/nodes";
 import { COLORS } from "@/features/graph/config/colors";
 
@@ -20,6 +21,15 @@ const emit = defineEmits<{
   (e: "startEditing"): void;
 }>();
 
+const localWeight = ref(props.weight.toString());
+
+watch(
+  () => props.weight,
+  (newWeight) => {
+    localWeight.value = newWeight.toString();
+  },
+);
+
 const decreaseSize = () => {
   nodeStore.changeNodeSize(false, props.nodeId);
 };
@@ -36,12 +46,22 @@ const startEditing = () => {
   emit("startEditing");
 };
 
-const updateWeight = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  const value = parseInt(target.value, 10);
-  if (!isNaN(value) && value >= 0) {
-    emit("update:weight", value);
+const handleWeightChange = () => {
+  const value = parseInt(localWeight.value, 10);
+
+  if (isNaN(value) || value < 0) {
+    localWeight.value = props.weight.toString();
+    return;
   }
+
+  const data = nodeStore.getNodeData(props.nodeId);
+  if (!data) {
+    return;
+  }
+  nodeStore.updateNodeData(props.nodeId, {
+    ...data,
+    weight: value,
+  });
 };
 
 const selectColor = (color: string) => {
@@ -61,12 +81,12 @@ const selectColor = (color: string) => {
     <div class="controls-row">
       <div class="weight-label">Вес:</div>
       <input
-        type="text"
-        :value="weight"
-        @input="updateWeight"
-        @click.stop
+        type="number"
+        v-model="localWeight"
+        @blur="handleWeightChange"
         min="0"
         class="weight-input"
+        @click.stop
       />
     </div>
 
