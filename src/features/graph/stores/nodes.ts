@@ -119,6 +119,14 @@ export const useNodeStore = defineStore("nodes", {
     },
 
     removeEdge(id: string): void {
+      const edgeIndex = this.edges.findIndex((edge) => edge.id === id);
+      if (edgeIndex === -1) {
+        return;
+      }
+      history.onStateUpdate({
+        type: "edge:remove",
+        properties: this.edges[edgeIndex],
+      });
       this.edges = this.edges.filter((edge) => edge.id !== id);
     },
 
