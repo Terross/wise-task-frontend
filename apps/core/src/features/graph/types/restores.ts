@@ -47,10 +47,18 @@ export interface EdgeRemoveRestore extends BaseRestore {
   properties: CustomEdge;
 }
 
+export interface EdgeAddRestore extends BaseRestore {
+  type: "edge:add";
+  properties: {
+    edgeId: string;
+  };
+}
+
 export type Restore =
   | NodeAddRestore
   | NodeRemoveRestore
   | NodeSizeRestore
   | NodeShiftRestore
   | NodeDataRestore
-  | EdgeRemoveRestore;
+  | EdgeRemoveRestore
+  | EdgeAddRestore;

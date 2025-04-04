@@ -109,15 +109,6 @@ export const useNodeStore = defineStore("nodes", {
       });
     },
 
-    renameNode(id: string, name: string): void {
-      const node: CustomNode | undefined = this.nodes.find(
-        (node) => node.id === id,
-      );
-      if (node) {
-        node.data.label = name;
-      }
-    },
-
     removeEdge(id: string): void {
       const edgeIndex = this.edges.findIndex((edge) => edge.id === id);
       if (edgeIndex === -1) {
@@ -135,6 +126,16 @@ export const useNodeStore = defineStore("nodes", {
       if (edge) {
         Object.assign(edge, updates);
       }
+    },
+
+    addEdge(edge: CustomEdge) {
+      this.edges.push(edge);
+      history.onStateUpdate({
+        type: "edge:add",
+        properties: {
+          edgeId: edge.id,
+        },
+      });
     },
 
     getMaximumLabel(): number {

@@ -6,6 +6,7 @@ import { NodeSizeRestoreObject } from "@/features/graph/lib/history/NodeResizeRe
 import { NodeShiftRestoreObjet } from "@/features/graph/lib/history/NodeShiftRestore";
 import { NodeDataRestoreObjet } from "@/features/graph/lib/history/NodeDataRestore";
 import { EdgeRemoveRestoreObject } from "@/features/graph/lib/history/EdgeRemoveRestore";
+import { EdgeAddRestoreObject } from "@/features/graph/lib/history/EdgeAddRestore";
 
 export class RestoreObjectFactory {
   public static create(restore: Restore): RestoreObject {
@@ -22,6 +23,8 @@ export class RestoreObjectFactory {
         return new NodeDataRestoreObjet(restore);
       case "edge:remove":
         return new EdgeRemoveRestoreObject(restore);
+      case "edge:add":
+        return new EdgeAddRestoreObject(restore);
       default:
         throw new Error(`Unknown restore type: ${(restore as any).type}`);
     }
