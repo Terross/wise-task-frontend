@@ -66,7 +66,6 @@ const midY = computed(() => (props.sourceY + props.targetY) / 2);
 
 const deleteEdge = () => {
   nodeStore.removeEdge(props.id);
-  nodeStore.saveState();
 };
 
 const removeSelfEdge = () => {
