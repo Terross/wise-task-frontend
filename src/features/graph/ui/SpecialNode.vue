@@ -87,8 +87,8 @@ onUnmounted(() => {
     :id="props.id"
     class="vue-flow__node-default"
     :style="{
-      width: `${data.size || 100}px`,
-      height: `${data.size || 100}px`,
+      width: `${data.size?.width || 100}px`,
+      height: `${data.size?.height || 100}px`,
       border: `2px solid ${'#333'}`,
       borderRadius: '50%',
       display: 'flex',
@@ -126,7 +126,7 @@ onUnmounted(() => {
     <NodeControls
       v-if="isControlsVisible"
       :nodeId="props.id"
-      :size="data.size || 100"
+      :size="data.size || { width: 100, height: 100 }"
       :label="data.label"
       :weight="data.weight || 0"
       :color="data.color || '#333'"
