@@ -10,9 +10,6 @@ import {
 import { computed, ref, onMounted, onUnmounted } from "vue";
 import { useNodeStore } from "@/features/graph/stores/nodes";
 import { COLORS } from "@/features/graph/config/colors";
-import { storeToRefs } from "pinia";
-import { useTaskStore } from "@/store/task";
-import { GraphType } from "@/__generated__/graphql";
 
 const props = defineProps<EdgeProps>();
 
@@ -21,7 +18,10 @@ const isPanelVisible = ref(false);
 const selectedColor = ref(props.data?.color || "#555555");
 const weight = ref(props.data?.weight || "");
 
+console.log("PROPS", props);
+
 const updateEdgeData = () => {
+  console.log(selectedColor.value, weight.value);
   nodeStore.updateEdge(props.id, {
     color: selectedColor.value,
     weight: weight.value,
@@ -122,7 +122,7 @@ onUnmounted(() => {
 
   <g @click.stop="handleEdgeClick">
     <BaseEdge
-      :path="path"
+      :path="path?.[0] || ''"
       :style="{ stroke: selectedColor, strokeWidth: 3 }"
       :marker-start="
         nodeStore.isDirected ? `url(#${MarkerType.Arrow})` : undefined
@@ -178,7 +178,7 @@ onUnmounted(() => {
   background: rgba(255, 255, 255, 0.8);
   padding: 4px 8px;
   border-radius: 6px;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
   pointer-events: none;
   font-size: 14px;
   font-weight: bold;
@@ -190,7 +190,7 @@ onUnmounted(() => {
   background: rgba(255, 255, 255, 0.95);
   padding: 8px 12px;
   border-radius: 10px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
   pointer-events: all;
   display: flex;
   gap: 8px;
