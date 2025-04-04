@@ -59,6 +59,31 @@ export const useNodeStore = defineStore("nodes", {
       });
     },
 
+    getNodeData(nodeId: string): undefined | CustomNode["data"] {
+      const nodeIndex: number = this.nodes.findIndex(
+        (node: CustomNode) => node.id === nodeId,
+      );
+      if (nodeIndex === -1) {
+        return;
+      }
+      return this.nodes[nodeIndex].data;
+    },
+
+    updateNodeData(nodeId: string, data: CustomNode["data"]) {
+      const nodeIndex: number = this.nodes.findIndex(
+        (node: CustomNode) => node.id === nodeId,
+      );
+      if (nodeIndex === -1) {
+        return;
+      }
+      const prevData = this.nodes[nodeIndex].data;
+      this.nodes[nodeIndex].data = data;
+      history.onStateUpdate({
+        type: "node:change_data",
+        properties: { nodeId: nodeId, data: prevData },
+      });
+    },
+
     nodeShift(nodeId: string, coords: { x: number; y: number }) {
       const nodeIndex = this.nodes.findIndex((node) => node.id === nodeId);
       if (nodeIndex === -1) {
