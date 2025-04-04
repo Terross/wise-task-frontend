@@ -33,8 +33,7 @@ const increaseSize = () => {
 };
 
 const deleteNode = () => {
-  emit("delete");
-  nodeStore.saveState();
+  nodeStore.removeNode(props.nodeId)
 };
 
 const startEditing = () => {
@@ -47,12 +46,10 @@ const updateWeight = (event: Event) => {
   if (!isNaN(value) && value >= 0) {
     emit("update:weight", value);
   }
-  nodeStore.saveState();
 };
 
 const selectColor = (color: string) => {
   emit("update:color", color);
-  nodeStore.saveState();
 };
 </script>
 

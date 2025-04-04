@@ -1,3 +1,6 @@
+import {CustomNode} from "@/features/graph/types/CustomNode";
+import {CustomEdge} from "@/features/graph/types/Edge";
+
 interface BaseRestore {
     type: string;
     properties: any;
@@ -6,15 +9,15 @@ interface BaseRestore {
 export interface NodeAddRestore extends BaseRestore {
     type: "node:add";
     properties: {
-        nodeId: number;
+        nodeId: string;
     };
 }
 
 export interface NodeRemoveRestore extends BaseRestore {
     type: "node:remove";
     properties: {
-        nodeId: number;
-        reason?: string;
+        node: CustomNode;
+        edges: CustomEdge[];
     };
 }
 

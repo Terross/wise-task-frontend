@@ -51,11 +51,11 @@ onConnect((connection) => {
 });
 
 onNodeDragStop(() => {
-  nodeStore.saveState();
+  // nodeStore.saveState();
 });
 
 onConnectEnd(() => {
-  nodeStore.saveState();
+  // nodeStore.saveState();
 });
 
 const downloadJson = () => {
