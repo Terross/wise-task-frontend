@@ -3,7 +3,7 @@ import { NodesStoreState } from "../types/NodesStore";
 import { Edge } from "@vue-flow/core";
 import { history } from "../lib/history/history";
 import { CustomNode } from "@/features/graph/types/CustomNode";
-import { CustomEdge } from "@/features/graph/types/Edge";
+import { CustomEdge } from "@/features/graph/types/CustomEdge";
 
 export const useNodeStore = defineStore("nodes", {
   state: (): NodesStoreState => ({

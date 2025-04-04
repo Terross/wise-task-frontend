@@ -1,7 +1,7 @@
 import { Restore } from "@/features/graph/types/restores";
 import { RestoreObject } from "@/features/graph/types/RestoreObject";
 import { NodeAddRestoreObject } from "@/features/graph/lib/history/NodeAddRestore";
-import { NodeRemoveRestoreObject } from "@/features/graph/lib/history/NodeRemoveRestoreObject";
+import { NodeRemoveRestoreObject } from "@/features/graph/lib/history/NodeRemoveRestore";
 import { NodeSizeRestoreObject } from "@/features/graph/lib/history/NodeResizeRestore";
 import { NodeShiftRestoreObjet } from "@/features/graph/lib/history/NodeShiftRestore";
 import { NodeDataRestoreObjet } from "@/features/graph/lib/history/NodeDataRestore";
