@@ -6,6 +6,8 @@ import SpecialEdge from "./SpecialEdge.vue";
 import { useNodeStore } from "@/features/graph/stores/nodes";
 import { ref } from "vue";
 import HelpingModal from "@/features/graph/ui/HelpingModal.vue";
+import { createEdgeFromConnection } from "@/features/graph/lib/helpers/createEdgeFromConnection";
+import { CustomEdge } from "@/features/graph/types/CustomEdge";
 
 interface Props {
   style?: Record<string, string | number>;
@@ -46,8 +48,8 @@ const closeHelpModal = () => {
 };
 
 onConnect((connection) => {
-  connection.type = "special";
-  addEdges(connection);
+  const edge: CustomEdge = createEdgeFromConnection(connection);
+  nodeStore.addEdge(edge);
 });
 
 onNodeDragStart((event) => {
