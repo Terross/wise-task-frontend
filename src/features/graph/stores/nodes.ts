@@ -1,9 +1,9 @@
-import {defineStore} from "pinia";
-import {NodesStoreState} from "../types/NodesStore";
-import {Edge} from "@vue-flow/core";
-import {history} from "../lib/history/history"
-import {CustomNode} from "@/features/graph/types/CustomNode";
-import {CustomEdge} from "@/features/graph/types/Edge";
+import { defineStore } from "pinia";
+import { NodesStoreState } from "../types/NodesStore";
+import { Edge } from "@vue-flow/core";
+import { history } from "../lib/history/history";
+import { CustomNode } from "@/features/graph/types/CustomNode";
+import { CustomEdge } from "@/features/graph/types/Edge";
 
 export const useNodeStore = defineStore("nodes", {
   state: (): NodesStoreState => ({
@@ -33,25 +33,50 @@ export const useNodeStore = defineStore("nodes", {
         type: "special",
         data: { label },
       });
-      history.onStateUpdate({type: "node:add", properties: {nodeId: id}})
+      history.onStateUpdate({ type: "node:add", properties: { nodeId: id } });
     },
 
     undo() {
-      this.$state = history.undo(this.$state)
+      this.$state = history.undo(this.$state);
     },
 
     removeNode(id: string) {
-      const removedNode: CustomNode | undefined = this.nodes.find(node => node.id === id)
+      const removedNode: CustomNode | undefined = this.nodes.find(
+        (node) => node.id === id,
+      );
       if (!removedNode) {
-        return
+        return;
       }
-      this.nodes = this.nodes.filter(node => node.id !== removedNode.id)
-      const edges: CustomEdge[] = this.edges.filter((edge: CustomEdge) => edge.sourceNode.id === removedNode.id || edge.targetNode.id === removedNode.id)
-      history.onStateUpdate({type: "node:remove", properties: {node: removedNode, edges: edges}})
+      this.nodes = this.nodes.filter((node) => node.id !== removedNode.id);
+      const edges: CustomEdge[] = this.edges.filter(
+        (edge: CustomEdge) =>
+          edge.sourceNode.id === removedNode.id ||
+          edge.targetNode.id === removedNode.id,
+      );
+      history.onStateUpdate({
+        type: "node:remove",
+        properties: { node: removedNode, edges: edges },
+      });
+    },
+
+    changeNodeSize(isIncreasing: boolean, nodeId: string) {
+      const nodeIndex = this.nodes.findIndex((node) => node.id === nodeId);
+      if (nodeIndex === -1) {
+        return;
+      }
+      const size = this.nodes[nodeIndex].data.size?.width || 100;
+      const newSize = isIncreasing ? size + 10 : size - 10;
+      this.nodes[nodeIndex].data.size = { width: newSize, height: newSize };
+      history.onStateUpdate({
+        type: "node:change_size",
+        properties: { nodeId: nodeId, prevSize: size },
+      });
     },
 
     renameNode(id: string, name: string): void {
-      const node: CustomNode | undefined = this.nodes.find((node) => node.id === id);
+      const node: CustomNode | undefined = this.nodes.find(
+        (node) => node.id === id,
+      );
       if (node) {
         node.data.label = name;
       }
