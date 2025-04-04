@@ -44,12 +44,7 @@ export interface NodeDataRestore extends BaseRestore {
 
 export interface EdgeRemoveRestore extends BaseRestore {
   type: "edge:remove";
-  properties: {
-    sourceId: string;
-    targetId: string;
-    weight?: string | number;
-    color?: string;
-  };
+  properties: CustomEdge;
 }
 
 export type Restore =
