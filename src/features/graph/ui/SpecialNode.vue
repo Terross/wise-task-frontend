@@ -8,7 +8,7 @@ import NodeHandles from "@/features/graph/ui/NodeHandles.vue";
 
 const props = defineProps<NodeProps>();
 
-const { updateNode, removeNodes } = useVueFlow();
+const { updateNode } = useVueFlow();
 const nodeStore = useNodeStore();
 
 const isEditing = ref(false);
@@ -16,7 +16,7 @@ const newTitle = ref(props.data.label || "");
 const isControlsVisible = ref(false);
 
 const deleteNode = () => {
-  console.log(`Удалили узел с id: ${props.id}`);
+  nodeStore.removeNode(props.id);
 };
 
 const startEditing = () => {
@@ -28,45 +28,14 @@ const finishEditing = (e: Event) => {
   e.stopPropagation();
   if (newTitle.value.trim()) {
     const data = nodeStore.getNodeData(props.id);
-    if (!data) {
-      return;
-    }
+    if (!data) return;
+
     nodeStore.updateNodeData(props.id, {
       ...data,
       label: newTitle.value,
     });
   }
   isEditing.value = false;
-};
-
-const handleSizeUpdate = (newSize: number) => {
-  updateNode(props.id, (node) => ({
-    ...node,
-    data: {
-      ...node.data,
-      size: newSize,
-    },
-  }));
-};
-
-const handleWeightUpdate = (newWeight: number) => {
-  updateNode(props.id, (node) => ({
-    ...node,
-    data: {
-      ...node.data,
-      weight: newWeight,
-    },
-  }));
-};
-
-const handleColorUpdate = (newColor: string) => {
-  updateNode(props.id, (node) => ({
-    ...node,
-    data: {
-      ...node.data,
-      color: newColor,
-    },
-  }));
 };
 
 const toggleControls = () => {
@@ -136,9 +105,6 @@ onUnmounted(() => {
       :label="data.label"
       :weight="data.weight || 0"
       :color="data.color || '#333'"
-      @update:size="handleSizeUpdate"
-      @update:weight="handleWeightUpdate"
-      @update:color="handleColorUpdate"
       @delete="deleteNode"
       @startEditing="startEditing"
     />
