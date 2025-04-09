@@ -4,11 +4,12 @@ import { VueFlow } from "@vue-flow/core";
 import SpecialNode from "./SpecialNode.vue";
 import SpecialEdge from "./SpecialEdge.vue";
 import { useNodeStore } from "@/features/graph/stores/nodes";
-import { ref } from "vue";
+import { ref, nextTick } from "vue";
 import HelpingModal from "@/features/graph/ui/HelpingModal.vue";
 import { createEdgeFromConnection } from "@/features/graph/lib/helpers/createEdgeFromConnection";
 import { CustomEdge } from "@/features/graph/types/CustomEdge";
 import { Background } from "@vue-flow/background";
+import RightClickModal from "@/features/graph/ui/RightClickModal.vue";
 
 interface Props {
   style?: Record<string, string | number>;
@@ -20,7 +21,28 @@ const nodeStore = useNodeStore();
 
 const { onConnect, onNodeDragStart, onPaneContextMenu, project } = useVueFlow();
 
-onPaneContextMenu((event) => {
+const contextMenuPosition = ref({ x: 0, y: 0 });
+const isHelpModalOpen = ref(false);
+const isRightClickModalOpen = ref(false);
+const contextMenuRef = ref<HTMLElement | null>(null);
+
+onPaneContextMenu(async (event) => {
+  event.preventDefault();
+  isRightClickModalOpen.value = false;
+
+  await nextTick();
+
+  const bounds = (event.currentTarget as HTMLElement).getBoundingClientRect();
+  const x = event.clientX - bounds.left;
+  const y = event.clientY - bounds.top;
+
+  const pos = project({ x, y });
+  contextMenuPosition.value = { x: pos.x + 29, y: pos.y + 10 };
+
+  isRightClickModalOpen.value = true;
+});
+
+onPaneContextMenu(async (event) => {
   event.preventDefault();
 
   const bounds = (event.currentTarget as HTMLElement).getBoundingClientRect();
@@ -28,10 +50,16 @@ onPaneContextMenu((event) => {
   const y = event.clientY - bounds.top;
 
   const pos = project({ x, y });
-  nodeStore.addNode({ x: pos.x - 40, y: pos.y - 40 });
+  contextMenuPosition.value = { x: pos.x + 10, y: pos.y };
+  isRightClickModalOpen.value = true;
 });
 
-const isHelpModalOpen = ref(false);
+const handleAddNodeAtPosition = () => {
+  nodeStore.addNode({
+    x: contextMenuPosition.value.x,
+    y: contextMenuPosition.value.y,
+  });
+};
 
 const openHelpModal = () => {
   isHelpModalOpen.value = true;
@@ -39,6 +67,10 @@ const openHelpModal = () => {
 
 const closeHelpModal = () => {
   isHelpModalOpen.value = false;
+};
+
+const closeRightClickModal = () => {
+  isRightClickModalOpen.value = false;
 };
 
 onConnect((connection) => {
@@ -124,7 +156,14 @@ const addNodeToCenter = () => {
       v-model:nodes="nodeStore.nodes"
       v-model:edges="nodeStore.edges"
       class="pinia-flow"
+      @pane-click="closeRightClickModal"
     >
+      <RightClickModal
+        v-if="isRightClickModalOpen"
+        :position="contextMenuPosition"
+        @close="isRightClickModalOpen = false"
+        @add-node="handleAddNodeAtPosition"
+      />
       <Background />
       <template #node-special="specialNodeProps">
         <SpecialNode v-bind="specialNodeProps" />
@@ -160,5 +199,14 @@ const addNodeToCenter = () => {
   min-height: 500px;
   height: calc(100% - 45px);
   overflow: hidden;
+}
+
+.context-menu {
+  position: absolute;
+  z-index: 10;
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  min-width: 200px;
 }
 </style>
