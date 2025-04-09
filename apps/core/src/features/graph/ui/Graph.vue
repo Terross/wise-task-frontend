@@ -8,6 +8,7 @@ import { ref } from "vue";
 import HelpingModal from "@/features/graph/ui/HelpingModal.vue";
 import { createEdgeFromConnection } from "@/features/graph/lib/helpers/createEdgeFromConnection";
 import { CustomEdge } from "@/features/graph/types/CustomEdge";
+import { Background } from "@vue-flow/background";
 
 interface Props {
   style?: Record<string, string | number>;
@@ -124,6 +125,7 @@ const addNodeToCenter = () => {
       v-model:edges="nodeStore.edges"
       class="pinia-flow"
     >
+      <Background />
       <template #node-special="specialNodeProps">
         <SpecialNode v-bind="specialNodeProps" />
       </template>
