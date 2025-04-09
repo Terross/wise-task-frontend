@@ -6,7 +6,15 @@ const props = defineProps<{
 </script>
 
 <template>
-  <v-dialog v-model="props.isHelpModalOpen" max-width="600">
+  <v-dialog
+    :model-value="props.isHelpModalOpen"
+    @update:modelValue="
+      (val) => {
+        if (!val) props.closeHelpModal();
+      }
+    "
+    max-width="600"
+  >
     <v-card>
       <v-card-title class="headline"
         >Руководство по работе с графом</v-card-title

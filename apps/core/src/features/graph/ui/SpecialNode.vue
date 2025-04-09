@@ -42,19 +42,29 @@ const toggleControls = () => {
   isControlsVisible.value = !isControlsVisible.value;
 };
 
-const handleClickOutside = (event: MouseEvent) => {
+const handleInteractionOutside = (event: MouseEvent | PointerEvent) => {
   const nodeElement = document.getElementById(props.id);
-  if (nodeElement && !nodeElement.contains(event.target as Node)) {
+  if (!nodeElement) return;
+
+  const isClickInside =
+    nodeElement.contains(event.target as Node) ||
+    document.querySelector(".controls")?.contains(event.target as Node);
+
+  if (!isClickInside) {
     isControlsVisible.value = false;
   }
 };
 
 onMounted(() => {
-  document.addEventListener("click", handleClickOutside);
+  document.addEventListener("click", handleInteractionOutside);
+  document.addEventListener("pointerdown", handleInteractionOutside);
+  document.addEventListener("mousedown", handleInteractionOutside);
 });
 
 onUnmounted(() => {
-  document.removeEventListener("click", handleClickOutside);
+  document.removeEventListener("click", handleInteractionOutside);
+  document.removeEventListener("pointerdown", handleInteractionOutside);
+  document.removeEventListener("mousedown", handleInteractionOutside);
 });
 </script>
 
