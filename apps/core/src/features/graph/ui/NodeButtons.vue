@@ -14,9 +14,6 @@ const props = defineProps<{
 const nodeStore = useNodeStore();
 
 const emit = defineEmits<{
-  (e: "update:size", value: number): void;
-  (e: "update:weight", value: number): void;
-  (e: "update:color", value: string): void;
   (e: "delete"): void;
   (e: "startEditing"): void;
 }>();
@@ -39,7 +36,7 @@ const increaseSize = () => {
 };
 
 const deleteNode = () => {
-  nodeStore.removeNode(props.nodeId);
+  emit("delete");
 };
 
 const startEditing = () => {
@@ -55,9 +52,8 @@ const handleWeightChange = () => {
   }
 
   const data = nodeStore.getNodeData(props.nodeId);
-  if (!data) {
-    return;
-  }
+  if (!data) return;
+
   nodeStore.updateNodeData(props.nodeId, {
     ...data,
     weight: value,
@@ -66,9 +62,8 @@ const handleWeightChange = () => {
 
 const selectColor = (color: string) => {
   const data = nodeStore.getNodeData(props.nodeId);
-  if (!data) {
-    return;
-  }
+  if (!data) return;
+
   nodeStore.updateNodeData(props.nodeId, {
     ...data,
     color: color,
