@@ -4,9 +4,9 @@ import { CustomEdge } from "./CustomEdge";
 export interface NodesStoreState {
   nodes: CustomNode[];
   edges: CustomEdge[];
-  selectedNodes: string[];
   historyIndex: number;
   isDirected: boolean;
   name: string;
   id?: string;
+  groups: NodeGroup[];
 }
