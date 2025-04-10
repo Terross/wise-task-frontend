@@ -150,7 +150,7 @@ const addNodeToCenter = () => {
       <v-btn @click="nodeStore.undo">UNDO</v-btn>
       <v-btn @click="downloadJson">Скачать JSON</v-btn>
       <v-btn @click="nodeStore.toggleIsDirected">Сменить направленность</v-btn>
-      <v-btn @click="nodeStore.toggleIsDirected">Объединить вершины</v-btn>
+      <v-btn @click="nodeStore.normalizeView">Нормализовать граф</v-btn>
       <v-btn>
         <label for="upload-json" style="cursor: pointer">Загрузить JSON</label>
         <input
