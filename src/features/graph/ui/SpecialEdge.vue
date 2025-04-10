@@ -6,7 +6,7 @@ import {
   MarkerType,
   Position,
 } from "@vue-flow/core";
-import { computed, ref, onMounted, onUnmounted, watch } from "vue";
+import { computed, ref, onMounted, onUnmounted } from "vue";
 import { useNodeStore } from "@/features/graph/stores/nodes";
 import { COLORS } from "@/features/graph/config/colors";
 import { CustomEdge } from "@/features/graph/types/CustomEdge";
@@ -16,17 +16,11 @@ const props = defineProps<CustomEdge>();
 const nodeStore = useNodeStore();
 const isPanelVisible = ref(false);
 const weight = ref(props.data?.weight || "");
-
-watch(
-  () => props.data?.weight,
-  (newWeight) => {
-    weight.value = newWeight || "";
-  },
-);
+const color = ref(props.data?.color || "#595959");
 
 const updateEdgeData = () => {
   nodeStore.updateEdge(props.id, {
-    color: props.data.color || "#595959",
+    color: color.value,
     weight: weight.value || 0,
   });
 };
@@ -34,7 +28,7 @@ const updateEdgeData = () => {
 const isSelfConnected: boolean = props.targetNode.id === props.sourceNode.id;
 
 const path = computed(() => {
-  if (!(props.targetNode.id === props.sourceNode.id)) {
+  if (!(props.sourcePosition === props.targetPosition)) {
     return getBezierPath(props);
   }
   if (
@@ -77,11 +71,9 @@ const removeSelfEdge = () => {
   }
 };
 
-const setColor = (color: string) => {
-  nodeStore.updateEdge(props.id, {
-    color: color,
-    weight: props.data.weight || 0,
-  });
+const setColor = (colorValue: string) => {
+  color.value = colorValue;
+  updateEdgeData();
 };
 
 const handleClickOutside = (event: MouseEvent) => {
@@ -128,7 +120,7 @@ onUnmounted(() => {
   <g @click.stop="handleEdgeClick">
     <BaseEdge
       :path="path?.[0] || ''"
-      :style="{ stroke: props.data.color, strokeWidth: 3 }"
+      :style="{ stroke: color, strokeWidth: 3 }"
       :marker-start="
         nodeStore.isDirected ? `url(#${MarkerType.Arrow})` : undefined
       "

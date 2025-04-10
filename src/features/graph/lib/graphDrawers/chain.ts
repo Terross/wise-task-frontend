@@ -3,24 +3,31 @@ import { CustomEdge } from "@/features/graph/types/CustomEdge";
 import { buildLinkedListFromGraph } from "@/features/graph/lib/helpers/linkedListFromGraph";
 import { DRAW_SPACING_X } from "@/features/graph/config/drawSpacing";
 import { DEFAULT_NODE_SIZE } from "@/features/graph/config/nodeDefaultSettings";
+import { DrawerResults } from "@/features/graph/types/ConnectedComponents";
+import { Position } from "@vue-flow/core";
 
 export const drawChainGraph = (
   nodes: CustomNode[],
   edges: CustomEdge[],
-): CustomNode[] => {
+): DrawerResults => {
   let currentX: number = 0;
   let currentY: number = 0;
-  let iter = 0;
   let xPositionTaken = 0;
   const linked = buildLinkedListFromGraph(nodes, edges);
   console.log(linked);
 
   if (!linked) {
-    return nodes;
+    return { nodes, edges, yFinish: currentY, xFinish: currentX };
   }
 
   let current = linked;
-  while (current) {
+
+  edges.forEach((edge) => {
+    edge.sourcePosition = Position.Right;
+    edge.targetPosition = Position.Left;
+  });
+
+  while (true) {
     console.log(current.node.data.label);
     const nodeIndex = nodes.findIndex((node) => node.id === current.node.id);
     if (nodeIndex !== -1) {
@@ -33,11 +40,14 @@ export const drawChainGraph = (
       (current.node.data.size?.width || DEFAULT_NODE_SIZE.width);
 
     if (current.next === null) {
-      return nodes;
+      return {
+        nodes,
+        edges,
+        xFinish: currentX,
+        yFinish: currentY,
+      };
     }
 
     current = current.next;
   }
-
-  return nodes;
 };

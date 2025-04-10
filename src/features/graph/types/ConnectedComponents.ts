@@ -5,3 +5,10 @@ export type ConnectedComponent = {
   nodes: CustomNode[];
   edges: CustomEdge[];
 };
+
+export interface DrawerResults {
+  nodes: CustomNode[];
+  edges: CustomEdge[];
+  xFinish: number;
+  yFinish: number;
+}
