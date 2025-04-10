@@ -1,10 +1,15 @@
 import { CustomNode } from "@/features/graph/types/CustomNode";
 import { CustomEdge } from "@/features/graph/types/CustomEdge";
 
+interface LinkedListNode {
+  node: CustomNode;
+  next: LinkedListNode | null;
+}
+
 /**
  * Возвращает массив узлов в порядке следования по графу-цепи, поддерживает циклы.
  */
-export const getNodesPriority = (
+const getNodesPriority = (
   nodes: CustomNode[],
   edges: CustomEdge[],
 ): CustomNode[] => {
@@ -49,25 +54,36 @@ export const getNodesPriority = (
     currentNode = edge.targetNode;
   }
 
-  return priorityList;
+  return priorityList.reverse();
 };
 
 /**
- * Возвращает связанный список графа (в виде массива), можно использовать для обхода или отрисовки.
+ * Возвращает связанный список графа (реальный LinkedList)
  */
 export const buildLinkedListFromGraph = (
   nodes: CustomNode[],
   edges: CustomEdge[],
-): { current: CustomNode; next?: CustomNode }[] => {
+): LinkedListNode | null => {
   const ordered = getNodesPriority(nodes, edges);
-  const linkedList: { current: CustomNode; next?: CustomNode }[] = [];
+  console.log("Priorities", ordered);
+  if (ordered.length === 0) return null;
 
-  for (let i = 0; i < ordered.length; i++) {
-    linkedList.push({
-      current: ordered[i],
-      next: ordered[i + 1],
-    });
+  let head: LinkedListNode = {
+    node: ordered[0],
+    next: null,
+  };
+
+  let current = head;
+  for (let i = 1; i < ordered.length; i++) {
+    const newNode: LinkedListNode = {
+      node: ordered[i],
+      next: null,
+    };
+    current.next = newNode;
+    current = newNode;
   }
 
-  return linkedList;
+  console.log(head);
+
+  return head;
 };
