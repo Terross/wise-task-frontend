@@ -7,6 +7,7 @@ import { ConnectedComponent } from "@/features/graph/types/ConnectedComponents";
 import { getConnectedComponents } from "@/features/graph/lib/helpers/getConnectedComponents";
 import { isGraphBipartite } from "@/features/graph/lib/graphType/bipartite";
 import { isGraphNearlyFull } from "@/features/graph/lib/graphType/nearlyFull";
+import { isGraphTree } from "@/features/graph/lib/graphType/tree";
 
 export const useNodeStore = defineStore("nodes", {
   state: (): NodesStoreState => ({
@@ -71,6 +72,7 @@ export const useNodeStore = defineStore("nodes", {
       console.log(connectedComponents);
       console.log("Двудольный: ", isGraphBipartite(connectedComponents[0]));
       console.log("Почти полный: ", isGraphNearlyFull(connectedComponents[0]));
+      console.log("Дерево: ", isGraphTree(connectedComponents[0]));
     },
 
     getNodeData(nodeId: string): undefined | CustomNode["data"] {
