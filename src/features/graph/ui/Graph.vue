@@ -150,6 +150,7 @@ const addNodeToCenter = () => {
       <v-btn @click="nodeStore.undo">UNDO</v-btn>
       <v-btn @click="downloadJson">Скачать JSON</v-btn>
       <v-btn @click="nodeStore.toggleIsDirected">Сменить направленность</v-btn>
+      <v-btn @click="nodeStore.toggleIsDirected">Объединить вершины</v-btn>
       <v-btn>
         <label for="upload-json" style="cursor: pointer">Загрузить JSON</label>
         <input
@@ -210,14 +211,5 @@ const addNodeToCenter = () => {
   min-height: 500px;
   height: calc(100% - 45px);
   overflow: hidden;
-}
-
-.context-menu {
-  position: absolute;
-  z-index: 10;
-  background: white;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  min-width: 200px;
 }
 </style>

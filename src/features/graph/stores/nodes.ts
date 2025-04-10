@@ -12,7 +12,7 @@ export const useNodeStore = defineStore("nodes", {
     isDirected: true,
     id: undefined,
     name: "",
-    selectedNodes: [],
+    groups: [],
   }),
 
   actions: {
@@ -82,6 +82,18 @@ export const useNodeStore = defineStore("nodes", {
         type: "node:change_data",
         properties: { nodeId: nodeId, data: prevData },
       });
+    },
+
+    groupNodes() {
+      const selectedNodes: CustomNode[] = this.nodes.filter(
+        (node) => node.selected,
+      );
+      if (selectedNodes.length > 1) {
+        this.groups.push({
+          color: "#f1f1f1",
+          nodeIds: selectedNodes.map((node) => node.id),
+        });
+      }
     },
 
     nodeShift(nodeId: string, coords: { x: number; y: number }) {

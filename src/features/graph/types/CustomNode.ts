@@ -14,4 +14,5 @@ export type CustomNode = {
 
 export type NodeGroup = {
   nodeIds: string[];
+  color: string;
 };
