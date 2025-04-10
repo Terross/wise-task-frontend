@@ -3,6 +3,9 @@ import { NodesStoreState } from "../types/NodesStore";
 import { history } from "../lib/history/history";
 import { CustomNode } from "@/features/graph/types/CustomNode";
 import { CustomEdge } from "@/features/graph/types/CustomEdge";
+import { ConnectedComponent } from "@/features/graph/types/ConnectedComponents";
+import { getConnectedComponents } from "@/features/graph/lib/helpers/getConnectedComponents";
+import { isGraphBipartite } from "@/features/graph/lib/graphType/bipartite";
 
 export const useNodeStore = defineStore("nodes", {
   state: (): NodesStoreState => ({
@@ -57,6 +60,15 @@ export const useNodeStore = defineStore("nodes", {
         type: "node:remove",
         properties: { node: removedNode, edges: edges },
       });
+    },
+
+    normalizeView() {
+      const connectedComponents: ConnectedComponent[] = getConnectedComponents(
+        this.nodes,
+        this.edges,
+      );
+      console.log(connectedComponents);
+      console.log(isGraphBipartite(connectedComponents[0]));
     },
 
     getNodeData(nodeId: string): undefined | CustomNode["data"] {
