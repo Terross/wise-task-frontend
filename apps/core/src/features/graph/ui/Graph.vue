@@ -4,7 +4,7 @@ import { VueFlow } from "@vue-flow/core";
 import SpecialNode from "./SpecialNode.vue";
 import SpecialEdge from "./SpecialEdge.vue";
 import { useNodeStore } from "@/features/graph/stores/nodes";
-import { ref, nextTick } from "vue";
+import { ref, nextTick, watch, computed } from "vue";
 import HelpingModal from "@/features/graph/ui/HelpingModal.vue";
 import { createEdgeFromConnection } from "@/features/graph/lib/helpers/createEdgeFromConnection";
 import { CustomEdge } from "@/features/graph/types/CustomEdge";
@@ -21,10 +21,21 @@ const nodeStore = useNodeStore();
 
 const { onConnect, onNodeDragStart, onPaneContextMenu, project } = useVueFlow();
 
+const selectedNodes = computed(() =>
+  nodeStore.nodes.filter((node) => node.selected),
+);
+
 const contextMenuPosition = ref({ x: 0, y: 0 });
 const isHelpModalOpen = ref(false);
 const isRightClickModalOpen = ref(false);
 const contextMenuRef = ref<HTMLElement | null>(null);
+
+watch(selectedNodes, (newSelected) => {
+  console.log(
+    "Выделенные ноды:",
+    newSelected.map((n) => n.id),
+  );
+});
 
 onPaneContextMenu(async (event) => {
   event.preventDefault();

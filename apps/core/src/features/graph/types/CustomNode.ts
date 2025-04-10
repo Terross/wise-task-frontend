@@ -8,4 +8,10 @@ export type CustomNode = {
     label?: string;
     color?: string;
   };
+  parentNode?: string;
+  selected?: boolean;
+};
+
+export type NodeGroup = {
+  nodeIds: string[];
 };
