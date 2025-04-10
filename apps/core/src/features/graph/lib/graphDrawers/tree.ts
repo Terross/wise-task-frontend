@@ -18,12 +18,10 @@ export const drawTreeGraph = (
     nodeMap.set(node.id, { ...node, children: [], subtreeWidth: 0 });
   });
 
-  // Находим root — ноду без входящих рёбер
   const hasParent = new Set(edges.map((edge) => edge.target));
   const rootId = nodes.find((n) => !hasParent.has(n.id))?.id;
   if (!rootId) throw new Error("No root node found");
 
-  // Строим дерево
   edges.forEach((edge) => {
     const parent = nodeMap.get(edge.source);
     const child = nodeMap.get(edge.target);
@@ -34,7 +32,6 @@ export const drawTreeGraph = (
 
   const root = nodeMap.get(rootId)!;
 
-  // 1. Подсчёт ширины поддеревьев
   const calculateSubtreeWidth = (node: TreeNode): number => {
     const { width } = node.data.size || { width: 100, height: 100 };
     if (node.children.length === 0) {
@@ -48,7 +45,6 @@ export const drawTreeGraph = (
     return node.subtreeWidth;
   };
 
-  // 2. Расположение нод
   const setPositions = (node: TreeNode, xStart: number, depth: number) => {
     const { width, height } = node.data?.size || { width: 100, height: 100 };
     const xCenter = xStart + node.subtreeWidth / 2;
