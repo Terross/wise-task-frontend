@@ -3,7 +3,10 @@ import { NodesStoreState } from "../types/NodesStore";
 import { history } from "../lib/history/history";
 import { CustomNode } from "@/features/graph/types/CustomNode";
 import { CustomEdge } from "@/features/graph/types/CustomEdge";
-import { ConnectedComponent } from "@/features/graph/types/ConnectedComponents";
+import {
+  ConnectedComponent,
+  DrawerResults,
+} from "@/features/graph/types/ConnectedComponents";
 import { getConnectedComponents } from "@/features/graph/lib/helpers/getConnectedComponents";
 import { isGraphBipartite } from "@/features/graph/lib/graphType/bipartite";
 import { isGraphNearlyFull } from "@/features/graph/lib/graphType/nearlyFull";
@@ -76,7 +79,14 @@ export const useNodeStore = defineStore("nodes", {
       );
       console.log(connectedComponents);
       if (isGraphChain(connectedComponents[0])) {
-        this.nodes = drawChainGraph(this.nodes, this.edges);
+        console.log(this.edges);
+        const graphResult: DrawerResults = drawChainGraph(
+          this.nodes,
+          this.edges,
+        );
+        console.log(this.edges);
+        this.nodes = graphResult.nodes;
+        this.edges = graphResult.edges;
         return;
       }
       if (isGraphTree(connectedComponents[0])) {
