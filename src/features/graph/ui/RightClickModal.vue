@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from "vue";
+import { useNodeStore } from "@/features/graph/stores/nodes";
 
 const props = defineProps<{
   position: { x: number; y: number };
@@ -8,6 +9,7 @@ const props = defineProps<{
 const emit = defineEmits(["close", "addNode"]);
 
 const menuRef = ref<HTMLElement | null>(null);
+const nodeStore = useNodeStore();
 
 const handleClickOutside = (event: MouseEvent) => {
   if (menuRef.value && !menuRef.value.contains(event.target as Node)) {
@@ -15,8 +17,8 @@ const handleClickOutside = (event: MouseEvent) => {
   }
 };
 
-const handleAction = (action: () => void) => {
-  action();
+const addNode = () => {
+  nodeStore.addNode({ x: props.position.x, y: props.position.y });
   emit("close");
 };
 
@@ -46,9 +48,7 @@ onBeforeUnmount(() => {
     <v-card>
       <v-card-title class="headline">Контекстное меню</v-card-title>
       <v-card-text>
-        <v-btn block @click="handleAction(() => emit('addNode'))">
-          Добавить вершину здесь
-        </v-btn>
+        <v-btn block @click="addNode"> Добавить вершину здесь </v-btn>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>

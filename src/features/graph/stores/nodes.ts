@@ -12,6 +12,7 @@ export const useNodeStore = defineStore("nodes", {
     isDirected: true,
     id: undefined,
     name: "",
+    selectedNodes: [],
   }),
 
   actions: {
@@ -148,6 +149,20 @@ export const useNodeStore = defineStore("nodes", {
           edgeId: edge.id,
         },
       });
+    },
+
+    selectNode(id: string) {
+      const nodeIndex: number = this.nodes.findIndex((node) => node.id === id);
+      if (nodeIndex !== -1) {
+        this.nodes[nodeIndex].selected = true;
+      }
+    },
+
+    unselectNode(id: string) {
+      const nodeIndex = this.nodes.findIndex((node) => node.id === id);
+      if (nodeIndex !== -1) {
+        this.nodes[nodeIndex].selected = false;
+      }
     },
 
     getMaximumLabel(): number {
