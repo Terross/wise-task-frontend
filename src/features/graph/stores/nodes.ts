@@ -10,6 +10,7 @@ import { isGraphNearlyFull } from "@/features/graph/lib/graphType/nearlyFull";
 import { isGraphTree } from "@/features/graph/lib/graphType/tree";
 import { isGraphChain } from "@/features/graph/lib/graphType/chain";
 import { isGraphCycle } from "@/features/graph/lib/graphType/cycle";
+import { isGraphStar } from "@/features/graph/lib/graphType/star";
 
 export const useNodeStore = defineStore("nodes", {
   state: (): NodesStoreState => ({
@@ -77,6 +78,7 @@ export const useNodeStore = defineStore("nodes", {
       console.log("Дерево: ", isGraphTree(connectedComponents[0]));
       console.log("Цепь: ", isGraphChain(connectedComponents[0]));
       console.log("Цикл: ", isGraphCycle(connectedComponents[0]));
+      console.log("Звезда: ", isGraphStar(connectedComponents[0]));
     },
 
     getNodeData(nodeId: string): undefined | CustomNode["data"] {
