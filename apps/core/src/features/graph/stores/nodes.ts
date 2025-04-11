@@ -102,6 +102,9 @@ export const useNodeStore = defineStore("nodes", {
       }
       if (isGraphBipartite(connectedComponents[0])) {
         const graphResult = drawBipartiteGraph(this.nodes, this.edges);
+        this.nodes = graphResult.nodes;
+        this.edges = graphResult.edges;
+        return this.edges;
       }
       console.log("Двудольный: ", isGraphBipartite(connectedComponents[0]));
       console.log("Почти полный: ", isGraphNearlyFull(connectedComponents[0]));
