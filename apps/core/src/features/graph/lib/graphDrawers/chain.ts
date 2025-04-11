@@ -22,10 +22,13 @@ export const drawChainGraph = (
 
   let current = linked;
 
+  console.log("AFTER", edges);
   edges.forEach((edge) => {
-    edge.sourcePosition = Position.Right;
-    edge.targetPosition = Position.Left;
+    edge.sourceHandle = "source-b";
+    edge.targetHandle = "target-a";
   });
+
+  console.log("BEFORE", edges);
 
   while (true) {
     console.log(current.node.data.label);

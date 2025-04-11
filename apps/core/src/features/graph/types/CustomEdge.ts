@@ -7,4 +7,6 @@ type EdgeData = {
 
 export interface CustomEdge extends EdgeProps {
   data: EdgeData;
+  sourceHandle?: string;
+  targetHandle?: string;
 }

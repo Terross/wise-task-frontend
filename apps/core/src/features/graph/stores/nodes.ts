@@ -72,7 +72,7 @@ export const useNodeStore = defineStore("nodes", {
       });
     },
 
-    normalizeView() {
+    normalizeView(): CustomEdge[] {
       const connectedComponents: ConnectedComponent[] = getConnectedComponents(
         this.nodes,
         this.edges,
@@ -87,7 +87,7 @@ export const useNodeStore = defineStore("nodes", {
         console.log(this.edges);
         this.nodes = graphResult.nodes;
         this.edges = graphResult.edges;
-        return;
+        return this.edges;
       }
       if (isGraphTree(connectedComponents[0])) {
         this.nodes = drawTreeGraph(this.nodes, this.edges);
@@ -98,6 +98,7 @@ export const useNodeStore = defineStore("nodes", {
       console.log("Цепь: ", isGraphChain(connectedComponents[0]));
       console.log("Цикл: ", isGraphCycle(connectedComponents[0]));
       console.log("Звезда: ", isGraphStar(connectedComponents[0]));
+      return this.edges;
     },
 
     getNodeData(nodeId: string): undefined | CustomNode["data"] {
@@ -195,6 +196,7 @@ export const useNodeStore = defineStore("nodes", {
     addEdge(edge: CustomEdge) {
       edge.data.color = "#949494";
       edge.data.weight = 0;
+      console.log(edge);
       this.edges.push(edge);
       history.onStateUpdate({
         type: "edge:add",

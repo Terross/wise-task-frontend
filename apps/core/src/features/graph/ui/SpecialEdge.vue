@@ -35,6 +35,20 @@ const color = computed({
   },
 });
 
+const sourcePosition = computed({
+  get: () => props.sourcePosition,
+  set: (val) => {},
+});
+
+console.log("source in edge", sourcePosition.value);
+
+const targetPosition = computed({
+  get: () => props.targetPosition,
+  set: (val) => {},
+});
+
+console.log("target in edge", targetPosition.value);
+
 const updateEdgeData = () => {
   nodeStore.updateEdge(props.id, {
     color: color.value,
@@ -45,14 +59,14 @@ const updateEdgeData = () => {
 const isSelfConnected: boolean = props.targetNode.id === props.sourceNode.id;
 
 const path = computed(() => {
-  if (!(props.sourcePosition === props.targetPosition)) {
+  if (!(sourcePosition.value === targetPosition.value)) {
     return getBezierPath(props);
   }
   if (
-    (props.sourcePosition === Position.Bottom &&
-      props.targetPosition === Position.Top) ||
-    (props.sourcePosition === Position.Top &&
-      props.targetPosition === Position.Bottom)
+    (sourcePosition.value === Position.Bottom &&
+      targetPosition.value === Position.Top) ||
+    (sourcePosition.value === Position.Top &&
+      targetPosition.value === Position.Bottom)
   ) {
     const radiusX = 60;
     const radiusY = props.sourceY - props.targetY;
@@ -61,10 +75,10 @@ const path = computed(() => {
       `M ${props.sourceX} ${props.sourceY} A ${radiusX} ${radiusY} 0 1 0 ${props.targetX} ${props.targetY}`,
     ];
   } else if (
-    (props.sourcePosition === Position.Left &&
-      props.targetPosition === Position.Right) ||
-    (props.sourcePosition === Position.Right &&
-      props.targetPosition === Position.Left)
+    (sourcePosition.value === Position.Left &&
+      targetPosition.value === Position.Right) ||
+    (sourcePosition.value === Position.Right &&
+      targetPosition.value === Position.Left)
   ) {
     const radiusX = (props.sourceX - props.targetX) * 0.6;
     const radiusY = 50;
