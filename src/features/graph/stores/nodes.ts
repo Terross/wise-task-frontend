@@ -17,6 +17,7 @@ import { isGraphStar } from "@/features/graph/lib/graphType/star";
 import { drawTreeGraph } from "@/features/graph/lib/graphDrawers/tree";
 import { drawChainGraph } from "@/features/graph/lib/graphDrawers/chain";
 import { drawCycleGraph } from "@/features/graph/lib/graphDrawers/cycle";
+import { drawBipartiteGraph } from "@/features/graph/lib/graphDrawers/bibartite";
 
 export const useNodeStore = defineStore("nodes", {
   state: (): NodesStoreState => ({
@@ -98,6 +99,9 @@ export const useNodeStore = defineStore("nodes", {
         this.nodes = graphResult.nodes;
         this.edges = graphResult.edges;
         return this.edges;
+      }
+      if (isGraphBipartite(connectedComponents[0])) {
+        const graphResult = drawBipartiteGraph(this.nodes, this.edges);
       }
       console.log("Двудольный: ", isGraphBipartite(connectedComponents[0]));
       console.log("Почти полный: ", isGraphNearlyFull(connectedComponents[0]));
