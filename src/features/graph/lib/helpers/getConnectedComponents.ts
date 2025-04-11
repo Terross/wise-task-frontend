@@ -7,26 +7,35 @@ export const getConnectedComponents = (
   edges: CustomEdge[],
 ): ConnectedComponent[] => {
   const adjacency: Record<string, Set<string>> = {};
-  for (const node of nodes) {
+  const nodeIds = new Set(nodes.map((n) => n.id));
+
+  nodes.forEach((node) => {
     adjacency[node.id] = new Set();
-  }
+  });
 
-  for (const edge of edges) {
-    const source: string = edge.source;
-    const target: string = edge.target;
-    adjacency[source]?.add(target);
-    adjacency[target]?.add(source);
-  }
+  edges.forEach((edge) => {
+    if (nodeIds.has(edge.source) && nodeIds.has(edge.target)) {
+      adjacency[edge.source].add(edge.target);
+      adjacency[edge.target].add(edge.source);
+    }
+  });
 
-  const visited: Set<string> = new Set<string>();
+  const visited = new Set<string>();
   const components: ConnectedComponent[] = [];
 
   const dfs = (nodeId: string, componentNodeIds: Set<string>) => {
+    const stack = [nodeId];
     visited.add(nodeId);
-    componentNodeIds.add(nodeId);
-    for (const neighbor of adjacency[nodeId]) {
-      if (!visited.has(neighbor)) {
-        dfs(neighbor, componentNodeIds);
+
+    while (stack.length > 0) {
+      const current = stack.pop()!;
+      componentNodeIds.add(current);
+
+      for (const neighbor of adjacency[current]) {
+        if (!visited.has(neighbor)) {
+          visited.add(neighbor);
+          stack.push(neighbor);
+        }
       }
     }
   };
@@ -36,21 +45,13 @@ export const getConnectedComponents = (
       const componentNodeIds = new Set<string>();
       dfs(node.id, componentNodeIds);
 
-      const componentNodes: CustomNode[] = nodes.filter((n) =>
-        componentNodeIds.has(n.id),
-      );
-      const componentEdges: CustomEdge[] = edges.filter(
-        (edge) =>
-          componentNodeIds.has(edge.source) &&
-          componentNodeIds.has(edge.target),
-      );
-
       components.push({
-        nodes: componentNodes,
-        edges: componentEdges,
+        nodes: nodes.filter((n) => componentNodeIds.has(n.id)),
+        edges: edges.filter((e) => {
+          componentNodeIds.has(e.source) && componentNodeIds.has(e.target);
+        }),
       });
     }
   }
-
   return components;
 };
