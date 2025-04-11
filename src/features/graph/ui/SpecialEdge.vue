@@ -15,8 +15,25 @@ const props = defineProps<CustomEdge>();
 
 const nodeStore = useNodeStore();
 const isPanelVisible = ref(false);
-const weight = ref(props.data?.weight || "");
-const color = ref(props.data?.color || "#595959");
+const weight = computed({
+  get: () => props.data?.weight || 0,
+  set: (value) => {
+    nodeStore.updateEdge(props.id, {
+      weight: value,
+      color: props.data?.color || "#f1f1f1",
+    });
+  },
+});
+
+const color = computed({
+  get: () => props.data?.color || "#595959",
+  set: (value) => {
+    nodeStore.updateEdge(props.id, {
+      weight: props.data?.weight || 0,
+      color: value,
+    });
+  },
+});
 
 const updateEdgeData = () => {
   nodeStore.updateEdge(props.id, {
@@ -73,7 +90,6 @@ const removeSelfEdge = () => {
 
 const setColor = (colorValue: string) => {
   color.value = colorValue;
-  updateEdgeData();
 };
 
 const handleClickOutside = (event: MouseEvent) => {
