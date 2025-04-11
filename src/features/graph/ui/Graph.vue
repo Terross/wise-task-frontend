@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { Edge, useVueFlow } from "@vue-flow/core";
+import { useVueFlow } from "@vue-flow/core";
 import { VueFlow } from "@vue-flow/core";
 import SpecialNode from "./SpecialNode.vue";
 import SpecialEdge from "./SpecialEdge.vue";
 import { useNodeStore } from "@/features/graph/stores/nodes";
-import { ref, nextTick, watch, computed } from "vue";
+import { ref, nextTick } from "vue";
 import HelpingModal from "@/features/graph/ui/HelpingModal.vue";
 import { Background } from "@vue-flow/background";
 import RightClickModal from "@/features/graph/ui/RightClickModal.vue";
-import { CustomEdge } from "@/features/graph/types/CustomEdge";
 
 interface Props {
   style?: Record<string, string | number>;
@@ -26,11 +25,10 @@ const {
   addEdges,
   onEdgesChange,
   setEdges,
-} = useVueFlow<{ special: CustomEdge }>();
+} = useVueFlow();
 
 onEdgesChange((changes) => {
   changes.forEach((change) => {
-    console.log(change);
     if (change.type === "add") {
       // @ts-ignore
       nodeStore.addEdge(change.item);

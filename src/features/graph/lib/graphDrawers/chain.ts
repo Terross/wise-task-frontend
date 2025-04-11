@@ -1,5 +1,9 @@
 import { CustomNode } from "@/features/graph/types/CustomNode";
-import { CustomEdge } from "@/features/graph/types/CustomEdge";
+import {
+  ConnectionSourceID,
+  ConnectionTargetID,
+  CustomEdge,
+} from "@/features/graph/types/CustomEdge";
 import { buildLinkedListFromGraph } from "@/features/graph/lib/helpers/linkedListFromGraph";
 import { DRAW_SPACING_X } from "@/features/graph/config/drawSpacing";
 import { DEFAULT_NODE_SIZE } from "@/features/graph/config/nodeDefaultSettings";
@@ -14,7 +18,6 @@ export const drawChainGraph = (
   let currentY: number = 0;
   let xPositionTaken = 0;
   const linked = buildLinkedListFromGraph(nodes, edges);
-  console.log(linked);
 
   if (!linked) {
     return { nodes, edges, yFinish: currentY, xFinish: currentX };
@@ -22,13 +25,10 @@ export const drawChainGraph = (
 
   let current = linked;
 
-  console.log("AFTER", edges);
   edges.forEach((edge) => {
-    edge.sourceHandle = "source-b";
-    edge.targetHandle = "target-a";
+    edge.sourceHandle = ConnectionSourceID.Left;
+    edge.targetHandle = ConnectionTargetID.Right;
   });
-
-  console.log("BEFORE", edges);
 
   while (true) {
     console.log(current.node.data.label);

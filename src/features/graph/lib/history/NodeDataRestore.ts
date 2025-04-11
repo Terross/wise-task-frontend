@@ -18,9 +18,7 @@ export class NodeDataRestoreObjet extends RestoreObject {
     if (nodeIndex === -1) {
       return state;
     }
-    console.log("Before", state.nodes[nodeIndex].data);
     state.nodes[nodeIndex].data = this.data;
-    console.log("After", state.nodes[nodeIndex].data);
     return state;
   };
 }

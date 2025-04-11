@@ -77,7 +77,6 @@ export const useNodeStore = defineStore("nodes", {
         this.nodes,
         this.edges,
       );
-      console.log(connectedComponents);
       if (isGraphChain(connectedComponents[0])) {
         console.log(this.edges);
         const graphResult: DrawerResults = drawChainGraph(
