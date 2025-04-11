@@ -55,7 +55,6 @@ const updateEdgeData = () => {
 const isSelfConnected: boolean = props.targetNode.id === props.sourceNode.id;
 
 const path = computed(() => {
-  console.log(sourcePosition.value, targetPosition.value);
   if (props.targetNode.id !== props.sourceNode.id) {
     return getBezierPath(props);
   }
