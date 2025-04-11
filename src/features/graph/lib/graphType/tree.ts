@@ -1,32 +1,29 @@
 import { ConnectedComponent } from "@/features/graph/types/ConnectedComponents";
 
 export const isGraphTree = (component: ConnectedComponent): boolean => {
-  if (component.edges.length !== component.nodes.length - 1) {
-    return false;
-  }
+  if (component.nodes.length === 0) return true;
+  if (component.edges.length !== component.nodes.length - 1) return false;
 
-  const incomingCount = new Map<string, number>();
-  const hasParent = new Set<string>();
+  const adj = new Map<string, string[]>();
+  component.nodes.forEach((node) => adj.set(node.id, []));
+  component.edges.forEach((edge) => {
+    adj.get(edge.sourceNode.id)!.push(edge.targetNode.id);
+    adj.get(edge.targetNode.id)!.push(edge.sourceNode.id);
+  });
 
-  for (const node of component.nodes) {
-    incomingCount.set(node.id, 0);
-  }
-
-  for (const edge of component.edges) {
-    const target = edge.sourceNode.id;
-    incomingCount.set(target, incomingCount.get(target)! + 1);
-    hasParent.add(target);
-  }
-
-  let rootCount = 0;
-  for (const node of component.nodes) {
-    const count = incomingCount.get(node.id)!;
-    if (count === 0) {
-      rootCount++;
-    } else if (count > 1) {
-      return false;
+  const visited = new Set<string>();
+  const hasCycle = (node: string, parent: string | null): boolean => {
+    visited.add(node);
+    for (const neighbor of adj.get(node)!) {
+      if (!visited.has(neighbor)) {
+        if (hasCycle(neighbor, node)) return true;
+      } else if (neighbor !== parent) {
+        return true;
+      }
     }
-  }
+    return false;
+  };
 
-  return rootCount === 1;
+  if (hasCycle(component.nodes[0].id, null)) return false;
+  return visited.size === component.nodes.length;
 };
