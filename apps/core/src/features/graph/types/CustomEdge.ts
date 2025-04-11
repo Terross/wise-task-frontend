@@ -5,8 +5,22 @@ type EdgeData = {
   weight?: string | number;
 };
 
+export enum ConnectionSourceID {
+  Right = "source-a",
+  Left = "source-b",
+  Top = "source-c",
+  Bottom = "source-d",
+}
+
+export enum ConnectionTargetID {
+  Right = "target-a",
+  Left = "target-b",
+  Top = "target-c",
+  Bottom = "target-d",
+}
+
 export interface CustomEdge extends EdgeProps {
   data: EdgeData;
-  sourceHandle?: string;
-  targetHandle?: string;
+  sourceHandle?: ConnectionSourceID;
+  targetHandle?: ConnectionTargetID;
 }

@@ -40,14 +40,10 @@ const sourcePosition = computed({
   set: (val) => {},
 });
 
-console.log("source in edge", sourcePosition.value);
-
 const targetPosition = computed({
   get: () => props.targetPosition,
   set: (val) => {},
 });
-
-console.log("target in edge", targetPosition.value);
 
 const updateEdgeData = () => {
   nodeStore.updateEdge(props.id, {
@@ -59,7 +55,8 @@ const updateEdgeData = () => {
 const isSelfConnected: boolean = props.targetNode.id === props.sourceNode.id;
 
 const path = computed(() => {
-  if (!(sourcePosition.value === targetPosition.value)) {
+  console.log(sourcePosition.value, targetPosition.value);
+  if (props.targetNode.id !== props.sourceNode.id) {
     return getBezierPath(props);
   }
   if (

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch, computed } from "vue";
-import { useVueFlow } from "@vue-flow/core";
 import type { NodeProps } from "@vue-flow/core";
 import { useNodeStore } from "@/features/graph/stores/nodes";
 import NodeControls from "./NodeButtons.vue";
@@ -67,7 +66,6 @@ const handleInteractionOutside = (event: MouseEvent | PointerEvent) => {
 };
 
 onMounted(() => {
-  console.log("Node mounted:", props.id);
   document.addEventListener("click", handleInteractionOutside);
   document.addEventListener("pointerdown", handleInteractionOutside);
   document.addEventListener("mousedown", handleInteractionOutside);
