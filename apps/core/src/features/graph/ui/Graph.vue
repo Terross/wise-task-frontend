@@ -25,6 +25,7 @@ const {
   addEdges,
   onEdgesChange,
   setEdges,
+  fitView,
 } = useVueFlow();
 
 onEdgesChange((changes) => {
@@ -149,6 +150,7 @@ const addNodeToCenter = () => {
 const normalize = () => {
   const edges = nodeStore.normalizeView();
   setEdges(JSON.parse(JSON.stringify(edges)));
+  setTimeout(() => fitView(), 150);
 };
 </script>
 

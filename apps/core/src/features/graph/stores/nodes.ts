@@ -79,6 +79,15 @@ export const useNodeStore = defineStore("nodes", {
         this.nodes,
         this.edges,
       );
+      console.log("store edges length: ", this.edges.length);
+      console.log("edges: ", connectedComponents[0].edges.length);
+      console.log("nodes: ", connectedComponents[0].nodes.length);
+      console.log("Двудольный: ", isGraphBipartite(connectedComponents[0]));
+      console.log("Почти полный: ", isGraphNearlyFull(connectedComponents[0]));
+      console.log("Дерево: ", isGraphTree(connectedComponents[0]));
+      console.log("Цепь: ", isGraphChain(connectedComponents[0]));
+      console.log("Цикл: ", isGraphCycle(connectedComponents[0]));
+      console.log("Звезда: ", isGraphStar(connectedComponents[0]));
       if (isGraphChain(connectedComponents[0])) {
         const graphResult: DrawerResults = drawChainGraph(
           this.nodes,
@@ -89,7 +98,13 @@ export const useNodeStore = defineStore("nodes", {
         return this.edges;
       }
       if (isGraphTree(connectedComponents[0])) {
-        this.nodes = drawTreeGraph(this.nodes, this.edges);
+        const graphResult: DrawerResults = drawTreeGraph(
+          connectedComponents[0].nodes,
+          connectedComponents[0].edges,
+        );
+        this.nodes = graphResult.nodes;
+        this.edges = graphResult.edges;
+        return this.edges;
       }
       if (isGraphCycle(connectedComponents[0])) {
         const graphResult: DrawerResults = drawCycleGraph(
@@ -100,18 +115,12 @@ export const useNodeStore = defineStore("nodes", {
         this.edges = graphResult.edges;
         return this.edges;
       }
-      if (isGraphBipartite(connectedComponents[0])) {
+      if (isGraphBipartite(connectedComponents[0]) && false) {
         const graphResult = drawBipartiteGraph(this.nodes, this.edges);
         this.nodes = graphResult.nodes;
         this.edges = graphResult.edges;
         return this.edges;
       }
-      console.log("Двудольный: ", isGraphBipartite(connectedComponents[0]));
-      console.log("Почти полный: ", isGraphNearlyFull(connectedComponents[0]));
-      console.log("Дерево: ", isGraphTree(connectedComponents[0]));
-      console.log("Цепь: ", isGraphChain(connectedComponents[0]));
-      console.log("Цикл: ", isGraphCycle(connectedComponents[0]));
-      console.log("Звезда: ", isGraphStar(connectedComponents[0]));
       return this.edges;
     },
 
@@ -208,9 +217,9 @@ export const useNodeStore = defineStore("nodes", {
     },
 
     addEdge(edge: CustomEdge) {
+      console.log("ADDING edge");
       edge.data.color = "#949494";
       edge.data.weight = 0;
-      console.log(edge);
       this.edges.push(edge);
       history.onStateUpdate({
         type: "edge:add",
