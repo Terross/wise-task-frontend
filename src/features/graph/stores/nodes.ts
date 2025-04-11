@@ -16,6 +16,7 @@ import { isGraphCycle } from "@/features/graph/lib/graphType/cycle";
 import { isGraphStar } from "@/features/graph/lib/graphType/star";
 import { drawTreeGraph } from "@/features/graph/lib/graphDrawers/tree";
 import { drawChainGraph } from "@/features/graph/lib/graphDrawers/chain";
+import { drawCycleGraph } from "@/features/graph/lib/graphDrawers/cycle";
 
 export const useNodeStore = defineStore("nodes", {
   state: (): NodesStoreState => ({
@@ -78,18 +79,25 @@ export const useNodeStore = defineStore("nodes", {
         this.edges,
       );
       if (isGraphChain(connectedComponents[0])) {
-        console.log(this.edges);
         const graphResult: DrawerResults = drawChainGraph(
           this.nodes,
           this.edges,
         );
-        console.log(this.edges);
         this.nodes = graphResult.nodes;
         this.edges = graphResult.edges;
         return this.edges;
       }
       if (isGraphTree(connectedComponents[0])) {
         this.nodes = drawTreeGraph(this.nodes, this.edges);
+      }
+      if (isGraphCycle(connectedComponents[0])) {
+        const graphResult: DrawerResults = drawCycleGraph(
+          this.nodes,
+          this.edges,
+        );
+        this.nodes = graphResult.nodes;
+        this.edges = graphResult.edges;
+        return this.edges;
       }
       console.log("Двудольный: ", isGraphBipartite(connectedComponents[0]));
       console.log("Почти полный: ", isGraphNearlyFull(connectedComponents[0]));
