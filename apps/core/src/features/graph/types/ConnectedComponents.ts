@@ -9,6 +9,6 @@ export type ConnectedComponent = {
 export interface DrawerResults {
   nodes: CustomNode[];
   edges: CustomEdge[];
-  xFinish: number;
-  yFinish: number;
+  width: number;
+  height: number;
 }

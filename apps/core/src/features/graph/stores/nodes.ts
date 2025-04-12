@@ -75,53 +75,115 @@ export const useNodeStore = defineStore("nodes", {
     },
 
     normalizeView(): CustomEdge[] {
-      const connectedComponents: ConnectedComponent[] = getConnectedComponents(
+      const connectedComponents = getConnectedComponents(
         this.nodes,
         this.edges,
       );
-      console.log("store edges length: ", this.edges.length);
-      console.log("edges: ", connectedComponents[0].edges.length);
-      console.log("nodes: ", connectedComponents[0].nodes.length);
-      console.log("Двудольный: ", isGraphBipartite(connectedComponents[0]));
-      console.log("Почти полный: ", isGraphNearlyFull(connectedComponents[0]));
-      console.log("Дерево: ", isGraphTree(connectedComponents[0]));
-      console.log("Цепь: ", isGraphChain(connectedComponents[0]));
-      console.log("Цикл: ", isGraphCycle(connectedComponents[0]));
-      console.log("Звезда: ", isGraphStar(connectedComponents[0]));
-      if (isGraphChain(connectedComponents[0])) {
-        const graphResult: DrawerResults = drawChainGraph(
-          this.nodes,
-          this.edges,
-        );
-        this.nodes = graphResult.nodes;
-        this.edges = graphResult.edges;
-        return this.edges;
+      const componentResults: DrawerResults[] = connectedComponents.map(
+        (component) => this.drawComponent(component),
+      );
+
+      const gridLayout: { width: number; height: number; isTree: boolean }[] =
+        [];
+      let maxRowHeight = 0;
+      let currentRowWidth = 0;
+
+      componentResults.forEach((result) => {
+        const isTree = isGraphTree({
+          nodes: result.nodes,
+          edges: result.edges,
+        });
+
+        if (isTree || currentRowWidth + result.width > 1500) {
+          if (currentRowWidth > 0) {
+            gridLayout.push({
+              width: currentRowWidth,
+              height: maxRowHeight,
+              isTree: false,
+            });
+          }
+          gridLayout.push({
+            width: result.width,
+            height: result.height,
+            isTree,
+          });
+          currentRowWidth = 0;
+          maxRowHeight = 0;
+        } else {
+          currentRowWidth += result.width + 150;
+          maxRowHeight = Math.max(maxRowHeight, result.height);
+        }
+      });
+
+      if (currentRowWidth > 0) {
+        gridLayout.push({
+          width: currentRowWidth,
+          height: maxRowHeight,
+          isTree: false,
+        });
       }
-      if (isGraphTree(connectedComponents[0])) {
-        const graphResult: DrawerResults = drawTreeGraph(
-          connectedComponents[0].nodes,
-          connectedComponents[0].edges,
-        );
-        this.nodes = graphResult.nodes;
-        this.edges = graphResult.edges;
-        return this.edges;
-      }
-      if (isGraphCycle(connectedComponents[0])) {
-        const graphResult: DrawerResults = drawCycleGraph(
-          this.nodes,
-          this.edges,
-        );
-        this.nodes = graphResult.nodes;
-        this.edges = graphResult.edges;
-        return this.edges;
-      }
-      if (isGraphBipartite(connectedComponents[0]) && false) {
-        const graphResult = drawBipartiteGraph(this.nodes, this.edges);
-        this.nodes = graphResult.nodes;
-        this.edges = graphResult.edges;
-        return this.edges;
-      }
+
+      let currentY = 0;
+      let currentX = 0;
+      let componentIndex = 0;
+
+      gridLayout.forEach((row) => {
+        if (row.isTree) {
+          const result = componentResults[componentIndex++];
+          result.nodes.forEach((node) => {
+            node.position.x += currentX;
+            node.position.y += currentY;
+          });
+          currentY += row.height + 100;
+          currentX = 0;
+        } else {
+          let rowComponents = 0;
+          while (
+            componentIndex < componentResults.length &&
+            !isGraphTree({
+              nodes: componentResults[componentIndex].nodes,
+              edges: componentResults[componentIndex].edges,
+            }) &&
+            rowComponents < 2
+          ) {
+            const result = componentResults[componentIndex++];
+            result.nodes.forEach((node) => {
+              node.position.x += currentX;
+              node.position.y += currentY;
+            });
+            currentX += result.width + 150;
+            rowComponents++;
+          }
+          currentY += row.height + 100;
+          currentX = 0;
+        }
+      });
+
+      this.nodes = componentResults.flatMap((r) => r.nodes);
+      this.edges = componentResults.flatMap((r) => r.edges);
+
       return this.edges;
+    },
+
+    drawComponent(component: ConnectedComponent): DrawerResults {
+      if (isGraphChain(component)) {
+        return drawChainGraph(component.nodes, component.edges);
+      }
+      if (isGraphTree(component)) {
+        return drawTreeGraph(component.nodes, component.edges);
+      }
+      if (isGraphCycle(component)) {
+        return drawCycleGraph(component.nodes, component.edges);
+      }
+      if (isGraphBipartite(component)) {
+        return drawBipartiteGraph(component.nodes, component.edges);
+      }
+      return {
+        nodes: component.nodes,
+        edges: component.edges,
+        width: 0,
+        height: 0,
+      };
     },
 
     getNodeData(nodeId: string): undefined | CustomNode["data"] {
