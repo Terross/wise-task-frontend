@@ -1,5 +1,6 @@
 import { CustomNode } from "@/features/graph/types/CustomNode";
 import { CustomEdge } from "@/features/graph/types/CustomEdge";
+import { NodesStoreState } from "@/features/graph/types/NodesStore";
 
 interface BaseRestore {
   type: string;
@@ -62,6 +63,13 @@ export interface EdgeDataRestore extends BaseRestore {
   };
 }
 
+export interface NormalizingRestore extends BaseRestore {
+  type: "normalizing:full_backup";
+  properties: {
+    state: NodesStoreState;
+  };
+}
+
 export type Restore =
   | NodeAddRestore
   | NodeRemoveRestore
@@ -70,4 +78,5 @@ export type Restore =
   | NodeDataRestore
   | EdgeRemoveRestore
   | EdgeAddRestore
-  | EdgeDataRestore;
+  | EdgeDataRestore
+  | NormalizingRestore;

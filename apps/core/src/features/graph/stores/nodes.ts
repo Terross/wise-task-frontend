@@ -74,6 +74,12 @@ export const useNodeStore = defineStore("nodes", {
     },
 
     normalizeView(): CustomEdge[] {
+      history.onStateUpdate({
+        type: "normalizing:full_backup",
+        properties: {
+          state: this.$state,
+        },
+      });
       const connectedComponents = getConnectedComponents(
         this.nodes,
         this.edges,
@@ -177,7 +183,7 @@ export const useNodeStore = defineStore("nodes", {
       if (isGraphBipartite(component)) {
         return drawBipartiteGraph(component.nodes, component.edges);
       }
-      return drawDefaultTypeGraph(component, {});
+      return drawDefaultTypeGraph(component.nodes, component.edges);
     },
 
     getNodeData(nodeId: string): undefined | CustomNode["data"] {
