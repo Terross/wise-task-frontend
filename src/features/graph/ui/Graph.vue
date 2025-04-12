@@ -134,6 +134,11 @@ const uploadJson = (event: Event) => {
   }
 };
 
+const undo = () => {
+  nodeStore.undo();
+  setTimeout(fitView, 200);
+};
+
 const addNodeToCenter = () => {
   const { width, height } = document
     .querySelector(".pinia-flow")!
@@ -158,7 +163,7 @@ const normalize = () => {
   <div :style="props.style">
     <div class="buttons-container">
       <v-btn @click="addNodeToCenter">Добавить вершину</v-btn>
-      <v-btn @click="nodeStore.undo">UNDO</v-btn>
+      <v-btn @click="undo">UNDO</v-btn>
       <v-btn @click="downloadJson">Скачать JSON</v-btn>
       <v-btn @click="nodeStore.toggleIsDirected">Сменить направленность</v-btn>
       <v-btn @click="normalize">Нормализовать граф</v-btn>
