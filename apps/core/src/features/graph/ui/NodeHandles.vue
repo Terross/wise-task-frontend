@@ -75,4 +75,17 @@ const props = defineProps<{
   width: 20px;
   height: 20px;
 }
+
+.full-node-handle::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 30px;
+  height: 30px;
+  opacity: 0;
+  background: transparent;
+  pointer-events: auto;
+}
 </style>
