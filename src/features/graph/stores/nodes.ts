@@ -9,15 +9,14 @@ import {
 } from "@/features/graph/types/ConnectedComponents";
 import { getConnectedComponents } from "@/features/graph/lib/helpers/getConnectedComponents";
 import { isGraphBipartite } from "@/features/graph/lib/graphType/bipartite";
-import { isGraphNearlyFull } from "@/features/graph/lib/graphType/nearlyFull";
 import { isGraphTree } from "@/features/graph/lib/graphType/tree";
 import { isGraphChain } from "@/features/graph/lib/graphType/chain";
 import { isGraphCycle } from "@/features/graph/lib/graphType/cycle";
-import { isGraphStar } from "@/features/graph/lib/graphType/star";
 import { drawTreeGraph } from "@/features/graph/lib/graphDrawers/tree";
 import { drawChainGraph } from "@/features/graph/lib/graphDrawers/chain";
 import { drawCycleGraph } from "@/features/graph/lib/graphDrawers/cycle";
 import { drawBipartiteGraph } from "@/features/graph/lib/graphDrawers/bibartite";
+import { drawDefaultTypeGraph } from "@/features/graph/lib/graphDrawers/default";
 
 export const useNodeStore = defineStore("nodes", {
   state: (): NodesStoreState => ({
@@ -178,12 +177,7 @@ export const useNodeStore = defineStore("nodes", {
       if (isGraphBipartite(component)) {
         return drawBipartiteGraph(component.nodes, component.edges);
       }
-      return {
-        nodes: component.nodes,
-        edges: component.edges,
-        width: 0,
-        height: 0,
-      };
+      return drawDefaultTypeGraph(component, {});
     },
 
     getNodeData(nodeId: string): undefined | CustomNode["data"] {
@@ -209,18 +203,6 @@ export const useNodeStore = defineStore("nodes", {
         type: "node:change_data",
         properties: { nodeId: nodeId, data: prevData },
       });
-    },
-
-    groupNodes() {
-      const selectedNodes: CustomNode[] = this.nodes.filter(
-        (node) => node.selected,
-      );
-      if (selectedNodes.length > 1) {
-        this.groups.push({
-          color: "#f1f1f1",
-          nodeIds: selectedNodes.map((node) => node.id),
-        });
-      }
     },
 
     nodeShift(nodeId: string, coords: { x: number; y: number }) {
