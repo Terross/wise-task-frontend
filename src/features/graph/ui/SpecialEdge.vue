@@ -15,13 +15,12 @@ const props = defineProps<CustomEdge>();
 
 const nodeStore = useNodeStore();
 const isPanelVisible = ref(false);
+const tempWeight = ref(props.data?.weight || 0);
+
 const weight = computed({
   get: () => props.data?.weight || 0,
   set: (value) => {
-    nodeStore.updateEdge(props.id, {
-      weight: value,
-      color: props.data?.color || "#f1f1f1",
-    });
+    tempWeight.value = value;
   },
 });
 
@@ -29,7 +28,7 @@ const color = computed({
   get: () => props.data?.color || "#595959",
   set: (value) => {
     nodeStore.updateEdge(props.id, {
-      weight: props.data?.weight || 0,
+      weight: weight.value,
       color: value,
     });
   },
@@ -48,7 +47,7 @@ const targetPosition = computed({
 const updateEdgeData = () => {
   nodeStore.updateEdge(props.id, {
     color: color.value,
-    weight: weight.value || 0,
+    weight: tempWeight.value,
   });
 };
 
@@ -175,10 +174,9 @@ onUnmounted(() => {
         <input
           type="text"
           inputmode="numeric"
-          v-model="weight"
-          min="1"
-          max="100"
-          @change="updateEdgeData"
+          :value="weight"
+          @input="(e) => (tempWeight = Number(e.target.value))"
+          @blur="updateEdgeData"
           class="edge-input"
         />
         <button
