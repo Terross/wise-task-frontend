@@ -13,9 +13,10 @@ export const drawTreeGraph = (
   nodes: CustomNode[],
   edges: CustomEdge[],
 ): DrawerResults => {
-  const treeLevels: CustomNode[][] = getTreeLevels(nodes, edges);
-  const updatedNodes: CustomNode[] = [];
-  let maxY: number = 0;
+  const treeLevels = getTreeLevels(nodes, edges);
+  let maxWidth = 0;
+  let maxHeight = 0;
+  const verticalSpacing = 100;
 
   edges.forEach((edge) => {
     edge.sourceHandle = ConnectionSourceID.Top;
@@ -23,7 +24,7 @@ export const drawTreeGraph = (
   });
 
   treeLevels.forEach((level, levelIndex) => {
-    const levelWidth: number = level.reduce((sum, node) => {
+    const levelWidth = level.reduce((sum, node) => {
       return (
         sum +
         (node.data.size?.width || DEFAULT_NODE_SIZE.width) +
@@ -31,25 +32,27 @@ export const drawTreeGraph = (
       );
     }, -DRAW_SPACING_X);
 
-    let currentX: number = -levelWidth / 2;
-    const currentY: number = levelIndex * 300;
+    maxWidth = Math.max(maxWidth, levelWidth);
 
-    level.forEach((node): void => {
-      const nodeWidth: number =
-        node.data.size?.width || DEFAULT_NODE_SIZE.width;
-      node.position.x = currentX + nodeWidth / 2;
-      node.position.y = currentY;
-      updatedNodes.push(node);
-      currentX += nodeWidth + DRAW_SPACING_X;
+    const currentY =
+      levelIndex *
+      ((level[0]?.data.size?.height || DEFAULT_NODE_SIZE.height) +
+        verticalSpacing);
+    maxHeight =
+      currentY + (level[0]?.data.size?.height || DEFAULT_NODE_SIZE.height);
+
+    let currentX = -levelWidth / 2;
+    level.forEach((node) => {
+      node.position = { x: currentX, y: currentY };
+      currentX +=
+        (node.data.size?.width || DEFAULT_NODE_SIZE.width) + DRAW_SPACING_X;
     });
-
-    maxY = currentY + (level[0]?.data.size?.height || DEFAULT_NODE_SIZE.height);
   });
 
   return {
-    nodes: updatedNodes,
+    nodes,
     edges,
-    xFinish: 0,
-    yFinish: maxY,
+    width: maxWidth,
+    height: maxHeight,
   };
 };

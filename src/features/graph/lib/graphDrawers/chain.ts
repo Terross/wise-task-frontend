@@ -18,38 +18,52 @@ export const drawChainGraph = (
   let xPositionTaken = 0;
   const linked = buildLinkedListFromGraph(nodes, edges);
 
-  if (!linked) {
-    return { nodes, edges, yFinish: currentY, xFinish: currentX };
-  }
-
-  let current = linked;
-
   edges.forEach((edge) => {
     edge.sourceHandle = ConnectionSourceID.Left;
     edge.targetHandle = ConnectionTargetID.Right;
   });
 
-  while (true) {
-    console.log(current.node.data.label);
+  if (!linked) {
+    return {
+      nodes,
+      edges,
+      width: currentX,
+      height: currentY,
+    };
+  }
+
+  let current = linked;
+  let maxHeight = 0;
+
+  while (current) {
     const nodeIndex = nodes.findIndex((node) => node.id === current.node.id);
     if (nodeIndex !== -1) {
-      nodes[nodeIndex].position.y = currentY;
-      nodes[nodeIndex].position.x = currentX + xPositionTaken;
+      nodes[nodeIndex].position = {
+        x: currentX + xPositionTaken,
+        y: currentY,
+      };
+
+      maxHeight = Math.max(
+        maxHeight,
+        current.node.data.size?.height || DEFAULT_NODE_SIZE.height,
+      );
     }
 
     xPositionTaken +=
-      DRAW_SPACING_X +
-      (current.node.data.size?.width || DEFAULT_NODE_SIZE.width);
+      (current.node.data.size?.width || DEFAULT_NODE_SIZE.width) +
+      DRAW_SPACING_X;
 
-    if (current.next === null) {
-      return {
-        nodes,
-        edges,
-        xFinish: currentX,
-        yFinish: currentY,
-      };
+    if (!current.next) {
+      break;
     }
 
     current = current.next;
   }
+
+  return {
+    nodes,
+    edges,
+    width: xPositionTaken - DRAW_SPACING_X,
+    height: maxHeight,
+  };
 };
