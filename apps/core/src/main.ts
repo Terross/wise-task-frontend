@@ -22,7 +22,7 @@ const cache = new InMemoryCache({ addTypename: false });
 
 const apolloClient = new ApolloClient({
   cache,
-  uri: "http://178.162.62.64:82/graphql",
+  uri: "https://wisetask.ru:82/graphql",
 });
 
 const app = createApp({
