@@ -75,6 +75,14 @@ export interface NodeMassMovementRestore extends BaseRestore {
   properties: Map<string, { x: number; y: number }>;
 }
 
+export interface NodeMassDeleteRestore extends BaseRestore {
+  type: "node:mass_delete";
+  properties: {
+    nodes: CustomNode[];
+    edges: CustomEdge[];
+  };
+}
+
 export type Restore =
   | NodeAddRestore
   | NodeRemoveRestore
@@ -85,4 +93,5 @@ export type Restore =
   | EdgeAddRestore
   | EdgeDataRestore
   | NormalizingRestore
-  | NodeMassMovementRestore;
+  | NodeMassMovementRestore
+  | NodeMassDeleteRestore;

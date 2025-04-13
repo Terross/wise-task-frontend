@@ -33,7 +33,6 @@ onNodesChange((events) => {
   if (events.length < 2) {
     return;
   }
-  console.log(events);
   if (events[0].type === "position") {
     if (events[0].dragging) {
       return;
@@ -44,6 +43,10 @@ onNodesChange((events) => {
       nodesMap.set(events[i].id, events[i].from); // #TODO: Нормальные типы добавить сюда (оно не хочет работать нормально(()
     }
     nodeStore.nodeMassMovement(nodesMap);
+  }
+  if (events[0].type === "remove") {
+    // @ts-ignore
+    nodeStore.nodesMassRemove(events.map((event) => event.id)); // TODO: то же самое
   }
 });
 

@@ -302,6 +302,26 @@ export const useNodeStore = defineStore("nodes", {
       });
     },
 
+    nodesMassRemove(nodeIds: string[]): void {
+      const nodes: CustomNode[] = this.nodes.filter((node) =>
+        nodeIds.includes(node.id),
+      );
+      const edges: Set<CustomEdge> = new Set<CustomEdge>(
+        this.edges.filter(
+          (edge) =>
+            nodeIds.includes(edge.sourceNode.id) ||
+            nodeIds.includes(edge.targetNode.id),
+        ),
+      );
+      history.onStateUpdate({
+        type: "node:mass_delete",
+        properties: {
+          nodes: nodes,
+          edges: Array.from(edges),
+        },
+      });
+    },
+
     getMaximumLabel(): number {
       let maxNumber = -1;
       for (const node of this.nodes) {
