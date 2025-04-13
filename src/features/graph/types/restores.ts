@@ -70,6 +70,11 @@ export interface NormalizingRestore extends BaseRestore {
   };
 }
 
+export interface NodeMassMovementRestore extends BaseRestore {
+  type: "node:mass_movement";
+  properties: Map<string, { x: number; y: number }>;
+}
+
 export type Restore =
   | NodeAddRestore
   | NodeRemoveRestore
@@ -79,4 +84,5 @@ export type Restore =
   | EdgeRemoveRestore
   | EdgeAddRestore
   | EdgeDataRestore
-  | NormalizingRestore;
+  | NormalizingRestore
+  | NodeMassMovementRestore;

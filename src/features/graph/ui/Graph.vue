@@ -25,8 +25,27 @@ const {
   addEdges,
   onEdgesChange,
   setEdges,
+  onNodesChange,
   fitView,
 } = useVueFlow();
+
+onNodesChange((events) => {
+  if (events.length < 2) {
+    return;
+  }
+  console.log(events);
+  if (events[0].type === "position") {
+    if (events[0].dragging) {
+      return;
+    }
+    const nodesMap = new Map<string, { x: number; y: number }>();
+    for (let i = 0; i < events.length; i++) {
+      // @ts-ignore
+      nodesMap.set(events[i].id, events[i].from); // #TODO: Нормальные типы добавить сюда (оно не хочет работать нормально(()
+    }
+    nodeStore.nodeMassMovement(nodesMap);
+  }
+});
 
 onEdgesChange((changes) => {
   changes.forEach((change) => {
@@ -54,18 +73,6 @@ onPaneContextMenu(async (event) => {
   const pos = project({ x, y });
   contextMenuPosition.value = { x: pos.x + 29, y: pos.y + 10 };
 
-  isRightClickModalOpen.value = true;
-});
-
-onPaneContextMenu(async (event) => {
-  event.preventDefault();
-
-  const bounds = (event.currentTarget as HTMLElement).getBoundingClientRect();
-  const x = event.clientX - bounds.left;
-  const y = event.clientY - bounds.top;
-
-  const pos = project({ x, y });
-  contextMenuPosition.value = { x: pos.x + 10, y: pos.y };
   isRightClickModalOpen.value = true;
 });
 
@@ -155,7 +162,7 @@ const addNodeToCenter = () => {
 const normalize = () => {
   const edges = nodeStore.normalizeView();
   setEdges(JSON.parse(JSON.stringify(edges)));
-  setTimeout(() => fitView(), 150);
+  setTimeout(() => fitView({ padding: 5, includeHiddenNodes: true }), 150);
 };
 </script>
 
