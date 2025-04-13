@@ -4,7 +4,7 @@ import {
   ConnectionTargetID,
   CustomEdge,
 } from "@/features/graph/types/CustomEdge";
-import { DRAW_SPACING_Y } from "@/features/graph/config/drawSpacing";
+import { DRAW_SPACING_Y } from "@/features/graph/config/drawParams";
 import { DEFAULT_NODE_SIZE } from "@/features/graph/config/nodeDefaultSettings";
 import { DrawerResults } from "@/features/graph/types/ConnectedComponents";
 import { colorNodesIntoTwoColors } from "@/features/graph/lib/helpers/colorNodesTwoColors";
