@@ -293,6 +293,15 @@ export const useNodeStore = defineStore("nodes", {
       }
     },
 
+    nodeMassMovement(
+      nodePositions: Map<string, { x: number; y: number }>,
+    ): void {
+      history.onStateUpdate({
+        type: "node:mass_movement",
+        properties: nodePositions,
+      });
+    },
+
     getMaximumLabel(): number {
       let maxNumber = -1;
       for (const node of this.nodes) {
