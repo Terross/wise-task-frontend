@@ -4,3 +4,8 @@ export type SelectedAreaSize = {
   endX: number;
   endY: number;
 };
+
+export type CircleGraphParams = {
+  radius: number;
+  stepDegree: number;
+};
