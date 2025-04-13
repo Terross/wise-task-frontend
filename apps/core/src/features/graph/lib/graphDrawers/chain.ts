@@ -5,7 +5,7 @@ import {
   CustomEdge,
 } from "@/features/graph/types/CustomEdge";
 import { buildLinkedListFromGraph } from "@/features/graph/lib/helpers/linkedListFromGraph";
-import { DRAW_SPACING_X } from "@/features/graph/config/drawSpacing";
+import { DRAW_SPACING_X } from "@/features/graph/config/drawParams";
 import { DEFAULT_NODE_SIZE } from "@/features/graph/config/nodeDefaultSettings";
 import { DrawerResults } from "@/features/graph/types/ConnectedComponents";
 

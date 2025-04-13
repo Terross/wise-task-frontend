@@ -1,5 +1,5 @@
 import { CustomNode } from "@/features/graph/types/CustomNode";
-import { SelectedAreaSize } from "@/features/graph/types/selectedAreaSize";
+import { SelectedAreaSize } from "@/features/graph/types/areaParams";
 
 export const getSelectedAreaSizes = (nodes: CustomNode[]): SelectedAreaSize => {
   if (nodes.length === 0) {
