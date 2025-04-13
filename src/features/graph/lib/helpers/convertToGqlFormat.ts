@@ -1,4 +1,4 @@
-import { NodesStoreState } from "../stores/nodes";
+import { NodesStoreState } from "../../stores/nodes";
 import {
   Color,
   EdgeInput,
@@ -6,7 +6,7 @@ import {
   InputMaybe,
   Vertex,
 } from "@/__generated__/graphql";
-import { CustomEdge } from "@/features/graph/types/Edge";
+import { CustomEdge } from "@/features/graph/types/CustomEdge";
 import { CustomNode } from "@/features/graph/types/CustomNode";
 
 const convertToInt = (number: number): number => {
