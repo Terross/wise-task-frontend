@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import { ref, watch } from "vue";
 import { useNodeStore } from "@/features/graph/stores/nodes";
 import { COLORS } from "@/features/graph/config/colors";
 
 const props = defineProps<{
   nodeId: string;
-  size: number;
+  size: { width: number; height: number };
   label: string;
   weight: number;
   color: string;
@@ -13,46 +14,60 @@ const props = defineProps<{
 const nodeStore = useNodeStore();
 
 const emit = defineEmits<{
-  (e: "update:size", value: number): void;
-  (e: "update:weight", value: number): void;
-  (e: "update:color", value: string): void;
   (e: "delete"): void;
   (e: "startEditing"): void;
 }>();
 
+const localWeight = ref(props.weight.toString());
+
+watch(
+  () => props.weight,
+  (newWeight) => {
+    localWeight.value = newWeight.toString();
+  },
+);
+
 const decreaseSize = () => {
-  if (props.size > 50) {
-    emit("update:size", props.size - 10);
-  }
+  nodeStore.changeNodeSize(false, props.nodeId);
 };
 
 const increaseSize = () => {
-  if (props.size < 300) {
-    emit("update:size", props.size + 10);
-  }
+  nodeStore.changeNodeSize(true, props.nodeId);
 };
 
 const deleteNode = () => {
   emit("delete");
-  nodeStore.saveState();
 };
 
 const startEditing = () => {
   emit("startEditing");
 };
 
-const updateWeight = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  const value = parseInt(target.value, 10);
-  if (!isNaN(value) && value >= 0) {
-    emit("update:weight", value);
+const handleWeightChange = () => {
+  const value = parseInt(localWeight.value, 10);
+
+  if (isNaN(value) || value < 0) {
+    localWeight.value = props.weight.toString();
+    return;
   }
-  nodeStore.saveState();
+
+  const data = nodeStore.getNodeData(props.nodeId);
+  if (!data) return;
+
+  nodeStore.updateNodeData(props.nodeId, {
+    ...data,
+    weight: value,
+  });
 };
 
 const selectColor = (color: string) => {
-  emit("update:color", color);
-  nodeStore.saveState();
+  const data = nodeStore.getNodeData(props.nodeId);
+  if (!data) return;
+
+  nodeStore.updateNodeData(props.nodeId, {
+    ...data,
+    color: color,
+  });
 };
 </script>
 
@@ -68,12 +83,12 @@ const selectColor = (color: string) => {
     <div class="controls-row">
       <div class="weight-label">Вес:</div>
       <input
-        type="text"
-        :value="weight"
-        @input="updateWeight"
-        @click.stop
+        type="number"
+        v-model="localWeight"
+        @blur="handleWeightChange"
         min="0"
         class="weight-input"
+        @click.stop
       />
     </div>
 
