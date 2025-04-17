@@ -204,6 +204,7 @@ onUnmounted(() => {
   font-size: 14px;
   font-weight: bold;
   color: black;
+  z-index: 200000;
 }
 
 .edge-panel {

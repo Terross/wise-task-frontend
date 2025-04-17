@@ -36,6 +36,12 @@ export const useNodeStore = defineStore("nodes", {
       this.isDirected = !this.isDirected;
     },
 
+    clearState() {
+      this.nodes = [];
+      this.edges = [];
+      this.groups = [];
+    },
+
     addNode(params?: { x: number; y: number }): void {
       const id: string = Date.now().toString();
       const maxNum = this.getMaximumLabel();
