@@ -140,6 +140,7 @@ onUnmounted(() => {
   user-select: none;
   transition: all 0.2s ease;
   box-shadow: none;
+  z-index: 1000;
 }
 
 .vue-flow__node-default:hover {

@@ -17,6 +17,8 @@ import { drawChainGraph } from "@/features/graph/lib/graphDrawers/chain";
 import { drawCycleGraph } from "@/features/graph/lib/graphDrawers/cycle";
 import { drawBipartiteGraph } from "@/features/graph/lib/graphDrawers/bibartite";
 import { drawDefaultTypeGraph } from "@/features/graph/lib/graphDrawers/default";
+import { isGraphNearlyFull } from "@/features/graph/lib/graphType/nearlyFull";
+import { drawNearlyFullGraph } from "@/features/graph/lib/graphDrawers/nearlyFull";
 
 export const useNodeStore = defineStore("nodes", {
   state: (): NodesStoreState => ({
@@ -32,6 +34,12 @@ export const useNodeStore = defineStore("nodes", {
   actions: {
     toggleIsDirected(): void {
       this.isDirected = !this.isDirected;
+    },
+
+    clearState() {
+      this.nodes = [];
+      this.edges = [];
+      this.groups = [];
     },
 
     addNode(params?: { x: number; y: number }): void {
@@ -182,6 +190,9 @@ export const useNodeStore = defineStore("nodes", {
       }
       if (isGraphBipartite(component)) {
         return drawBipartiteGraph(component.nodes, component.edges);
+      }
+      if (isGraphNearlyFull(component)) {
+        return drawNearlyFullGraph(component.nodes, component.edges);
       }
       return drawDefaultTypeGraph(component.nodes, component.edges);
     },
