@@ -6,7 +6,7 @@ import {
 } from "@/features/graph/types/CustomEdge";
 import { DrawerResults } from "@/features/graph/types/ConnectedComponents";
 import { getTreeLevels } from "@/features/graph/lib/helpers/getTreeLevels";
-import { DRAW_SPACING_X } from "@/features/graph/config/drawSpacing";
+import { DRAW_SPACING_X } from "@/features/graph/config/drawParams";
 import { DEFAULT_NODE_SIZE } from "@/features/graph/config/nodeDefaultSettings";
 
 export const drawTreeGraph = (

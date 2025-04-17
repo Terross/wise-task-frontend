@@ -4,10 +4,12 @@ import { VueFlow } from "@vue-flow/core";
 import SpecialNode from "./SpecialNode.vue";
 import SpecialEdge from "./SpecialEdge.vue";
 import { useNodeStore } from "@/features/graph/stores/nodes";
-import { ref, nextTick } from "vue";
+import { ref, nextTick, provide } from "vue";
 import HelpingModal from "@/features/graph/ui/HelpingModal.vue";
 import { Background } from "@vue-flow/background";
 import RightClickModal from "@/features/graph/ui/RightClickModal.vue";
+import { convertToGqlFormat } from "@/features/graph/lib/helpers/convertToGqlFormat";
+import DownloadGraphButton from "@/features/graph/ui/DownloadGraphButton.vue";
 
 interface Props {
   style?: Record<string, string | number>;
@@ -16,6 +18,9 @@ interface Props {
 const props = defineProps<Props>();
 
 const nodeStore = useNodeStore();
+
+const vueFlowState = useVueFlow();
+provide("vueFlowState", vueFlowState);
 
 const {
   onConnect,
@@ -27,7 +32,7 @@ const {
   setEdges,
   onNodesChange,
   fitView,
-} = useVueFlow();
+} = vueFlowState;
 
 onNodesChange((events) => {
   if (events.length < 2) {
@@ -108,23 +113,6 @@ onNodeDragStart((event) => {
   nodeStore.nodeShift(event.node.id, event.node.computedPosition);
 });
 
-const downloadJson = () => {
-  const data = {
-    nodes: nodeStore.nodes,
-    edges: nodeStore.edges,
-  };
-  const jsonString = JSON.stringify(data, null, 2);
-  const blob = new Blob([jsonString], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `graph-data-${Date.now().toString()}.json`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-};
-
 const uploadJson = (event: Event) => {
   const input = event.target as HTMLInputElement;
   if (input.files && input.files[0]) {
@@ -174,7 +162,7 @@ const normalize = () => {
     <div class="buttons-container">
       <v-btn @click="addNodeToCenter">Добавить вершину</v-btn>
       <v-btn @click="undo">UNDO</v-btn>
-      <v-btn @click="downloadJson">Скачать JSON</v-btn>
+      <DownloadGraphButton />
       <v-btn @click="nodeStore.toggleIsDirected">Сменить направленность</v-btn>
       <v-btn @click="normalize">Нормализовать граф</v-btn>
       <v-btn>
