@@ -52,14 +52,12 @@
 <script lang="ts">
 import { SOLVE_TASK_GRAPH } from "@/api/Mutations";
 import { GET_TASK } from "@/api/Queries";
-import { useGraphStore } from "@/store/graph";
 import { useTaskStore } from "@/store/task";
 import { useMutation, useQuery } from "@vue/apollo-composable";
 import { storeToRefs } from "pinia";
 import { defineComponent } from "vue";
-import { toGraph } from "../graph/network/helper/graph";
 import { PluginResult } from "@/__generated__/graphql";
-import Graph from "@/features/graph/ui/Graph.vue";
+import Graph from "@/features/graph/ui/graph/Graph.vue";
 import { useNodeStore } from "@/features/graph/stores/nodes";
 import { convertToGqlFormat } from "@/features/graph/lib/helpers/convertToGqlFormat";
 

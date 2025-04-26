@@ -8,6 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     ControlPanelComponent: typeof import('./src/components/graph/network/ControlPanelComponent.vue')['default']
+    ExamComponent: typeof import('./src/components/exam/ExamComponent.vue')['default']
     GraphCardComponent: typeof import('./src/components/graph/network/GraphCardComponent.vue')['default']
     GraphConstructorComponent: typeof import('./src/components/graph/network/GraphConstructorComponent.vue')['default']
     GraphInputComponent: typeof import('./src/components/graph/GraphInputComponent.vue')['default']
@@ -16,6 +17,7 @@ declare module 'vue' {
     GraphTableComponent: typeof import('./src/components/graph/GraphTableComponent.vue')['default']
     GraphTaskConstructorComponent: typeof import('./src/components/task/constructor/graph/GraphTaskConstructorComponent.vue')['default']
     ImplementationTaskConstructor: typeof import('./src/components/task/constructor/implementation/ImplementationTaskConstructor.vue')['default']
+    MaterialsCard: typeof import('./src/components/materials/MaterialsCard.vue')['default']
     PluginComponent: typeof import('./src/components/plugins/PluginComponent.vue')['default']
     PluginFilterComponent: typeof import('./src/components/plugins/PluginFilterComponent.vue')['default']
     PluginInputComponent: typeof import('./src/components/plugins/PluginInputComponent.vue')['default']

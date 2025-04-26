@@ -5,11 +5,11 @@ import SpecialNode from "./SpecialNode.vue";
 import SpecialEdge from "./SpecialEdge.vue";
 import { useNodeStore } from "@/features/graph/stores/nodes";
 import { ref, nextTick, provide } from "vue";
-import HelpingModal from "@/features/graph/ui/HelpingModal.vue";
+import HelpingModal from "@/features/graph/ui/graph/HelpingModal.vue";
 import { Background } from "@vue-flow/background";
-import RightClickModal from "@/features/graph/ui/RightClickModal.vue";
-import { convertToGqlFormat } from "@/features/graph/lib/helpers/convertToGqlFormat";
-import DownloadGraphButton from "@/features/graph/ui/DownloadGraphButton.vue";
+import RightClickModal from "@/features/graph/ui/graph/RightClickModal.vue";
+import DownloadGraphButton from "@/features/graph/ui/graph/DownloadGraphButton.vue";
+import { useVueFlowBus } from "@/features/graph/stores/vueFlowBus";
 
 interface Props {
   style?: Record<string, string | number>;
@@ -19,7 +19,7 @@ const props = defineProps<Props>();
 
 const nodeStore = useNodeStore();
 
-const vueFlowState = useVueFlow();
+const { vueFlowState } = useVueFlowBus();
 provide("vueFlowState", vueFlowState);
 
 const {
@@ -206,8 +206,8 @@ const normalize = () => {
 </template>
 
 <style>
-@import "@vue-flow/core/dist/style.css";
-@import "@vue-flow/core/dist/theme-default.css";
+@import "../../../../../node_modules/@vue-flow/core/dist/style.css";
+@import "../../../../../node_modules/@vue-flow/core/dist/theme-default.css";
 
 .buttons-container {
   background-color: blue;

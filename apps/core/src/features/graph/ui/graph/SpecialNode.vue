@@ -3,7 +3,7 @@ import { ref, onMounted, onUnmounted, watch, computed } from "vue";
 import type { NodeProps } from "@vue-flow/core";
 import { useNodeStore } from "@/features/graph/stores/nodes";
 import NodeControls from "./NodeButtons.vue";
-import NodeHandles from "@/features/graph/ui/NodeHandles.vue";
+import NodeHandles from "@/features/graph/ui/graph/NodeHandles.vue";
 
 const props = defineProps<NodeProps>();
 
