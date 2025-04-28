@@ -6,36 +6,39 @@ import { GraphStatistics } from "@/features/graph/types/GraphStatistics";
 const nodeStore = useNodeStore();
 const graphBaseStatistics = computed(() => nodeStore.statistic);
 
-const items: { key: keyof GraphStatistics; label: string; tooltip: string }[] =
-  [
-    {
-      key: "nodesAmount",
-      label: "Кол-во вершин",
-      tooltip: "Общее количество вершин в графе",
-    },
-    {
-      key: "edgesAmount",
-      label: "Кол-во рёбер",
-      tooltip: "Общее количество рёбер в графе",
-    },
-    {
-      key: "selfLoopsAmount",
-      label: "Кол-во петель",
-      tooltip: "Количество петель (рёбер, соединяющих вершину саму с собой)",
-    },
-    {
-      key: "leafNodesAmount",
-      label: "Кол-во листьев",
-      tooltip:
-        "Количество листьев (степень вершины = 1), не учитывая направленность графа",
-    },
-    {
-      key: "hangingNodesAmount",
-      label: "Кол-во висячих вершин",
-      tooltip:
-        "Количество висячих вершин (не соединённых с другими или сами с собой)",
-    },
-  ];
+const statisticsItems: {
+  key: keyof GraphStatistics;
+  label: string;
+  tooltip: string;
+}[] = [
+  {
+    key: "nodesAmount",
+    label: "Кол-во вершин",
+    tooltip: "Общее количество вершин в графе",
+  },
+  {
+    key: "edgesAmount",
+    label: "Кол-во рёбер",
+    tooltip: "Общее количество рёбер в графе",
+  },
+  {
+    key: "selfLoopsAmount",
+    label: "Кол-во петель",
+    tooltip: "Количество петель (рёбер, соединяющих вершину саму с собой)",
+  },
+  {
+    key: "leafNodesAmount",
+    label: "Кол-во листьев",
+    tooltip:
+      "Количество листьев (степень вершины = 1), не учитывая направленность графа",
+  },
+  {
+    key: "hangingNodesAmount",
+    label: "Кол-во висячих вершин",
+    tooltip:
+      "Количество висячих вершин (не соединённых с другими или сами с собой)",
+  },
+];
 </script>
 
 <template>
@@ -44,7 +47,7 @@ const items: { key: keyof GraphStatistics; label: string; tooltip: string }[] =
 
     <v-card-text>
       <v-list v-if="graphBaseStatistics" dense>
-        <v-list-item v-for="item in items" :key="item.key">
+        <v-list-item v-for="item in statisticsItems" :key="item.key">
           <v-list-item-content>
             <div class="d-flex align-center item-row">
               <v-tooltip left>
