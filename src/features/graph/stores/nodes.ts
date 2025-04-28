@@ -56,10 +56,12 @@ export const useNodeStore = defineStore("nodes", {
         data: { label },
       });
       history.onStateUpdate({ type: "node:add", properties: { nodeId: id } });
+      this.regenerateStatistics();
     },
 
     undo() {
       this.$state = history.undo(this.$state);
+      this.regenerateStatistics();
     },
 
     removeNode(id: string) {
@@ -79,6 +81,7 @@ export const useNodeStore = defineStore("nodes", {
         type: "node:remove",
         properties: { node: removedNode, edges: edges },
       });
+      this.regenerateStatistics();
     },
 
     normalizeView(): CustomEdge[] {
@@ -257,6 +260,7 @@ export const useNodeStore = defineStore("nodes", {
         properties: this.edges[edgeIndex],
       });
       this.edges = this.edges.filter((edge) => edge.id !== id);
+      this.regenerateStatistics();
     },
 
     updateEdge(
@@ -287,6 +291,7 @@ export const useNodeStore = defineStore("nodes", {
           edgeId: edge.id,
         },
       });
+      this.regenerateStatistics();
     },
 
     selectNode(id: string) {
@@ -330,6 +335,7 @@ export const useNodeStore = defineStore("nodes", {
           edges: Array.from(edges),
         },
       });
+      this.regenerateStatistics();
     },
 
     getMaximumLabel(): number {
