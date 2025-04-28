@@ -142,7 +142,7 @@ onUnmounted(() => {
     </defs>
   </svg>
 
-  <g @click.stop="handleEdgeClick">
+  <g @click="handleEdgeClick">
     <BaseEdge
       :path="path?.[0] || ''"
       :style="{ stroke: color, strokeWidth: 3 }"
