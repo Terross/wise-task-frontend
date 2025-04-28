@@ -124,6 +124,7 @@ const uploadJson = (event: Event) => {
         const data = JSON.parse(content);
         nodeStore.nodes = data.nodes;
         nodeStore.edges = data.edges;
+        nodeStore.regenerateStatistics();
       } catch (error) {
         console.error("Ошибка при чтении файла:", error);
       }
