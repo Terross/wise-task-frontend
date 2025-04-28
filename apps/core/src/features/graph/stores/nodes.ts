@@ -19,6 +19,11 @@ import { drawBipartiteGraph } from "@/features/graph/lib/graphDrawers/bibartite"
 import { drawDefaultTypeGraph } from "@/features/graph/lib/graphDrawers/default";
 import { isGraphNearlyFull } from "@/features/graph/lib/graphType/nearlyFull";
 import { drawNearlyFullGraph } from "@/features/graph/lib/graphDrawers/nearlyFull";
+import {
+  calculateHangingNodesAmount,
+  calculateLeafsAmount,
+  calculateSelfConnectedEdgesAmount,
+} from "@/features/graph/lib/statistics/baseGraphStatistics";
 
 export const useNodeStore = defineStore("nodes", {
   state: (): NodesStoreState => ({
@@ -29,17 +34,12 @@ export const useNodeStore = defineStore("nodes", {
     id: undefined,
     name: "",
     groups: [],
+    statistic: undefined,
   }),
 
   actions: {
     toggleIsDirected(): void {
       this.isDirected = !this.isDirected;
-    },
-
-    clearState() {
-      this.nodes = [];
-      this.edges = [];
-      this.groups = [];
     },
 
     addNode(params?: { x: number; y: number }): void {
@@ -278,7 +278,6 @@ export const useNodeStore = defineStore("nodes", {
     },
 
     addEdge(edge: CustomEdge) {
-      console.log("ADDING edge");
       edge.data.color = "#949494";
       edge.data.weight = 0;
       this.edges.push(edge);
@@ -342,6 +341,16 @@ export const useNodeStore = defineStore("nodes", {
         }
       }
       return maxNumber === -1 ? 1 : maxNumber + 1;
+    },
+
+    regenerateStatistics(): void {
+      this.statistic = {
+        edgesAmount: this.edges.length,
+        nodesAmount: this.nodes.length,
+        selfLoopsAmount: calculateSelfConnectedEdgesAmount(this.edges),
+        leafNodesAmount: calculateLeafsAmount(this.nodes, this.edges),
+        hangingNodesAmount: calculateHangingNodesAmount(this.nodes, this.edges),
+      };
     },
   },
 });

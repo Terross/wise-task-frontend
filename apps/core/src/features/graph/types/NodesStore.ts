@@ -1,5 +1,6 @@
 import type { CustomNode, NodeGroup } from "./CustomNode";
 import { CustomEdge } from "./CustomEdge";
+import { GraphStatistics } from "@/features/graph/types/GraphStatistics";
 
 export interface NodesStoreState {
   nodes: CustomNode[];
@@ -9,4 +10,5 @@ export interface NodesStoreState {
   name: string;
   id?: string;
   groups: NodeGroup[];
+  statistic?: GraphStatistics;
 }

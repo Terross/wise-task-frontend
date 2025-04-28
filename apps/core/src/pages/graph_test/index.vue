@@ -6,8 +6,8 @@ import GraphStatisticsPanel from "@/features/graph/ui/statisticsBar/GraphStatist
 export default defineComponent({
   components: { GraphStatisticsPanel, Graph },
   setup() {
-    const expanded = ref(false);
-    const pinned = ref(false);
+    const expanded = ref(true);
+    const pinned = ref(true);
 
     const handleMouseEnter = () => {
       if (!pinned.value) {

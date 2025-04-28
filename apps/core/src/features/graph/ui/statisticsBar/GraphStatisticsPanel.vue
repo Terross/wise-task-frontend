@@ -1,23 +1,20 @@
 <script setup lang="ts">
 import { useVueFlowBus } from "@/features/graph/stores/vueFlowBus";
-import { Ref, toRef } from "vue";
+import { ref, watchEffect, toRef, computed } from "vue";
 import { CustomNode } from "@/features/graph/types/CustomNode";
 import SelectedNodes from "./SelectedNodes.vue";
-import { useVueFlow } from "@vue-flow/core";
 import { CustomEdge } from "@/features/graph/types/CustomEdge";
+import { useNodeStore } from "@/features/graph/stores/nodes";
 
 const { vueFlowState } = useVueFlowBus();
 const { fitView } = vueFlowState;
+const nodeStore = useNodeStore();
 
-const selectedNodes: Ref<CustomNode[]> = toRef(
-  vueFlowState,
-  "getSelectedNodes",
-);
+// @ts-ignore
+const selectedNodes = toRef(vueFlowState, "getSelectedNodes");
+const selectedEdges = computed(() => nodeStore.getSelectedEdges());
 
-const selectedEdges: Ref<CustomEdge[]> = toRef(
-  vueFlowState,
-  "getSelectedEdges",
-);
+console.log("edges", selectedEdges);
 </script>
 
 <template>
@@ -25,7 +22,6 @@ const selectedEdges: Ref<CustomEdge[]> = toRef(
     <v-btn density="compact" variant="outlined" @click="fitView()">
       Применить fitView
     </v-btn>
-
-    <SelectedNodes :nodes="selectedNodes" class="mt-4" />
+    <SelectedNodes :nodes="selectedNodes" />
   </div>
 </template>
