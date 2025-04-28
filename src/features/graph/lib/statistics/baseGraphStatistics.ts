@@ -43,11 +43,7 @@ export const calculateLeafsAmount = (
     edgesMap.set(node.id, 0);
   }
 
-  console.log(edgesMap);
-
   for (const edge of edges) {
-    console.log("SOURCE", edge.source);
-    console.log("TARGET: ", edge.target);
     const sourceEntrances: number | undefined = edgesMap.get(edge.source);
     if (sourceEntrances === undefined) {
       return -1;
