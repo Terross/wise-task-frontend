@@ -1,21 +1,25 @@
 <script setup lang="ts">
-import { useVueFlow } from "@vue-flow/core";
 import { VueFlow } from "@vue-flow/core";
 import SpecialNode from "./SpecialNode.vue";
 import SpecialEdge from "./SpecialEdge.vue";
 import { useNodeStore } from "@/features/graph/stores/nodes";
-import { ref, nextTick, provide } from "vue";
+import { ref, nextTick, provide, onMounted } from "vue";
 import HelpingModal from "@/features/graph/ui/graph/HelpingModal.vue";
 import { Background } from "@vue-flow/background";
 import RightClickModal from "@/features/graph/ui/graph/RightClickModal.vue";
 import DownloadGraphButton from "@/features/graph/ui/graph/DownloadGraphButton.vue";
 import { useVueFlowBus } from "@/features/graph/stores/vueFlowBus";
+import { setupNodeChangesHandler } from "@/features/graph/lib/flowEventsHandlers/nodeEventsHandling";
 
 interface Props {
   style?: Record<string, string | number>;
 }
 
 const props = defineProps<Props>();
+
+onMounted(() => {
+  setupNodeChangesHandler();
+});
 
 const nodeStore = useNodeStore();
 
@@ -30,30 +34,8 @@ const {
   addEdges,
   onEdgesChange,
   setEdges,
-  onNodesChange,
   fitView,
 } = vueFlowState;
-
-onNodesChange((events) => {
-  if (events.length < 2) {
-    return;
-  }
-  if (events[0].type === "position") {
-    if (events[0].dragging) {
-      return;
-    }
-    const nodesMap = new Map<string, { x: number; y: number }>();
-    for (let i = 0; i < events.length; i++) {
-      // @ts-ignore
-      nodesMap.set(events[i].id, events[i].from); // #TODO: Нормальные типы добавить сюда (оно не хочет работать нормально(()
-    }
-    nodeStore.nodeMassMovement(nodesMap);
-  }
-  if (events[0].type === "remove") {
-    // @ts-ignore
-    nodeStore.nodesMassRemove(events.map((event) => event.id)); // TODO: то же самое
-  }
-});
 
 onEdgesChange((changes) => {
   changes.forEach((change) => {
