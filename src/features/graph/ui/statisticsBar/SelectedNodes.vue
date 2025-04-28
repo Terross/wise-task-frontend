@@ -9,6 +9,7 @@ interface Props {
 const props = defineProps<Props>();
 
 const expandedNodes = ref<Record<string, boolean>>({});
+const isPanelExpanded = ref(false);
 
 const toggleNode = (nodeId: string) => {
   expandedNodes.value = {
@@ -16,78 +17,93 @@ const toggleNode = (nodeId: string) => {
     [nodeId]: !expandedNodes.value[nodeId],
   };
 };
+
+const togglePanel = () => {
+  isPanelExpanded.value = !isPanelExpanded.value;
+};
 </script>
 
 <template>
   <div class="nodes-panel">
     <div v-if="nodes.length > 0" class="nodes-container">
-      <div class="panel-header">
-        <h4>Выбранные узлы графа</h4>
-        <span class="counter">{{ nodes.length }}</span>
-      </div>
-
-      <div class="nodes-list">
-        <div v-for="node in nodes" :key="node.id" class="node-item">
-          <div class="node-header" @click="toggleNode(node.id)">
-            <v-icon
-              :icon="
-                expandedNodes[node.id]
-                  ? 'mdi-chevron-down'
-                  : 'mdi-chevron-right'
-              "
-              size="small"
-              color="#0D47A1"
-            />
-            <span class="node-title">
-              {{ node.data.label || `Узел ${node.id.slice(0, 4)}` }}
-            </span>
-            <v-chip
-              v-if="node.data.color"
-              :color="node.data.color"
-              size="x-small"
-              class="color-chip"
-            />
-          </div>
-
-          <v-expand-transition>
-            <div v-if="expandedNodes[node.id]" class="node-details">
-              <div v-if="node.data.color" class="detail-row">
-                <span class="detail-label">Цвет:</span>
-                <span class="detail-value">
-                  <v-chip :color="node.data.color" size="x-small" label>
-                    {{ node.data.color }}
-                  </v-chip>
-                </span>
-              </div>
-
-              <div v-if="node.data.weight" class="detail-row">
-                <span class="detail-label">Вес:</span>
-                <span class="detail-value">{{ node.data.weight }}</span>
-              </div>
-
-              <div v-if="node.data.size" class="detail-row">
-                <span class="detail-label">Размер:</span>
-                <span class="detail-value">
-                  {{ node.data.size.width }}×{{ node.data.size.height }}
-                </span>
-              </div>
-
-              <div class="detail-row">
-                <span class="detail-label">Позиция:</span>
-                <span class="detail-value">
-                  ({{ Math.round(node.position.x) }},
-                  {{ Math.round(node.position.y) }})
-                </span>
-              </div>
-            </div>
-          </v-expand-transition>
+      <div class="panel-header" @click="togglePanel">
+        <div class="header-content">
+          <v-icon
+            :icon="isPanelExpanded ? 'mdi-chevron-down' : 'mdi-chevron-right'"
+            size="small"
+            color="#0D47A1"
+          />
+          <h4>Выбранные вершины графа</h4>
+          <span class="counter">{{ nodes.length }}</span>
         </div>
       </div>
+
+      <v-expand-transition>
+        <div v-if="isPanelExpanded">
+          <div class="nodes-list">
+            <div v-for="node in nodes" :key="node.id" class="node-item">
+              <div class="node-header" @click.stop="toggleNode(node.id)">
+                <v-icon
+                  :icon="
+                    expandedNodes[node.id]
+                      ? 'mdi-chevron-down'
+                      : 'mdi-chevron-right'
+                  "
+                  size="small"
+                  color="#0D47A1"
+                />
+                <span class="node-title">
+                  {{ node.data.label || `Узел ${node.id.slice(0, 4)}` }}
+                </span>
+                <v-chip
+                  v-if="node.data.color"
+                  :color="node.data.color"
+                  size="x-small"
+                  class="color-chip"
+                />
+              </div>
+
+              <v-expand-transition>
+                <div v-if="expandedNodes[node.id]" class="node-details">
+                  <div v-if="node.data.color" class="detail-row">
+                    <span class="detail-label">Цвет:</span>
+                    <span class="detail-value">
+                      <v-chip :color="node.data.color" size="x-small" label>
+                        {{ node.data.color }}
+                      </v-chip>
+                    </span>
+                  </div>
+
+                  <div v-if="node.data.weight" class="detail-row">
+                    <span class="detail-label">Вес:</span>
+                    <span class="detail-value">{{ node.data.weight }}</span>
+                  </div>
+
+                  <div v-if="node.data.size" class="detail-row">
+                    <span class="detail-label">Размер:</span>
+                    <span class="detail-value">
+                      {{ node.data.size.width }}×{{ node.data.size.height }}
+                    </span>
+                  </div>
+
+                  <div class="detail-row">
+                    <span class="detail-label">Позиция:</span>
+                    <span class="detail-value">
+                      ({{ Math.round(node.position.x) }},
+                      {{ Math.round(node.position.y) }})
+                    </span>
+                  </div>
+                </div>
+              </v-expand-transition>
+            </div>
+          </div>
+        </div>
+      </v-expand-transition>
     </div>
 
     <div v-else class="empty-state">
       <v-icon icon="mdi-information-outline" size="small" color="#0D47A1" />
-      <span>Выберите узлы</span>
+      <span>Выберите вершины</span>
     </div>
   </div>
 </template>
@@ -95,6 +111,7 @@ const toggleNode = (nodeId: string) => {
 <style scoped>
 .nodes-panel {
   width: 100%;
+  margin-top: 10px;
   background-color: #ffffff;
   border-radius: 6px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -104,12 +121,20 @@ const toggleNode = (nodeId: string) => {
 }
 
 .panel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   padding: 12px 16px;
   background-color: #f5f5f5;
   border-bottom: 1px solid #e0e0e0;
+  cursor: pointer;
+}
+
+.panel-header:hover {
+  background-color: #eeeeee;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .panel-header h4 {
@@ -117,6 +142,7 @@ const toggleNode = (nodeId: string) => {
   font-size: 14px;
   font-weight: 500;
   color: #0d47a1;
+  flex-grow: 1;
 }
 
 .counter {
@@ -130,7 +156,7 @@ const toggleNode = (nodeId: string) => {
 
 .nodes-list {
   padding: 8px 0;
-  max-height: 400px;
+  max-height: 200px;
   overflow-y: auto;
 }
 
