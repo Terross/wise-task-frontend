@@ -1,104 +1,114 @@
 <script setup lang="ts">
 import { useNodeStore } from "@/features/graph/stores/nodes";
 import { computed } from "vue";
+import { GraphStatistics } from "@/features/graph/types/GraphStatistics";
 
 const nodeStore = useNodeStore();
-
 const graphBaseStatistics = computed(() => nodeStore.statistic);
+
+const items: { key: keyof GraphStatistics; label: string; tooltip: string }[] =
+  [
+    {
+      key: "nodesAmount",
+      label: "Кол-во вершин",
+      tooltip: "Общее количество вершин в графе",
+    },
+    {
+      key: "edgesAmount",
+      label: "Кол-во рёбер",
+      tooltip: "Общее количество рёбер в графе",
+    },
+    {
+      key: "selfLoopsAmount",
+      label: "Кол-во петель",
+      tooltip: "Количество петель (рёбер, соединяющих вершину саму с собой)",
+    },
+    {
+      key: "leafNodesAmount",
+      label: "Кол-во листьев",
+      tooltip:
+        "Количество листьев (степень вершины = 1), не учитывая направленность графа",
+    },
+    {
+      key: "hangingNodesAmount",
+      label: "Кол-во висячих вершин",
+      tooltip:
+        "Количество висячих вершин (не соединённых с другими или сами с собой)",
+    },
+  ];
 </script>
 
 <template>
-  <div class="statistics-container">
-    <h3 class="statistics-title">Статистика</h3>
+  <v-card class="statistics-container" max-width="250">
+    <v-card-title class="statistics-title"> Статистика графа </v-card-title>
 
-    <div v-if="graphBaseStatistics" class="statistics-grid">
-      <div class="statistic-item">
-        <span class="statistic-label">Кол-во вершин:</span>
-        <span class="statistic-value">{{
-          graphBaseStatistics.nodesAmount
-        }}</span>
-      </div>
+    <v-card-text>
+      <v-list v-if="graphBaseStatistics" dense>
+        <v-list-item v-for="item in items" :key="item.key">
+          <v-list-item-content>
+            <div class="d-flex align-center item-row">
+              <v-tooltip left>
+                <template #activator="{ props: tooltipProps }">
+                  <v-icon v-bind="tooltipProps" small class="help-icon mr-1">
+                    mdi-help-circle-outline
+                  </v-icon>
+                </template>
+                <span>{{ item.tooltip }}</span>
+              </v-tooltip>
 
-      <div class="statistic-item">
-        <span class="statistic-label">Кол-во ребер:</span>
-        <span class="statistic-value">{{
-          graphBaseStatistics.edgesAmount
-        }}</span>
-      </div>
+              <span class="label-text">{{ item.label }}:</span>
 
-      <div class="statistic-item">
-        <span class="statistic-label">Кол-во петель: </span>
-        <span class="statistic-value">{{
-          graphBaseStatistics.selfLoopsAmount
-        }}</span>
-      </div>
+              <v-spacer />
 
-      <div class="statistic-item">
-        <span class="statistic-label">Кол-во листьев:</span>
-        <span class="statistic-value">{{
-          graphBaseStatistics.leafNodesAmount
-        }}</span>
-      </div>
+              <strong class="value-text">
+                {{ graphBaseStatistics[item.key] }}
+              </strong>
+            </div>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
 
-      <div class="statistic-item">
-        <span class="statistic-label">Кол-во "висячих" вершин:</span>
-        <span class="statistic-value">{{
-          graphBaseStatistics.hangingNodesAmount
-        }}</span>
-      </div>
-    </div>
-
-    <div v-else class="no-statistics">No statistics available</div>
-  </div>
+      <v-alert v-else type="info" dense outlined class="mt-2">
+        Нет данных для отображения
+      </v-alert>
+    </v-card-text>
+  </v-card>
 </template>
 
 <style scoped>
 .statistics-container {
-  background-color: #f5f5f5;
-  border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  font-family: Arial, sans-serif;
+  margin-top: 10px;
 }
 
 .statistics-title {
-  margin-top: 0;
-  margin-bottom: 16px;
-  color: #333;
-  font-size: 1.2rem;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 12px 16px 8px;
 }
 
-.statistics-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+.item-row {
+  gap: 4px;
 }
 
-.statistic-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 0;
+.help-icon {
+  opacity: 0.6;
+  transition: opacity 0.2s;
+  color: #757575;
+  flex-shrink: 0;
 }
 
-.statistic-label {
-  font-weight: bold;
-  color: #555;
+.help-icon:hover {
+  opacity: 1;
+  color: #000;
 }
 
-.statistic-value {
-  background-color: #e9e9e9;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-family: monospace;
+.label-text {
+  flex-shrink: 0;
 }
 
-.no-statistics {
-  color: #888;
-  font-style: italic;
-  text-align: center;
-  padding: 12px 0;
+.value-text {
+  flex-shrink: 0;
+  min-width: 24px;
+  text-align: right;
 }
 </style>
