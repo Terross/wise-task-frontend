@@ -6,10 +6,12 @@ export function setupNodeChangesHandler() {
   const nodeStore = useNodeStore();
   const { vueFlowState } = useVueFlowBus();
 
-  const { onNodesChange } = vueFlowState;
+  const { onNodesChange, onNodeDragStart } = vueFlowState;
 
   onNodesChange((events: NodeChange[]) => {
-    console.log(events);
+    if (events.length === 0) {
+      return;
+    }
     if (events[0].type === "position") {
       if (events[0].dragging) {
         return;
@@ -28,5 +30,9 @@ export function setupNodeChangesHandler() {
       // @ts-ignore
       nodeStore.nodesMassRemove(events.map((event) => event.id));
     }
+  });
+
+  onNodeDragStart((event) => {
+    nodeStore.nodeShift(event.node.id, event.node.computedPosition);
   });
 }

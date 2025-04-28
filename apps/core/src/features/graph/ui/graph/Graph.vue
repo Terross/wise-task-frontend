@@ -10,6 +10,7 @@ import RightClickModal from "@/features/graph/ui/graph/RightClickModal.vue";
 import DownloadGraphButton from "@/features/graph/ui/graph/DownloadGraphButton.vue";
 import { useVueFlowBus } from "@/features/graph/stores/vueFlowBus";
 import { setupNodeChangesHandler } from "@/features/graph/lib/flowEventsHandlers/nodeEventsHandling";
+import { setupEdgeChangesHandler } from "@/features/graph/lib/flowEventsHandlers/edgeEventsHandling";
 
 interface Props {
   style?: Record<string, string | number>;
@@ -18,6 +19,7 @@ interface Props {
 const props = defineProps<Props>();
 
 onMounted(() => {
+  setupEdgeChangesHandler();
   setupNodeChangesHandler();
 });
 
@@ -26,25 +28,7 @@ const nodeStore = useNodeStore();
 const { vueFlowState } = useVueFlowBus();
 provide("vueFlowState", vueFlowState);
 
-const {
-  onConnect,
-  onNodeDragStart,
-  onPaneContextMenu,
-  project,
-  addEdges,
-  onEdgesChange,
-  setEdges,
-  fitView,
-} = vueFlowState;
-
-onEdgesChange((changes) => {
-  changes.forEach((change) => {
-    if (change.type === "add") {
-      // @ts-ignore
-      nodeStore.addEdge(change.item);
-    }
-  });
-});
+const { onPaneContextMenu, project, setEdges, fitView } = vueFlowState;
 
 const contextMenuPosition = ref({ x: 0, y: 0 });
 const isHelpModalOpen = ref(false);
@@ -84,16 +68,6 @@ const closeHelpModal = () => {
 const closeRightClickModal = () => {
   isRightClickModalOpen.value = false;
 };
-
-onConnect((connection) => {
-  // @ts-ignore
-  connection.type = "special";
-  addEdges(connection);
-});
-
-onNodeDragStart((event) => {
-  nodeStore.nodeShift(event.node.id, event.node.computedPosition);
-});
 
 const uploadJson = (event: Event) => {
   const input = event.target as HTMLInputElement;
