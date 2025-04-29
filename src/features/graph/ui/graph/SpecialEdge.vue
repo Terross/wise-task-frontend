@@ -113,7 +113,7 @@ const handleEdgeClick = () => {
     removeSelfEdge();
   } else {
     // не убирать timeout, т.к. vueFlow получит ивент, поменяет компонент, он заререндерится и окошко не откроется
-    setTimeout(() => (isPanelVisible.value = !isPanelVisible.value), 10);
+    setTimeout(() => (isPanelVisible.value = !isPanelVisible.value), 20);
   }
 };
 
