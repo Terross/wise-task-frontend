@@ -338,6 +338,23 @@ export const useNodeStore = defineStore("nodes", {
       this.regenerateStatistics();
     },
 
+    edgesMassRemove(edgeIds: string[]) {
+      console.log(edgeIds);
+      console.log(this.edges);
+      const edges = this.edges.filter((edge) => edgeIds.includes(edge.id));
+      if (edges.length === 0) {
+        console.log("EDGES LENGTH IS 0");
+        return;
+      }
+      console.log("EDGES для массового удаления", edges.length);
+      history.onStateUpdate({
+        type: "edge:mass_delete",
+        properties: {
+          edges,
+        },
+      });
+    },
+
     getMaximumLabel(): number {
       let maxNumber = -1;
       for (const node of this.nodes) {

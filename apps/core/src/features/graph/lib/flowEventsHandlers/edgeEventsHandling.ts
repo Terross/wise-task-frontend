@@ -18,6 +18,13 @@ export function setupEdgeChangesHandler() {
     if (changes.length === 0) {
       return;
     }
+    if (changes.every((change) => change.type === "remove")) {
+      const edgeIds: string[] = [];
+      for (let i = 0; i < changes.length; i++) {
+        edgeIds.push(changes[i]?.id || "-1");
+      }
+      nodeStore.edgesMassRemove(edgeIds);
+    }
     console.log(changes);
     changes.forEach((change) => {
       if (change.type === "add") {
