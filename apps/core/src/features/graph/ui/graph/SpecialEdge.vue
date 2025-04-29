@@ -10,6 +10,7 @@ import { computed, ref, onMounted, onUnmounted } from "vue";
 import { useNodeStore } from "@/features/graph/stores/nodes";
 import { COLORS } from "@/features/graph/config/colors";
 import { CustomEdge } from "@/features/graph/types/CustomEdge";
+import { isEdgeSelected } from "@/features/graph/lib/flowEventsHandlers/edgeEventsHandling";
 
 const props = defineProps<CustomEdge>();
 
@@ -43,6 +44,8 @@ const targetPosition = computed({
   get: () => props.targetPosition,
   set: (val) => {},
 });
+
+const isSelected = computed(() => isEdgeSelected(props.id));
 
 const updateEdgeData = () => {
   nodeStore.updateEdge(props.id, {
@@ -146,7 +149,12 @@ onUnmounted(() => {
   <g @click="handleEdgeClick">
     <BaseEdge
       :path="path?.[0] || ''"
-      :style="{ stroke: color, strokeWidth: 3 }"
+      :style="{
+        stroke: isSelected ? '#ff0072' : color,
+        strokeWidth: isSelected ? 4 : 3,
+        filter: isSelected ? 'drop-shadow(0 0 8px currentColor)' : 'none',
+        transition: 'all 0.2s ease',
+      }"
       :marker-start="
         nodeStore.isDirected ? `url(#${MarkerType.Arrow})` : undefined
       "
