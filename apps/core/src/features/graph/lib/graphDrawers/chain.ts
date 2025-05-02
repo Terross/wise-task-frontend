@@ -5,9 +5,11 @@ import {
   CustomEdge,
 } from "@/features/graph/types/CustomEdge";
 import { buildLinkedListFromGraph } from "@/features/graph/lib/helpers/linkedListFromGraph";
-import { DRAW_SPACING_X } from "@/features/graph/config/drawParams";
 import { DEFAULT_NODE_SIZE } from "@/features/graph/config/nodeDefaultSettings";
 import { DrawerResults } from "@/features/graph/types/ConnectedComponents";
+import { useGraphSettings } from "@/features/graph/stores/graphSettings";
+
+const graphSettingsStore = useGraphSettings();
 
 export const drawChainGraph = (
   nodes: CustomNode[],
@@ -51,7 +53,7 @@ export const drawChainGraph = (
 
     xPositionTaken +=
       (current.node.data.size?.width || DEFAULT_NODE_SIZE.width) +
-      DRAW_SPACING_X;
+      graphSettingsStore.defaultNodeSpacingX;
 
     if (!current.next) {
       break;
@@ -63,7 +65,7 @@ export const drawChainGraph = (
   return {
     nodes,
     edges,
-    width: xPositionTaken - DRAW_SPACING_X,
+    width: xPositionTaken - graphSettingsStore.defaultNodeSpacingX,
     height: maxHeight,
   };
 };

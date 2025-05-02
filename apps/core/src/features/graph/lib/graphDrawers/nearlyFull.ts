@@ -1,9 +1,11 @@
 import { CustomNode } from "@/features/graph/types/CustomNode";
 import { CustomEdge } from "@/features/graph/types/CustomEdge";
-import { DEFAULT_CIRCLE_PADDING } from "@/features/graph/config/drawParams";
 import { DrawerResults } from "@/features/graph/types/ConnectedComponents";
 import { generateCircleParams } from "@/features/graph/lib/helpers/calculateCirleParams";
 import { changeDirectionsInCircularGraph } from "@/features/graph/lib/helpers/edgesDirectionsInCircular";
+import { useGraphSettings } from "@/features/graph/stores/graphSettings";
+
+const graphSettingsStore = useGraphSettings();
 
 export const drawNearlyFullGraph = (
   nodes: CustomNode[],
@@ -15,7 +17,7 @@ export const drawNearlyFullGraph = (
 
   const { radius, stepDegree } = generateCircleParams(
     nodes,
-    padding || DEFAULT_CIRCLE_PADDING,
+    padding || graphSettingsStore.defaultCirclePadding,
   );
 
   const stepRadians = (stepDegree * Math.PI) / 180;
