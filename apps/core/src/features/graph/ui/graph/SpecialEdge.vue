@@ -3,6 +3,8 @@ import {
   BaseEdge,
   EdgeLabelRenderer,
   getBezierPath,
+  getSmoothStepPath,
+  getStraightPath,
   MarkerType,
   Position,
 } from "@vue-flow/core";
@@ -11,10 +13,12 @@ import { useNodeStore } from "@/features/graph/stores/nodes";
 import { COLORS } from "@/features/graph/config/colors";
 import { CustomEdge } from "@/features/graph/types/CustomEdge";
 import { isEdgeSelected } from "@/features/graph/lib/flowEventsHandlers/edgeEventsHandling";
+import { useGraphSettings } from "@/features/graph/stores/graphSettings";
 
 const props = defineProps<CustomEdge>();
 
 const nodeStore = useNodeStore();
+const graphSettingsStore = useGraphSettings();
 const isPanelVisible = ref(false);
 const tempWeight = ref(props.data?.weight || 0);
 
@@ -81,10 +85,40 @@ const updateEdgeData = () => {
   });
 };
 
+const labelPosition = computed(() => {
+  if (!path.value?.[0]) return { x: midX.value, y: midY.value };
+
+  if (graphSettingsStore.edgeType === "Straight") {
+    return { x: midX.value, y: midY.value };
+  }
+
+  try {
+    const pathString = path.value[0];
+    const pathEl = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "path",
+    );
+    pathEl.setAttribute("d", pathString);
+
+    const pathLength = pathEl.getTotalLength();
+    const midpoint = pathEl.getPointAtLength(pathLength * 0.5);
+
+    return { x: midpoint.x, y: midpoint.y };
+  } catch {
+    return { x: midX.value, y: midY.value };
+  }
+});
+
 const isSelfConnected: boolean = props.targetNode.id === props.sourceNode.id;
 
 const path = computed(() => {
   if (props.targetNode.id !== props.sourceNode.id) {
+    if (graphSettingsStore.edgeType === "Straight") {
+      return getStraightPath(props);
+    }
+    if (graphSettingsStore.edgeType === "Step") {
+      return getSmoothStepPath(props);
+    }
     return getBezierPath(props);
   }
   if (
@@ -189,9 +223,10 @@ onUnmounted(() => {
 
     <div v-if="!!weight">
       <EdgeLabelRenderer>
+        <
         <div
           :style="{
-            transform: `translate(-50%, -50%) translate(${midX}px,${midY}px)`,
+            transform: `translate(-50%, -50%) translate(${labelPosition.x}px,${labelPosition.y}px)`,
           }"
           class="edge-label"
         >

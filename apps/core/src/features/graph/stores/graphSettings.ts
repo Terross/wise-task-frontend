@@ -5,8 +5,16 @@ import {
   DRAW_SPACING_Y,
 } from "@/features/graph/config/drawParams";
 
-export const graphSettings = defineStore("graphSettings", {
-  state: () => ({
+interface GraphSettingsStore {
+  edgeType: "Bezie" | "Straight" | "Step";
+  defaultNodeSize: number;
+  defaultNodeSpacingX: number;
+  defaultNodeSpacingY: number;
+  defaultCirclePadding: number;
+}
+
+export const useGraphSettings = defineStore("graphSettings", {
+  state: (): GraphSettingsStore => ({
     edgeType: "Bezie",
     defaultNodeSize: 100,
     defaultNodeSpacingX: DRAW_SPACING_X,
