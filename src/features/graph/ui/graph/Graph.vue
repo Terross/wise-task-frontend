@@ -5,13 +5,13 @@ import SpecialEdge from "./SpecialEdge.vue";
 import { useNodeStore } from "@/features/graph/stores/nodes";
 import { ref, nextTick, provide, onMounted } from "vue";
 import HelpingModal from "@/features/graph/ui/graph/HelpingModal.vue";
-import { Background } from "@vue-flow/background";
+import Background from "./Background";
 import RightClickModal from "@/features/graph/ui/graph/RightClickModal.vue";
 import DownloadGraphButton from "@/features/graph/ui/graph/DownloadGraphButton.vue";
 import { useVueFlowBus } from "@/features/graph/stores/vueFlowBus";
 import { setupNodeChangesHandler } from "@/features/graph/lib/flowEventsHandlers/nodeEventsHandling";
 import { setupEdgeChangesHandler } from "@/features/graph/lib/flowEventsHandlers/edgeEventsHandling";
-import SettingsDropDown from "@/features/graph/ui/graph/SettingsDropDown.vue";
+import SettingsDropDown from "@/features/graph/ui/graph/SettingsModal.vue";
 
 interface Props {
   style?: Record<string, string | number>;
@@ -149,12 +149,7 @@ const normalize = () => {
         @close="isRightClickModalOpen = false"
         @add-node="handleAddNodeAtPosition"
       />
-      <Background
-        :pattern-color="'#d1d1d1'"
-        :gap="20"
-        :size="2"
-        :variant="'dots'"
-      />
+      <Background />
       <template #node-special="specialNodeProps">
         <SpecialNode v-bind="specialNodeProps" />
       </template>
