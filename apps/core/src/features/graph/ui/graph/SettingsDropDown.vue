@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { useGraphSettings } from "@/features/graph/stores/graphSettings";
-
-const store = useGraphSettings();
+import { graphSettingsStore as store } from "@/features/graph/stores/graphSettings";
 
 const isOpen = ref(false);
 
@@ -58,7 +56,7 @@ const open = () => {
 };
 
 const save = () => {
-  store.edgeType = form.value.edgeType;
+  store.edgeType = form.value.edgeType as "Straight" | "Bezie" | "Step";
   store.defaultNodeSize = form.value.defaultNodeSize;
   store.defaultNodeSpacingX = form.value.defaultNodeSpacingX;
   store.defaultNodeSpacingY = form.value.defaultNodeSpacingY;

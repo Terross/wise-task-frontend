@@ -53,7 +53,13 @@ export const useNodeStore = defineStore("nodes", {
         id,
         position: position,
         type: "special",
-        data: { label },
+        data: {
+          label,
+          size: {
+            width: 200,
+            height: 200,
+          },
+        },
       });
       history.onStateUpdate({ type: "node:add", properties: { nodeId: id } });
       this.regenerateStatistics();

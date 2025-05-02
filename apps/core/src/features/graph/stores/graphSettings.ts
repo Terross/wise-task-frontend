@@ -13,7 +13,7 @@ interface GraphSettingsStore {
   defaultCirclePadding: number;
 }
 
-export const useGraphSettings = defineStore("graphSettings", {
+const useGraphSettings = defineStore("graphSettings", {
   state: (): GraphSettingsStore => ({
     edgeType: "Bezie",
     defaultNodeSize: 100,
@@ -22,3 +22,5 @@ export const useGraphSettings = defineStore("graphSettings", {
     defaultCirclePadding: DEFAULT_CIRCLE_PADDING,
   }),
 });
+
+export const graphSettingsStore = useGraphSettings();

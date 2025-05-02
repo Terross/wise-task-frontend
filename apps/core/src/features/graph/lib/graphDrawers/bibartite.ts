@@ -10,9 +10,7 @@ import {
   getMinHeight,
   getVerticalSpacing,
 } from "@/features/graph/lib/helpers/getBipartiteGraphHeight";
-import { useGraphSettings } from "@/features/graph/stores/graphSettings";
-
-const graphSettingsStore = useGraphSettings();
+import { graphSettingsStore } from "@/features/graph/stores/graphSettings";
 
 export const drawBipartiteGraph = (
   nodes: CustomNode[],

@@ -3,9 +3,7 @@ import { CustomEdge } from "@/features/graph/types/CustomEdge";
 import { DrawerResults } from "@/features/graph/types/ConnectedComponents";
 import { generateCircleParams } from "@/features/graph/lib/helpers/calculateCirleParams";
 import { changeDirectionsInCircularGraph } from "@/features/graph/lib/helpers/edgesDirectionsInCircular";
-import { useGraphSettings } from "@/features/graph/stores/graphSettings";
-
-const graphSettingsStore = useGraphSettings();
+import { graphSettingsStore } from "@/features/graph/stores/graphSettings";
 
 export const drawNearlyFullGraph = (
   nodes: CustomNode[],
