@@ -7,7 +7,6 @@ export const useVueFlowBus = defineStore("flow", () => {
     elevateEdgesOnSelect: true,
     selectNodesOnDrag: false,
     elevateNodesOnSelect: true,
-    autoPanOnNodeDrag: true,
   });
   return { vueFlowState };
 });

@@ -41,7 +41,7 @@ export const drawCycleGraph = (
 
       nodes[nodeIndex].position = {
         x: currentX,
-        y: isLastNode ? -100 : 0,
+        y: isLastNode ? -graphSettingsStore.defaultNodeSpacingY : 0,
       };
 
       nodeIdsInOrder.push(current.node.id);
@@ -53,7 +53,7 @@ export const drawCycleGraph = (
       maxHeight = Math.max(
         maxHeight,
         (current.node.data.size?.height || DEFAULT_NODE_SIZE.height) +
-          (isLastNode ? 100 : 0),
+          (isLastNode ? graphSettingsStore.defaultNodeSpacingY : 0),
       );
     }
 
