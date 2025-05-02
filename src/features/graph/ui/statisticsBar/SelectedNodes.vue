@@ -110,7 +110,7 @@ const togglePanel = () => {
 
 <style scoped>
 .nodes-panel {
-  width: 100%;
+  width: 250px;
   margin-top: 10px;
   background-color: #ffffff;
   border-radius: 6px;
