@@ -11,6 +11,7 @@ import DownloadGraphButton from "@/features/graph/ui/graph/DownloadGraphButton.v
 import { useVueFlowBus } from "@/features/graph/stores/vueFlowBus";
 import { setupNodeChangesHandler } from "@/features/graph/lib/flowEventsHandlers/nodeEventsHandling";
 import { setupEdgeChangesHandler } from "@/features/graph/lib/flowEventsHandlers/edgeEventsHandling";
+import SettingsDropDown from "@/features/graph/ui/graph/SettingsDropDown.vue";
 
 interface Props {
   style?: Record<string, string | number>;
@@ -133,6 +134,7 @@ const normalize = () => {
         />
       </v-btn>
       <v-btn @click="openHelpModal">Как работать с графом?</v-btn>
+      <SettingsDropDown />
     </div>
     <VueFlow
       :connection-radius="30"
