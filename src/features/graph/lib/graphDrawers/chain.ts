@@ -7,9 +7,7 @@ import {
 import { buildLinkedListFromGraph } from "@/features/graph/lib/helpers/linkedListFromGraph";
 import { DEFAULT_NODE_SIZE } from "@/features/graph/config/nodeDefaultSettings";
 import { DrawerResults } from "@/features/graph/types/ConnectedComponents";
-import { useGraphSettings } from "@/features/graph/stores/graphSettings";
-
-const graphSettingsStore = useGraphSettings();
+import { graphSettingsStore } from "@/features/graph/stores/graphSettings";
 
 export const drawChainGraph = (
   nodes: CustomNode[],

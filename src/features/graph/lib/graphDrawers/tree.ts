@@ -7,9 +7,7 @@ import {
 import { DrawerResults } from "@/features/graph/types/ConnectedComponents";
 import { getTreeLevels } from "@/features/graph/lib/helpers/getTreeLevels";
 import { DEFAULT_NODE_SIZE } from "@/features/graph/config/nodeDefaultSettings";
-import { useGraphSettings } from "@/features/graph/stores/graphSettings";
-
-const graphSettingsStore = useGraphSettings();
+import { graphSettingsStore } from "@/features/graph/stores/graphSettings";
 
 export const drawTreeGraph = (
   nodes: CustomNode[],

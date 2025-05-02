@@ -1,9 +1,7 @@
 import { CustomNode } from "@/features/graph/types/CustomNode";
 import { CustomEdge } from "@/features/graph/types/CustomEdge";
 import { DrawerResults } from "@/features/graph/types/ConnectedComponents";
-import { useGraphSettings } from "@/features/graph/stores/graphSettings";
-
-const graphSettingsStore = useGraphSettings();
+import { graphSettingsStore } from "@/features/graph/stores/graphSettings";
 
 export const drawDefaultTypeGraph = (
   nodes: CustomNode[],

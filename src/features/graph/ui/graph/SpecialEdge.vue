@@ -13,12 +13,11 @@ import { useNodeStore } from "@/features/graph/stores/nodes";
 import { COLORS } from "@/features/graph/config/colors";
 import { CustomEdge } from "@/features/graph/types/CustomEdge";
 import { isEdgeSelected } from "@/features/graph/lib/flowEventsHandlers/edgeEventsHandling";
-import { useGraphSettings } from "@/features/graph/stores/graphSettings";
+import { graphSettingsStore } from "@/features/graph/stores/graphSettings";
 
 const props = defineProps<CustomEdge>();
 
 const nodeStore = useNodeStore();
-const graphSettingsStore = useGraphSettings();
 const isPanelVisible = ref(false);
 const tempWeight = ref(props.data?.weight || 0);
 
