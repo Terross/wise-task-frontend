@@ -45,6 +45,33 @@ const targetPosition = computed({
   set: (val) => {},
 });
 
+function getHighlightColor(baseColor: string): string {
+  if (!["#ff0000", "#00ff00", "#0000ff"].includes(baseColor.toLowerCase())) {
+    return "#cccccc";
+  }
+
+  try {
+    const rgb = hexToRgb(baseColor);
+    const lighter = {
+      r: Math.min(255, Math.round(rgb.r + (255 - rgb.r) * 0.4)),
+      g: Math.min(255, Math.round(rgb.g + (255 - rgb.g) * 0.4)),
+      b: Math.min(255, Math.round(rgb.b + (255 - rgb.b) * 0.4)),
+    };
+    return `rgb(${lighter.r}, ${lighter.g}, ${lighter.b})`;
+  } catch {
+    return "#ffc0cb";
+  }
+}
+
+function hexToRgb(hex: string): { r: number; g: number; b: number } {
+  const cleanHex = hex.replace("#", "");
+  const bigint = parseInt(cleanHex, 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+  return { r, g, b };
+}
+
 const isSelected = computed(() => isEdgeSelected(props.id));
 
 const updateEdgeData = () => {
@@ -150,10 +177,10 @@ onUnmounted(() => {
     <BaseEdge
       :path="path?.[0] || ''"
       :style="{
-        stroke: isSelected ? '#ff0072' : color,
-        strokeWidth: isSelected ? 4 : 3,
-        filter: isSelected ? 'drop-shadow(0 0 8px currentColor)' : 'none',
-        transition: 'all 0.2s ease',
+        stroke: isSelected ? getHighlightColor(color) : color,
+        strokeWidth: isSelected ? 3 : 2,
+        filter: isSelected ? 'drop-shadow(0 0 1px currentColor)' : 'none',
+        transition: '',
       }"
       :marker-start="
         nodeStore.isDirected ? `url(#${MarkerType.Arrow})` : undefined
