@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { graphSettings } from "@/features/graph/stores/graphSettings";
+import { useGraphSettings } from "@/features/graph/stores/graphSettings";
 
-const store = graphSettings();
+const store = useGraphSettings();
 
 const isOpen = ref(false);
 
