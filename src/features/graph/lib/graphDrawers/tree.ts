@@ -6,8 +6,10 @@ import {
 } from "@/features/graph/types/CustomEdge";
 import { DrawerResults } from "@/features/graph/types/ConnectedComponents";
 import { getTreeLevels } from "@/features/graph/lib/helpers/getTreeLevels";
-import { DRAW_SPACING_X } from "@/features/graph/config/drawParams";
 import { DEFAULT_NODE_SIZE } from "@/features/graph/config/nodeDefaultSettings";
+import { useGraphSettings } from "@/features/graph/stores/graphSettings";
+
+const graphSettingsStore = useGraphSettings();
 
 export const drawTreeGraph = (
   nodes: CustomNode[],
@@ -28,9 +30,9 @@ export const drawTreeGraph = (
       return (
         sum +
         (node.data.size?.width || DEFAULT_NODE_SIZE.width) +
-        DRAW_SPACING_X
+        graphSettingsStore.defaultNodeSpacingX
       );
-    }, -DRAW_SPACING_X);
+    }, -graphSettingsStore.defaultNodeSpacingX);
 
     maxWidth = Math.max(maxWidth, levelWidth);
 
@@ -45,7 +47,8 @@ export const drawTreeGraph = (
     level.forEach((node) => {
       node.position = { x: currentX, y: currentY };
       currentX +=
-        (node.data.size?.width || DEFAULT_NODE_SIZE.width) + DRAW_SPACING_X;
+        (node.data.size?.width || DEFAULT_NODE_SIZE.width) +
+        graphSettingsStore.defaultNodeSpacingX;
     });
   });
 
