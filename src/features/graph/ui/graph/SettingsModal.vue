@@ -119,6 +119,10 @@ const resetToDefaults = () => {
 const cancel = () => {
   isOpen.value = false;
 };
+
+const preventManualInput = (event: KeyboardEvent) => {
+  event.preventDefault();
+};
 </script>
 
 <template>
@@ -185,6 +189,10 @@ const cancel = () => {
                 variant="underlined"
                 color="primary"
                 density="compact"
+                @keydown="preventManualInput"
+                @keypress="preventManualInput"
+                @paste="preventManualInput"
+                @drop="preventManualInput"
               />
             </template>
           </div>
