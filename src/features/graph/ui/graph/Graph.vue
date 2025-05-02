@@ -149,7 +149,12 @@ const normalize = () => {
         @close="isRightClickModalOpen = false"
         @add-node="handleAddNodeAtPosition"
       />
-      <Background />
+      <Background
+        :pattern-color="'#d1d1d1'"
+        :gap="20"
+        :size="2"
+        :variant="'dots'"
+      />
       <template #node-special="specialNodeProps">
         <SpecialNode v-bind="specialNodeProps" />
       </template>

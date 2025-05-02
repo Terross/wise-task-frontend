@@ -24,6 +24,7 @@ import {
   calculateLeafsAmount,
   calculateSelfConnectedEdgesAmount,
 } from "@/features/graph/lib/statistics/baseGraphStatistics";
+import { graphSettingsStore } from "./graphSettings";
 
 export const useNodeStore = defineStore("nodes", {
   state: (): NodesStoreState => ({
@@ -56,8 +57,8 @@ export const useNodeStore = defineStore("nodes", {
         data: {
           label,
           size: {
-            width: 200,
-            height: 200,
+            width: graphSettingsStore.defaultNodeSize,
+            height: graphSettingsStore.defaultNodeSize,
           },
         },
       });
