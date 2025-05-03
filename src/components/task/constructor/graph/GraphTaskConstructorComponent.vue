@@ -31,7 +31,7 @@ import { storeToRefs } from "pinia";
 import { useQuery } from "@vue/apollo-composable";
 import { GET_ALL_PLUGINS } from "@/api/Queries";
 import { useTaskStore } from "@/store/task";
-import Graph from "@/features/graph/ui/Graph.vue";
+import Graph from "@/features/graph/ui/graph/Graph.vue";
 
 export default defineComponent({
   components: { Graph },

@@ -5,9 +5,9 @@ import {
   CustomEdge,
 } from "@/features/graph/types/CustomEdge";
 import { buildLinkedListFromGraph } from "@/features/graph/lib/helpers/linkedListFromGraph";
-import { DRAW_SPACING_X } from "@/features/graph/config/drawParams";
 import { DEFAULT_NODE_SIZE } from "@/features/graph/config/nodeDefaultSettings";
 import { DrawerResults } from "@/features/graph/types/ConnectedComponents";
+import { graphSettingsStore } from "@/features/graph/stores/graphSettings";
 
 export const drawCycleGraph = (
   nodes: CustomNode[],
@@ -41,19 +41,19 @@ export const drawCycleGraph = (
 
       nodes[nodeIndex].position = {
         x: currentX,
-        y: isLastNode ? -100 : 0,
+        y: isLastNode ? -graphSettingsStore.defaultNodeSpacingY : 0,
       };
 
       nodeIdsInOrder.push(current.node.id);
 
       currentX +=
         (current.node.data.size?.width || DEFAULT_NODE_SIZE.width) +
-        DRAW_SPACING_X;
+        graphSettingsStore.defaultNodeSpacingX;
 
       maxHeight = Math.max(
         maxHeight,
         (current.node.data.size?.height || DEFAULT_NODE_SIZE.height) +
-          (isLastNode ? 100 : 0),
+          (isLastNode ? graphSettingsStore.defaultNodeSpacingY : 0),
       );
     }
 
@@ -86,7 +86,7 @@ export const drawCycleGraph = (
   return {
     nodes,
     edges,
-    width: currentX - DRAW_SPACING_X,
+    width: currentX - graphSettingsStore.defaultNodeSpacingX,
     height: maxHeight,
   };
 };

@@ -1,15 +1,18 @@
 <script setup lang="ts">
-import { useVueFlow } from "@vue-flow/core";
 import { VueFlow } from "@vue-flow/core";
 import SpecialNode from "./SpecialNode.vue";
 import SpecialEdge from "./SpecialEdge.vue";
 import { useNodeStore } from "@/features/graph/stores/nodes";
-import { ref, nextTick, provide } from "vue";
-import HelpingModal from "@/features/graph/ui/HelpingModal.vue";
-import { Background } from "@vue-flow/background";
-import RightClickModal from "@/features/graph/ui/RightClickModal.vue";
-import { convertToGqlFormat } from "@/features/graph/lib/helpers/convertToGqlFormat";
-import DownloadGraphButton from "@/features/graph/ui/DownloadGraphButton.vue";
+import { ref, nextTick, provide, onMounted } from "vue";
+import HelpingModal from "@/features/graph/ui/graph/HelpingModal.vue";
+import Background from "./Background";
+import RightClickModal from "@/features/graph/ui/graph/RightClickModal.vue";
+import DownloadGraphButton from "@/features/graph/ui/graph/DownloadGraphButton.vue";
+import { useVueFlowBus } from "@/features/graph/stores/vueFlowBus";
+import { setupNodeChangesHandler } from "@/features/graph/lib/flowEventsHandlers/nodeEventsHandling";
+import { setupEdgeChangesHandler } from "@/features/graph/lib/flowEventsHandlers/edgeEventsHandling";
+import SettingsDropDown from "@/features/graph/ui/graph/SettingsModal.vue";
+import HotKeysListener from "@/features/graph/ui/graph/HotKeysListener.vue";
 
 interface Props {
   style?: Record<string, string | number>;
@@ -17,52 +20,17 @@ interface Props {
 
 const props = defineProps<Props>();
 
+onMounted(() => {
+  setupEdgeChangesHandler();
+  setupNodeChangesHandler();
+});
+
 const nodeStore = useNodeStore();
 
-const vueFlowState = useVueFlow();
+const { vueFlowState } = useVueFlowBus();
 provide("vueFlowState", vueFlowState);
 
-const {
-  onConnect,
-  onNodeDragStart,
-  onPaneContextMenu,
-  project,
-  addEdges,
-  onEdgesChange,
-  setEdges,
-  onNodesChange,
-  fitView,
-} = vueFlowState;
-
-onNodesChange((events) => {
-  if (events.length < 2) {
-    return;
-  }
-  if (events[0].type === "position") {
-    if (events[0].dragging) {
-      return;
-    }
-    const nodesMap = new Map<string, { x: number; y: number }>();
-    for (let i = 0; i < events.length; i++) {
-      // @ts-ignore
-      nodesMap.set(events[i].id, events[i].from); // #TODO: Нормальные типы добавить сюда (оно не хочет работать нормально(()
-    }
-    nodeStore.nodeMassMovement(nodesMap);
-  }
-  if (events[0].type === "remove") {
-    // @ts-ignore
-    nodeStore.nodesMassRemove(events.map((event) => event.id)); // TODO: то же самое
-  }
-});
-
-onEdgesChange((changes) => {
-  changes.forEach((change) => {
-    if (change.type === "add") {
-      // @ts-ignore
-      nodeStore.addEdge(change.item);
-    }
-  });
-});
+const { onPaneContextMenu, project, setEdges, fitView } = vueFlowState;
 
 const contextMenuPosition = ref({ x: 0, y: 0 });
 const isHelpModalOpen = ref(false);
@@ -103,16 +71,6 @@ const closeRightClickModal = () => {
   isRightClickModalOpen.value = false;
 };
 
-onConnect((connection) => {
-  // @ts-ignore
-  connection.type = "special";
-  addEdges(connection);
-});
-
-onNodeDragStart((event) => {
-  nodeStore.nodeShift(event.node.id, event.node.computedPosition);
-});
-
 const uploadJson = (event: Event) => {
   const input = event.target as HTMLInputElement;
   if (input.files && input.files[0]) {
@@ -124,6 +82,7 @@ const uploadJson = (event: Event) => {
         const data = JSON.parse(content);
         nodeStore.nodes = data.nodes;
         nodeStore.edges = data.edges;
+        nodeStore.regenerateStatistics();
       } catch (error) {
         console.error("Ошибка при чтении файла:", error);
       }
@@ -176,6 +135,7 @@ const normalize = () => {
         />
       </v-btn>
       <v-btn @click="openHelpModal">Как работать с графом?</v-btn>
+      <SettingsDropDown />
     </div>
     <VueFlow
       :connection-radius="30"
@@ -191,6 +151,7 @@ const normalize = () => {
         @add-node="handleAddNodeAtPosition"
       />
       <Background />
+      <HotKeysListener />
       <template #node-special="specialNodeProps">
         <SpecialNode v-bind="specialNodeProps" />
       </template>
@@ -206,8 +167,8 @@ const normalize = () => {
 </template>
 
 <style>
-@import "@vue-flow/core/dist/style.css";
-@import "@vue-flow/core/dist/theme-default.css";
+@import "../../../../../node_modules/@vue-flow/core/dist/style.css";
+@import "../../../../../node_modules/@vue-flow/core/dist/theme-default.css";
 
 .buttons-container {
   background-color: blue;

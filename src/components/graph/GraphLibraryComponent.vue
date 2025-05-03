@@ -32,10 +32,10 @@ import { GET_GRAPH_LIBRARY } from "@/api/Queries";
 import { useGraphStore } from "@/store/graph";
 import { toVGraph } from "./network/helper/graph";
 import { Graph } from "@/__generated__/graphql";
-import Graph from "@/features/graph/ui/Graph.vue";
+import * as GraphUI from "@/features/graph/ui/graph/Graph.vue";
 
 export default defineComponent({
-  components: { Graph },
+  components: { GraphUI },
   setup() {
     useGraphStore().graphLibrary = [];
     const { onResult } = useQuery(GET_GRAPH_LIBRARY);

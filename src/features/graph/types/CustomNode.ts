@@ -1,4 +1,6 @@
-export type CustomNode = {
+import { Node } from "@vue-flow/core";
+
+export type CustomNode = Node & {
   id: string;
   position: { x: number; y: number };
   type: "special";
