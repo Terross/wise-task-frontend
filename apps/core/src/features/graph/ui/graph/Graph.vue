@@ -36,18 +36,24 @@ const contextMenuPosition = ref({ x: 0, y: 0 });
 const isHelpModalOpen = ref(false);
 const isRightClickModalOpen = ref(false);
 
-onPaneContextMenu(async (event) => {
+onPaneContextMenu((event) => {
   event.preventDefault();
   isRightClickModalOpen.value = false;
 
-  await nextTick();
+  const pane = event.currentTarget as HTMLElement;
+  const bounds = pane.getBoundingClientRect();
 
-  const bounds = (event.currentTarget as HTMLElement).getBoundingClientRect();
-  const x = event.clientX - bounds.left;
-  const y = event.clientY - bounds.top;
+  const modalPosition = {
+    x: event.clientX - bounds.left,
+    y: event.clientY - bounds.top,
+  };
 
-  const pos = project({ x, y });
-  contextMenuPosition.value = { x: pos.x + 29, y: pos.y + 10 };
+  const graphPosition = project(modalPosition);
+
+  contextMenuPosition.value = {
+    modalPosition,
+    position: graphPosition,
+  };
 
   isRightClickModalOpen.value = true;
 });
@@ -146,7 +152,8 @@ const normalize = () => {
     >
       <RightClickModal
         v-if="isRightClickModalOpen"
-        :position="contextMenuPosition"
+        :modal-position="contextMenuPosition.modalPosition"
+        :position="contextMenuPosition.position"
         @close="isRightClickModalOpen = false"
         @add-node="handleAddNodeAtPosition"
       />

@@ -6,6 +6,7 @@ import { CustomEdge } from "@/features/graph/types/CustomEdge";
 
 const props = defineProps<{
   position: { x: number; y: number };
+  modalPosition: { x: number; y: number };
 }>();
 
 const emit = defineEmits(["close", "addNode"]);
@@ -146,8 +147,8 @@ onBeforeUnmount(() => {
     ref="menuRef"
     class="context-menu"
     :style="{
-      left: `${props.position.x}px`,
-      top: `${props.position.y}px`,
+      left: `${props.modalPosition.x}px`,
+      top: `${props.modalPosition.y}px`,
     }"
     @click.stop
   >
