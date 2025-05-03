@@ -12,6 +12,7 @@ import { useVueFlowBus } from "@/features/graph/stores/vueFlowBus";
 import { setupNodeChangesHandler } from "@/features/graph/lib/flowEventsHandlers/nodeEventsHandling";
 import { setupEdgeChangesHandler } from "@/features/graph/lib/flowEventsHandlers/edgeEventsHandling";
 import SettingsDropDown from "@/features/graph/ui/graph/SettingsModal.vue";
+import HotKeysListener from "@/features/graph/ui/graph/HotKeysListener.vue";
 
 interface Props {
   style?: Record<string, string | number>;
@@ -150,6 +151,7 @@ const normalize = () => {
         @add-node="handleAddNodeAtPosition"
       />
       <Background />
+      <HotKeysListener />
       <template #node-special="specialNodeProps">
         <SpecialNode v-bind="specialNodeProps" />
       </template>
