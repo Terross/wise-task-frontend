@@ -156,7 +156,9 @@ onBeforeUnmount(() => {
       <v-card-title class="headline">Контекстное меню</v-card-title>
       <v-card-text>
         <v-btn block @click="addNode"> Добавить вершину здесь </v-btn>
-        <v-btn block @click="addCopiedElements">Вставить</v-btn>
+        <v-btn block @click="addCopiedElements" style="margin-top: 10px"
+          >Вставить</v-btn
+        >
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
