@@ -7,8 +7,10 @@
       <v-col>
         <v-card>
           <v-card-title>{{ activeTask.name }}</v-card-title>
-          <v-card-text class="text-pre-wrap">
-            {{ activeTask.description }}
+          <v-card-text
+            class="text-pre-wrap"
+            v-html="formatDescription(activeTask.description)"
+          >
           </v-card-text>
           <v-card-actions>
             <v-btn color="primary" variant="outlined" @click="solveTask">
@@ -105,6 +107,7 @@ export default defineComponent({
         if (response.data.solveTaskGraph.isCorrect) {
           this.successAlert = true;
           this.errorAlert = false;
+          this.$emit("isCorrect", true);
         } else {
           this.errorAlert = true;
           this.successAlert = false;
@@ -112,7 +115,7 @@ export default defineComponent({
             response.data.solveTaskGraph.pluginResults.filter(
               (item: PluginResult) => {
                 return !item.isCorrect;
-              },
+              }
             );
           if (this.activeTask.isHiddenMistake) {
             this.result = pluginResults[0];
@@ -123,7 +126,7 @@ export default defineComponent({
             const mistakeText = this.activeTask.condition.find(
               (element: string) => {
                 return element.pluginId === this.result[i].pluginId;
-              },
+              }
             ).mistakeText;
             this.result[i]["mistakeText"] = mistakeText;
           }
@@ -137,6 +140,21 @@ export default defineComponent({
             console.error(message);
           });
         }
+      });
+    },
+    formatDescription(description: string) {
+      if (!description) return "";
+
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+      return description.replace(urlRegex, (url) => {
+        const escapedUrl = url
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+
+        return `<a href="${escapedUrl}" target="_blank" rel="noopener noreferrer">${escapedUrl}</a>`;
       });
     },
   },

@@ -8,6 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     ControlPanelComponent: typeof import('./src/components/graph/network/ControlPanelComponent.vue')['default']
+    Exam: typeof import('./src/components/exam/index.vue')['default']
     ExamComponent: typeof import('./src/components/exam/ExamComponent.vue')['default']
     GraphCardComponent: typeof import('./src/components/graph/network/GraphCardComponent.vue')['default']
     GraphConstructorComponent: typeof import('./src/components/graph/network/GraphConstructorComponent.vue')['default']
