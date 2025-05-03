@@ -99,8 +99,6 @@ function processCopiedElements(
       id: newEdgeId,
       source: idMap.get(edge.source) || edge.source,
       target: idMap.get(edge.target) || edge.target,
-      sourceHandle: newSourceHandle,
-      targetHandle: newTargetHandle,
       ...(edge.sourceNode && {
         sourceNode: {
           ...edge.sourceNode,
