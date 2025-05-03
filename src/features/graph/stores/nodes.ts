@@ -30,6 +30,8 @@ export const useNodeStore = defineStore("nodes", {
   state: (): NodesStoreState => ({
     nodes: [],
     edges: [],
+    copiedNodes: [],
+    copiedEdges: [],
     historyIndex: -1,
     isDirected: true,
     id: undefined,
@@ -371,6 +373,31 @@ export const useNodeStore = defineStore("nodes", {
         }
       }
       return maxNumber === -1 ? 1 : maxNumber + 1;
+    },
+
+    setCopiedElements(nodes: CustomNode[], edges: CustomEdge[]) {
+      this.copiedNodes = nodes;
+      this.copiedEdges = edges;
+      console.log("COPIED NODES LENGTH", this.copiedNodes.length);
+      console.log("COPIED EDGES LENGTH", this.copiedEdges.length);
+    },
+
+    getCopiedElements(): { nodes: CustomNode[]; edges: CustomEdge[] } {
+      const edges = this.copiedEdges;
+      const nodes = this.copiedNodes;
+      return { nodes, edges };
+    },
+
+    pasteElements(nodes: CustomNode[], edges: CustomEdge[]) {
+      history.onStateUpdate({
+        type: "all:paste",
+        properties: {
+          nodeIds: nodes.map((node) => node.id),
+          edgeIds: edges.map((edge) => edge.id),
+        },
+      });
+      this.nodes = [...this.nodes, ...nodes];
+      this.edges = [...this.edges, ...edges];
     },
 
     regenerateStatistics(): void {

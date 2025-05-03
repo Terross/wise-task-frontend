@@ -5,6 +5,8 @@ import { GraphStatistics } from "@/features/graph/types/GraphStatistics";
 export interface NodesStoreState {
   nodes: CustomNode[];
   edges: CustomEdge[];
+  copiedNodes: CustomNode[];
+  copiedEdges: CustomEdge[];
   historyIndex: number;
   isDirected: boolean;
   name: string;
