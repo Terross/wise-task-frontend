@@ -90,6 +90,14 @@ export interface EdgeMassDeleteRestore extends BaseRestore {
   };
 }
 
+export interface PasteRestore extends BaseRestore {
+  type: "all:paste";
+  properties: {
+    edgeIds: string[];
+    nodeIds: string[];
+  };
+}
+
 export type Restore =
   | NodeAddRestore
   | NodeRemoveRestore
@@ -102,4 +110,5 @@ export type Restore =
   | NormalizingRestore
   | NodeMassMovementRestore
   | NodeMassDeleteRestore
-  | EdgeMassDeleteRestore;
+  | EdgeMassDeleteRestore
+  | PasteRestore;
