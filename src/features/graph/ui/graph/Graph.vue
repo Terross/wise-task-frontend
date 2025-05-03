@@ -32,7 +32,10 @@ provide("vueFlowState", vueFlowState);
 
 const { onPaneContextMenu, project, setEdges, fitView } = vueFlowState;
 
-const contextMenuPosition = ref({ x: 0, y: 0 });
+const contextMenuPosition = ref({
+  position: { x: 0, y: 0 },
+  modalPosition: { x: 0, y: 0 },
+});
 const isHelpModalOpen = ref(false);
 const isRightClickModalOpen = ref(false);
 
@@ -60,8 +63,8 @@ onPaneContextMenu((event) => {
 
 const handleAddNodeAtPosition = () => {
   nodeStore.addNode({
-    x: contextMenuPosition.value.x,
-    y: contextMenuPosition.value.y,
+    x: contextMenuPosition.value.position.x,
+    y: contextMenuPosition.value.position.y,
   });
 };
 
