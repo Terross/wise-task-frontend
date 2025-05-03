@@ -23,4 +23,5 @@ export interface CustomEdge extends EdgeProps {
   data: EdgeData;
   sourceHandle?: ConnectionSourceID;
   targetHandle?: ConnectionTargetID;
+  isSelected?: boolean;
 }
