@@ -1,12 +1,9 @@
 import { CustomNode } from "@/features/graph/types/CustomNode";
 import { CustomEdge } from "@/features/graph/types/CustomEdge";
-import {
-  DEFAULT_CIRCLE_PADDING,
-  DRAW_SPACING_X,
-} from "@/features/graph/config/drawParams";
 import { DrawerResults } from "@/features/graph/types/ConnectedComponents";
 import { generateCircleParams } from "@/features/graph/lib/helpers/calculateCirleParams";
-import { DEFAULT_NODE_SIZE } from "@/features/graph/config/nodeDefaultSettings";
+import { changeDirectionsInCircularGraph } from "@/features/graph/lib/helpers/edgesDirectionsInCircular";
+import { graphSettingsStore } from "@/features/graph/stores/graphSettings";
 
 export const drawNearlyFullGraph = (
   nodes: CustomNode[],
@@ -18,7 +15,7 @@ export const drawNearlyFullGraph = (
 
   const { radius, stepDegree } = generateCircleParams(
     nodes,
-    padding || DEFAULT_CIRCLE_PADDING,
+    padding || graphSettingsStore.defaultCirclePadding,
   );
 
   const stepRadians = (stepDegree * Math.PI) / 180;
@@ -28,14 +25,11 @@ export const drawNearlyFullGraph = (
 
     node.position.x = centerX + Math.cos(angle) * radius;
     node.position.y = centerY + Math.sin(angle) * radius;
-
-    const nodeHeight: number =
-      node.data.size?.height || DEFAULT_NODE_SIZE.height;
   });
 
   return {
     nodes,
-    edges,
+    edges: changeDirectionsInCircularGraph(nodes, edges),
     width: radius * 2,
     height: radius * 2,
   };

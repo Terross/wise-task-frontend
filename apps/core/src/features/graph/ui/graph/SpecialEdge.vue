@@ -3,6 +3,8 @@ import {
   BaseEdge,
   EdgeLabelRenderer,
   getBezierPath,
+  getSmoothStepPath,
+  getStraightPath,
   MarkerType,
   Position,
 } from "@vue-flow/core";
@@ -10,6 +12,8 @@ import { computed, ref, onMounted, onUnmounted } from "vue";
 import { useNodeStore } from "@/features/graph/stores/nodes";
 import { COLORS } from "@/features/graph/config/colors";
 import { CustomEdge } from "@/features/graph/types/CustomEdge";
+import { isEdgeSelected } from "@/features/graph/lib/flowEventsHandlers/edgeEventsHandling";
+import { graphSettingsStore } from "@/features/graph/stores/graphSettings";
 
 const props = defineProps<CustomEdge>();
 
@@ -44,6 +48,35 @@ const targetPosition = computed({
   set: (val) => {},
 });
 
+function getHighlightColor(baseColor: string): string {
+  if (!["#ff0000", "#00ff00", "#0000ff"].includes(baseColor.toLowerCase())) {
+    return "#cccccc";
+  }
+
+  try {
+    const rgb = hexToRgb(baseColor);
+    const lighter = {
+      r: Math.min(255, Math.round(rgb.r + (255 - rgb.r) * 0.4)),
+      g: Math.min(255, Math.round(rgb.g + (255 - rgb.g) * 0.4)),
+      b: Math.min(255, Math.round(rgb.b + (255 - rgb.b) * 0.4)),
+    };
+    return `rgb(${lighter.r}, ${lighter.g}, ${lighter.b})`;
+  } catch {
+    return "#ffc0cb";
+  }
+}
+
+function hexToRgb(hex: string): { r: number; g: number; b: number } {
+  const cleanHex = hex.replace("#", "");
+  const bigint = parseInt(cleanHex, 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+  return { r, g, b };
+}
+
+const isSelected = computed(() => isEdgeSelected(props.id));
+
 const updateEdgeData = () => {
   nodeStore.updateEdge(props.id, {
     color: color.value,
@@ -51,10 +84,40 @@ const updateEdgeData = () => {
   });
 };
 
+const labelPosition = computed(() => {
+  if (!path.value?.[0]) return { x: midX.value, y: midY.value };
+
+  if (graphSettingsStore.edgeType === "Straight") {
+    return { x: midX.value, y: midY.value };
+  }
+
+  try {
+    const pathString = path.value[0];
+    const pathEl = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "path",
+    );
+    pathEl.setAttribute("d", pathString);
+
+    const pathLength = pathEl.getTotalLength();
+    const midpoint = pathEl.getPointAtLength(pathLength * 0.5);
+
+    return { x: midpoint.x, y: midpoint.y };
+  } catch {
+    return { x: midX.value, y: midY.value };
+  }
+});
+
 const isSelfConnected: boolean = props.targetNode.id === props.sourceNode.id;
 
 const path = computed(() => {
   if (props.targetNode.id !== props.sourceNode.id) {
+    if (graphSettingsStore.edgeType === "Straight") {
+      return getStraightPath(props);
+    }
+    if (graphSettingsStore.edgeType === "Step") {
+      return getSmoothStepPath(props);
+    }
     return getBezierPath(props);
   }
   if (
@@ -112,7 +175,8 @@ const handleEdgeClick = () => {
   if (isSelfConnected) {
     removeSelfEdge();
   } else {
-    isPanelVisible.value = !isPanelVisible.value;
+    // не убирать timeout, т.к. vueFlow получит ивент, поменяет компонент, он заререндерится и окошко не откроется
+    setTimeout(() => (isPanelVisible.value = !isPanelVisible.value), 20);
   }
 };
 
@@ -142,10 +206,15 @@ onUnmounted(() => {
     </defs>
   </svg>
 
-  <g @click.stop="handleEdgeClick">
+  <g @click="handleEdgeClick">
     <BaseEdge
       :path="path?.[0] || ''"
-      :style="{ stroke: color, strokeWidth: 3 }"
+      :style="{
+        stroke: isSelected ? getHighlightColor(color) : color,
+        strokeWidth: isSelected ? 3 : 2,
+        filter: isSelected ? 'drop-shadow(0 0 1px currentColor)' : 'none',
+        transition: '',
+      }"
       :marker-start="
         nodeStore.isDirected ? `url(#${MarkerType.Arrow})` : undefined
       "
@@ -153,9 +222,10 @@ onUnmounted(() => {
 
     <div v-if="!!weight">
       <EdgeLabelRenderer>
+        <
         <div
           :style="{
-            transform: `translate(-50%, -50%) translate(${midX}px,${midY}px)`,
+            transform: `translate(-50%, -50%) translate(${labelPosition.x}px,${labelPosition.y}px)`,
           }"
           class="edge-label"
         >
@@ -204,6 +274,7 @@ onUnmounted(() => {
   font-size: 14px;
   font-weight: bold;
   color: black;
+  z-index: 200000;
 }
 
 .edge-panel {

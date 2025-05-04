@@ -11,6 +11,8 @@ import { EdgeDataRestoreObject } from "@/features/graph/lib/history/EdgeDataRest
 import { NormalizingFullRestoreObject } from "@/features/graph/lib/history/NormalizingFullRestore";
 import { NodeMassMovementRestoreObject } from "@/features/graph/lib/history/NodeMassMovement";
 import { NodeMassDeleteRestoreObject } from "@/features/graph/lib/history/NodeMassDelete";
+import { EdgeMassDeleteRestoreObject } from "@/features/graph/lib/history/EdgeMassDeleteRestore";
+import { PasteRestoreObject } from "@/features/graph/lib/history/PasteRestore";
 
 export class RestoreObjectFactory {
   public static create(restore: Restore): RestoreObject {
@@ -37,6 +39,10 @@ export class RestoreObjectFactory {
         return new NodeMassMovementRestoreObject(restore);
       case "node:mass_delete":
         return new NodeMassDeleteRestoreObject(restore);
+      case "edge:mass_delete":
+        return new EdgeMassDeleteRestoreObject(restore);
+      case "all:paste":
+        return new PasteRestoreObject(restore);
       default:
         throw new Error(`Unknown restore type: ${(restore as any).type}`);
     }

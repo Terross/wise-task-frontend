@@ -19,16 +19,25 @@ import { drawBipartiteGraph } from "@/features/graph/lib/graphDrawers/bibartite"
 import { drawDefaultTypeGraph } from "@/features/graph/lib/graphDrawers/default";
 import { isGraphNearlyFull } from "@/features/graph/lib/graphType/nearlyFull";
 import { drawNearlyFullGraph } from "@/features/graph/lib/graphDrawers/nearlyFull";
+import {
+  calculateHangingNodesAmount,
+  calculateLeafsAmount,
+  calculateSelfConnectedEdgesAmount,
+} from "@/features/graph/lib/statistics/baseGraphStatistics";
+import { graphSettingsStore } from "./graphSettings";
 
 export const useNodeStore = defineStore("nodes", {
   state: (): NodesStoreState => ({
     nodes: [],
     edges: [],
+    copiedNodes: [],
+    copiedEdges: [],
     historyIndex: -1,
     isDirected: true,
     id: undefined,
     name: "",
     groups: [],
+    statistic: undefined,
   }),
 
   actions: {
@@ -47,13 +56,21 @@ export const useNodeStore = defineStore("nodes", {
         id,
         position: position,
         type: "special",
-        data: { label },
+        data: {
+          label,
+          size: {
+            width: graphSettingsStore.defaultNodeSize,
+            height: graphSettingsStore.defaultNodeSize,
+          },
+        },
       });
       history.onStateUpdate({ type: "node:add", properties: { nodeId: id } });
+      this.regenerateStatistics();
     },
 
     undo() {
       this.$state = history.undo(this.$state);
+      this.regenerateStatistics();
     },
 
     removeNode(id: string) {
@@ -73,6 +90,7 @@ export const useNodeStore = defineStore("nodes", {
         type: "node:remove",
         properties: { node: removedNode, edges: edges },
       });
+      this.regenerateStatistics();
     },
 
     normalizeView(): CustomEdge[] {
@@ -251,6 +269,7 @@ export const useNodeStore = defineStore("nodes", {
         properties: this.edges[edgeIndex],
       });
       this.edges = this.edges.filter((edge) => edge.id !== id);
+      this.regenerateStatistics();
     },
 
     updateEdge(
@@ -272,7 +291,6 @@ export const useNodeStore = defineStore("nodes", {
     },
 
     addEdge(edge: CustomEdge) {
-      console.log("ADDING edge");
       edge.data.color = "#949494";
       edge.data.weight = 0;
       this.edges.push(edge);
@@ -282,6 +300,7 @@ export const useNodeStore = defineStore("nodes", {
           edgeId: edge.id,
         },
       });
+      this.regenerateStatistics();
     },
 
     selectNode(id: string) {
@@ -325,6 +344,24 @@ export const useNodeStore = defineStore("nodes", {
           edges: Array.from(edges),
         },
       });
+      this.regenerateStatistics();
+    },
+
+    edgesMassRemove(edgeIds: string[]) {
+      console.log(edgeIds);
+      console.log(this.edges);
+      const edges = this.edges.filter((edge) => edgeIds.includes(edge.id));
+      if (edges.length === 0) {
+        console.log("EDGES LENGTH IS 0");
+        return;
+      }
+      console.log("EDGES для массового удаления", edges.length);
+      history.onStateUpdate({
+        type: "edge:mass_delete",
+        properties: {
+          edges,
+        },
+      });
     },
 
     getMaximumLabel(): number {
@@ -336,6 +373,41 @@ export const useNodeStore = defineStore("nodes", {
         }
       }
       return maxNumber === -1 ? 1 : maxNumber + 1;
+    },
+
+    setCopiedElements(nodes: CustomNode[], edges: CustomEdge[]) {
+      this.copiedNodes = nodes;
+      this.copiedEdges = edges;
+      console.log("COPIED NODES LENGTH", this.copiedNodes.length);
+      console.log("COPIED EDGES LENGTH", this.copiedEdges.length);
+    },
+
+    getCopiedElements(): { nodes: CustomNode[]; edges: CustomEdge[] } {
+      const edges = this.copiedEdges;
+      const nodes = this.copiedNodes;
+      return { nodes, edges };
+    },
+
+    pasteElements(nodes: CustomNode[], edges: CustomEdge[]) {
+      history.onStateUpdate({
+        type: "all:paste",
+        properties: {
+          nodeIds: nodes.map((node) => node.id),
+          edgeIds: edges.map((edge) => edge.id),
+        },
+      });
+      this.nodes = [...this.nodes, ...nodes];
+      this.edges = [...this.edges, ...edges];
+    },
+
+    regenerateStatistics(): void {
+      this.statistic = {
+        edgesAmount: this.edges.length,
+        nodesAmount: this.nodes.length,
+        selfLoopsAmount: calculateSelfConnectedEdgesAmount(this.edges),
+        leafNodesAmount: calculateLeafsAmount(this.nodes, this.edges),
+        hangingNodesAmount: calculateHangingNodesAmount(this.nodes, this.edges),
+      };
     },
   },
 });

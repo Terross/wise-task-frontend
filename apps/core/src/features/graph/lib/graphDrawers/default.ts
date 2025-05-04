@@ -1,8 +1,7 @@
 import { CustomNode } from "@/features/graph/types/CustomNode";
 import { CustomEdge } from "@/features/graph/types/CustomEdge";
 import { DrawerResults } from "@/features/graph/types/ConnectedComponents";
-import { DEFAULT_NODE_SIZE } from "@/features/graph/config/nodeDefaultSettings";
-import { DRAW_SPACING_X } from "@/features/graph/config/drawParams";
+import { graphSettingsStore } from "@/features/graph/stores/graphSettings";
 
 export const drawDefaultTypeGraph = (
   nodes: CustomNode[],
@@ -13,14 +12,15 @@ export const drawDefaultTypeGraph = (
 
   nodes.forEach((node) => {
     width +=
-      (node.data.size?.width || DEFAULT_NODE_SIZE.width) + DRAW_SPACING_X;
+      (node.data.size?.width || graphSettingsStore.defaultNodeSize) +
+      graphSettingsStore.defaultNodeSpacingX;
     height = Math.max(
       height,
-      node.data.size?.height || DEFAULT_NODE_SIZE.height,
+      node.data.size?.height || graphSettingsStore.defaultNodeSize,
     );
   });
 
-  width -= DRAW_SPACING_X;
+  width -= graphSettingsStore.defaultNodeSpacingX;
 
   return {
     nodes,

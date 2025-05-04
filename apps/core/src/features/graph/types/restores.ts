@@ -83,6 +83,21 @@ export interface NodeMassDeleteRestore extends BaseRestore {
   };
 }
 
+export interface EdgeMassDeleteRestore extends BaseRestore {
+  type: "edge:mass_delete";
+  properties: {
+    edges: CustomEdge[];
+  };
+}
+
+export interface PasteRestore extends BaseRestore {
+  type: "all:paste";
+  properties: {
+    edgeIds: string[];
+    nodeIds: string[];
+  };
+}
+
 export type Restore =
   | NodeAddRestore
   | NodeRemoveRestore
@@ -94,4 +109,6 @@ export type Restore =
   | EdgeDataRestore
   | NormalizingRestore
   | NodeMassMovementRestore
-  | NodeMassDeleteRestore;
+  | NodeMassDeleteRestore
+  | EdgeMassDeleteRestore
+  | PasteRestore;
