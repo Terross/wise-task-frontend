@@ -48,10 +48,10 @@ export type Edge = {
 
 export type EdgeInput = {
   color: Color;
-  label: Scalars['String']['input'];
+  label?: InputMaybe<Scalars['String']['input']>;
   source: Scalars['Int']['input'];
   target: Scalars['Int']['input'];
-  weight: Scalars['Int']['input'];
+  weight?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type GenerateGraphRequest = {
@@ -305,6 +305,7 @@ export type PluginResult = {
   __typename?: 'PluginResult';
   isCorrect: Scalars['Boolean']['output'];
   pluginId: Scalars['String']['output'];
+  pluginMessage: Scalars['String']['output'];
   trueValue: Scalars['String']['output'];
   value: Scalars['String']['output'];
 };
@@ -560,8 +561,8 @@ export type Vertex = {
 export type VertexInput = {
   color: Color;
   id: Scalars['Int']['input'];
-  label: Scalars['String']['input'];
-  weight: Scalars['Int']['input'];
+  label?: InputMaybe<Scalars['String']['input']>;
+  weight?: InputMaybe<Scalars['Int']['input']>;
   xCoordinate: Scalars['Int']['input'];
   yCoordinate: Scalars['Int']['input'];
 };

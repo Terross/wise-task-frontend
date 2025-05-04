@@ -1,13 +1,18 @@
 <script setup lang="ts">
-import { useVueFlow } from "@vue-flow/core";
 import { VueFlow } from "@vue-flow/core";
 import SpecialNode from "./SpecialNode.vue";
 import SpecialEdge from "./SpecialEdge.vue";
 import { useNodeStore } from "@/features/graph/stores/nodes";
-import { ref, nextTick } from "vue";
-import HelpingModal from "@/features/graph/ui/HelpingModal.vue";
-import { Background } from "@vue-flow/background";
-import RightClickModal from "@/features/graph/ui/RightClickModal.vue";
+import { ref, nextTick, provide, onMounted } from "vue";
+import HelpingModal from "@/features/graph/ui/graph/HelpingModal.vue";
+import Background from "./Background";
+import RightClickModal from "@/features/graph/ui/graph/RightClickModal.vue";
+import DownloadGraphButton from "@/features/graph/ui/graph/DownloadGraphButton.vue";
+import { useVueFlowBus } from "@/features/graph/stores/vueFlowBus";
+import { setupNodeChangesHandler } from "@/features/graph/lib/flowEventsHandlers/nodeEventsHandling";
+import { setupEdgeChangesHandler } from "@/features/graph/lib/flowEventsHandlers/edgeEventsHandling";
+import SettingsDropDown from "@/features/graph/ui/graph/SettingsModal.vue";
+import HotKeysListener from "@/features/graph/ui/graph/HotKeysListener.vue";
 
 interface Props {
   style?: Record<string, string | number>;
@@ -15,74 +20,51 @@ interface Props {
 
 const props = defineProps<Props>();
 
+onMounted(() => {
+  setupEdgeChangesHandler();
+  setupNodeChangesHandler();
+});
+
 const nodeStore = useNodeStore();
 
-const {
-  onConnect,
-  onNodeDragStart,
-  onPaneContextMenu,
-  project,
-  addEdges,
-  onEdgesChange,
-  setEdges,
-  onNodesChange,
-  fitView,
-} = useVueFlow();
+const { vueFlowState } = useVueFlowBus();
+provide("vueFlowState", vueFlowState);
 
-onNodesChange((events) => {
-  if (events.length < 2) {
-    return;
-  }
-  if (events[0].type === "position") {
-    if (events[0].dragging) {
-      return;
-    }
-    const nodesMap = new Map<string, { x: number; y: number }>();
-    for (let i = 0; i < events.length; i++) {
-      // @ts-ignore
-      nodesMap.set(events[i].id, events[i].from); // #TODO: Нормальные типы добавить сюда (оно не хочет работать нормально(()
-    }
-    nodeStore.nodeMassMovement(nodesMap);
-  }
-  if (events[0].type === "remove") {
-    // @ts-ignore
-    nodeStore.nodesMassRemove(events.map((event) => event.id)); // TODO: то же самое
-  }
+const { onPaneContextMenu, project, setEdges, fitView } = vueFlowState;
+
+const contextMenuPosition = ref({
+  position: { x: 0, y: 0 },
+  modalPosition: { x: 0, y: 0 },
 });
-
-onEdgesChange((changes) => {
-  changes.forEach((change) => {
-    if (change.type === "add") {
-      // @ts-ignore
-      nodeStore.addEdge(change.item);
-    }
-  });
-});
-
-const contextMenuPosition = ref({ x: 0, y: 0 });
 const isHelpModalOpen = ref(false);
 const isRightClickModalOpen = ref(false);
 
-onPaneContextMenu(async (event) => {
+onPaneContextMenu((event) => {
   event.preventDefault();
   isRightClickModalOpen.value = false;
 
-  await nextTick();
+  const pane = event.currentTarget as HTMLElement;
+  const bounds = pane.getBoundingClientRect();
 
-  const bounds = (event.currentTarget as HTMLElement).getBoundingClientRect();
-  const x = event.clientX - bounds.left;
-  const y = event.clientY - bounds.top;
+  const modalPosition = {
+    x: event.clientX - bounds.left,
+    y: event.clientY - bounds.top,
+  };
 
-  const pos = project({ x, y });
-  contextMenuPosition.value = { x: pos.x + 29, y: pos.y + 10 };
+  const graphPosition = project(modalPosition);
+
+  contextMenuPosition.value = {
+    modalPosition,
+    position: graphPosition,
+  };
 
   isRightClickModalOpen.value = true;
 });
 
 const handleAddNodeAtPosition = () => {
   nodeStore.addNode({
-    x: contextMenuPosition.value.x,
-    y: contextMenuPosition.value.y,
+    x: contextMenuPosition.value.position.x,
+    y: contextMenuPosition.value.position.y,
   });
 };
 
@@ -98,33 +80,6 @@ const closeRightClickModal = () => {
   isRightClickModalOpen.value = false;
 };
 
-onConnect((connection) => {
-  // @ts-ignore
-  connection.type = "special";
-  addEdges(connection);
-});
-
-onNodeDragStart((event) => {
-  nodeStore.nodeShift(event.node.id, event.node.computedPosition);
-});
-
-const downloadJson = () => {
-  const data = {
-    nodes: nodeStore.nodes,
-    edges: nodeStore.edges,
-  };
-  const jsonString = JSON.stringify(data, null, 2);
-  const blob = new Blob([jsonString], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `graph-data-${Date.now().toString()}.json`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-};
-
 const uploadJson = (event: Event) => {
   const input = event.target as HTMLInputElement;
   if (input.files && input.files[0]) {
@@ -136,6 +91,7 @@ const uploadJson = (event: Event) => {
         const data = JSON.parse(content);
         nodeStore.nodes = data.nodes;
         nodeStore.edges = data.edges;
+        nodeStore.regenerateStatistics();
       } catch (error) {
         console.error("Ошибка при чтении файла:", error);
       }
@@ -174,7 +130,7 @@ const normalize = () => {
     <div class="buttons-container">
       <v-btn @click="addNodeToCenter">Добавить вершину</v-btn>
       <v-btn @click="undo">UNDO</v-btn>
-      <v-btn @click="downloadJson">Скачать JSON</v-btn>
+      <DownloadGraphButton />
       <v-btn @click="nodeStore.toggleIsDirected">Сменить направленность</v-btn>
       <v-btn @click="normalize">Нормализовать граф</v-btn>
       <v-btn>
@@ -188,6 +144,7 @@ const normalize = () => {
         />
       </v-btn>
       <v-btn @click="openHelpModal">Как работать с графом?</v-btn>
+      <SettingsDropDown />
     </div>
     <VueFlow
       :connection-radius="30"
@@ -198,11 +155,13 @@ const normalize = () => {
     >
       <RightClickModal
         v-if="isRightClickModalOpen"
-        :position="contextMenuPosition"
+        :modal-position="contextMenuPosition.modalPosition"
+        :position="contextMenuPosition.position"
         @close="isRightClickModalOpen = false"
         @add-node="handleAddNodeAtPosition"
       />
       <Background />
+      <HotKeysListener />
       <template #node-special="specialNodeProps">
         <SpecialNode v-bind="specialNodeProps" />
       </template>
@@ -218,8 +177,8 @@ const normalize = () => {
 </template>
 
 <style>
-@import "@vue-flow/core/dist/style.css";
-@import "@vue-flow/core/dist/theme-default.css";
+@import "../../../../../node_modules/@vue-flow/core/dist/style.css";
+@import "../../../../../node_modules/@vue-flow/core/dist/theme-default.css";
 
 .buttons-container {
   background-color: blue;

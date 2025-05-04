@@ -4,14 +4,13 @@ import {
   ConnectionTargetID,
   CustomEdge,
 } from "@/features/graph/types/CustomEdge";
-import { DRAW_SPACING_Y } from "@/features/graph/config/drawParams";
-import { DEFAULT_NODE_SIZE } from "@/features/graph/config/nodeDefaultSettings";
 import { DrawerResults } from "@/features/graph/types/ConnectedComponents";
 import { colorNodesIntoTwoColors } from "@/features/graph/lib/helpers/colorNodesTwoColors";
 import {
   getMinHeight,
   getVerticalSpacing,
 } from "@/features/graph/lib/helpers/getBipartiteGraphHeight";
+import { graphSettingsStore } from "@/features/graph/stores/graphSettings";
 
 export const drawBipartiteGraph = (
   nodes: CustomNode[],
@@ -20,7 +19,10 @@ export const drawBipartiteGraph = (
   const { redNodes, blueNodes } = colorNodesIntoTwoColors(edges, nodes);
   const columnSpacing = 200;
 
-  const minHeight = getMinHeight([...redNodes, ...blueNodes], DRAW_SPACING_Y);
+  const minHeight = getMinHeight(
+    [...redNodes, ...blueNodes],
+    graphSettingsStore.defaultNodeSpacingY,
+  );
   const redVerticalSpacing = getVerticalSpacing(redNodes, minHeight);
   const blueVerticalSpacing = getVerticalSpacing(blueNodes, minHeight);
 
@@ -38,16 +40,19 @@ export const drawBipartiteGraph = (
 
   let currentY = 0;
   redNodes.forEach((node) => {
-    const nodeHeight = node.data.size?.height || DEFAULT_NODE_SIZE.height;
+    const nodeHeight =
+      node.data.size?.height || graphSettingsStore.defaultNodeSize;
     node.position = { x: 0, y: currentY + redVerticalSpacing / 2 };
     currentY += nodeHeight + redVerticalSpacing;
   });
 
   currentY = 0;
   const blueX =
-    (redNodes[0]?.data.size?.width || DEFAULT_NODE_SIZE.width) + columnSpacing;
+    (redNodes[0]?.data.size?.width || graphSettingsStore.defaultNodeSize) +
+    columnSpacing;
   blueNodes.forEach((node) => {
-    const nodeHeight = node.data.size?.height || DEFAULT_NODE_SIZE.height;
+    const nodeHeight =
+      node.data.size?.height || graphSettingsStore.defaultNodeSize;
     node.position = { x: blueX, y: currentY + blueVerticalSpacing / 2 };
     currentY += nodeHeight + blueVerticalSpacing;
   });
@@ -58,7 +63,8 @@ export const drawBipartiteGraph = (
   );
 
   const maxWidth =
-    blueX + (blueNodes[0]?.data.size?.width || DEFAULT_NODE_SIZE.width);
+    blueX +
+    (blueNodes[0]?.data.size?.width || graphSettingsStore.defaultNodeSize);
 
   return {
     nodes: [...redNodes, ...blueNodes],
