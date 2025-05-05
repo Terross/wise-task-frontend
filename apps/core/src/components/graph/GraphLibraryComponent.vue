@@ -31,18 +31,16 @@ import { useQuery } from "@vue/apollo-composable";
 import { GET_GRAPH_LIBRARY } from "@/api/Queries";
 import { useGraphStore } from "@/store/graph";
 import { toVGraph } from "./network/helper/graph";
-import { Graph } from "@/__generated__/graphql";
-import * as GraphUI from "@/features/graph/ui/graph/Graph.vue";
 import Graph from "@/features/graph/ui/graph/Graph.vue";
 
 export default defineComponent({
-  components: {Graph, GraphUI },
+  components: {Graph },
   setup() {
     useGraphStore().graphLibrary = [];
     const { onResult } = useQuery(GET_GRAPH_LIBRARY);
     onResult((response) => {
       if (response.data) {
-        response.data.getGraphLibrary.forEach(function (graph: Graph) {
+        response.data.getGraphLibrary.forEach(function (graph: any) {
           useGraphStore().graphLibrary.push(toVGraph(graph));
         });
       }
