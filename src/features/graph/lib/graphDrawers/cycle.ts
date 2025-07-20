@@ -26,10 +26,12 @@ export const drawCycleGraph = (
     };
   }
 
-  edges.forEach((edge) => {
-    edge.sourceHandle = ConnectionSourceID.Left;
-    edge.targetHandle = ConnectionTargetID.Right;
-  });
+  if (!graphSettingsStore.isOneHandle) {
+    edges.forEach((edge) => {
+      edge.sourceHandle = ConnectionSourceID.Left;
+      edge.targetHandle = ConnectionTargetID.Right;
+    });
+  }
 
   const nodeIdsInOrder: string[] = [];
   let current = linked;
@@ -73,11 +75,11 @@ export const drawCycleGraph = (
         (e) => e.source === lastNodeId && e.target === firstNodeId,
       );
 
-      if (reverseClosingEdge) {
+      if (reverseClosingEdge && !graphSettingsStore.isOneHandle) {
         reverseClosingEdge.sourceHandle = ConnectionSourceID.Top;
         reverseClosingEdge.targetHandle = ConnectionTargetID.Top;
       }
-    } else {
+    } else if (!graphSettingsStore.isOneHandle) {
       closingEdge.sourceHandle = ConnectionSourceID.Top;
       closingEdge.targetHandle = ConnectionTargetID.Top;
     }

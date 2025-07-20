@@ -14,6 +14,7 @@ const form = ref({
   patternGap: 20,
   patternSize: 1,
   patternColor: "#e5e7eb",
+  isOneHandle: false, // Initialize with a boolean value
 });
 
 const config = {
@@ -69,6 +70,10 @@ const config = {
     label: "Цвет фона",
     description: "Какой цвет использовать для фона?",
   },
+  isOneHandle: {
+    label: "Одна точка соединения",
+    description: "Использовать только одну точку соединения для ребер?",
+  },
 };
 
 const open = () => {
@@ -82,6 +87,7 @@ const open = () => {
     patternGap: store.patternGap,
     patternSize: store.patternSize,
     patternColor: store.patternColor,
+    isOneHandle: store.isOneHandle || false,
   };
   isOpen.value = true;
 };
@@ -96,6 +102,7 @@ const save = () => {
   store.patternGap = form.value.patternGap;
   store.patternSize = form.value.patternSize;
   store.patternColor = form.value.patternColor;
+  store.isOneHandle = form.value.isOneHandle;
 
   store.saveToLocalStorage();
   isOpen.value = false;
@@ -113,6 +120,7 @@ const resetToDefaults = () => {
     patternGap: store.patternGap,
     patternSize: store.patternSize,
     patternColor: store.patternColor,
+    isOneHandle: store.isOneHandle || false,
   };
 };
 
@@ -121,6 +129,17 @@ const cancel = () => {
 };
 
 const preventManualInput = (event: KeyboardEvent) => {
+  if (
+    event.key === "ArrowUp" ||
+    event.key === "ArrowDown" ||
+    event.key === "ArrowLeft" ||
+    event.key === "ArrowRight" ||
+    event.key === "Delete" ||
+    event.key === "Backspace" ||
+    event.key === "Tab"
+  ) {
+    return;
+  }
   event.preventDefault();
 };
 </script>
@@ -179,6 +198,15 @@ const preventManualInput = (event: KeyboardEvent) => {
                 />
               </div>
             </template>
+            <template v-else-if="key === 'isOneHandle'">
+              <v-checkbox
+                v-model="form[key]"
+                :label="configItem.label"
+                color="primary"
+                density="compact"
+                hide-details
+              />
+            </template>
             <template v-else>
               <v-text-field
                 v-model.number="form[key]"
@@ -198,18 +226,32 @@ const preventManualInput = (event: KeyboardEvent) => {
           </div>
         </v-card-text>
 
-        <v-card-actions class="settings-actions">
-          <v-btn variant="text" @click="resetToDefaults">По умолчанию</v-btn>
-          <v-spacer />
-          <v-btn variant="text" @click="cancel">Отмена</v-btn>
-          <v-btn color="primary" variant="flat" @click="save">Сохранить</v-btn>
-        </v-card-actions>
+        <div class="">
+          <div class="double-button-container">
+            <v-btn variant="text" class="half-button" @click="resetToDefaults">По умолчанию</v-btn>
+            <v-btn variant="text" class="half-button" @click="cancel">Отмена</v-btn>
+          </div>
+          <v-btn color="primary" variant="flat" class="mt-5 mx-5" @click="save">Сохранить</v-btn>
+        </div>
       </v-card>
     </v-dialog>
   </div>
 </template>
 
 <style scoped>
+
+.double-button-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding-inline: 20px;
+}
+
+.half-button {
+  width: 45%;
+  border: 1px solid gray;
+}
+
 .settings-card {
   background-color: white;
   border-radius: 8px;

@@ -18,10 +18,12 @@ export const drawTreeGraph = (
   let maxHeight = 0;
   const verticalSpacing = 100;
 
-  edges.forEach((edge) => {
-    edge.sourceHandle = ConnectionSourceID.Top;
-    edge.targetHandle = ConnectionTargetID.Bottom;
-  });
+  if (!graphSettingsStore.isOneHandle) {
+    edges.forEach((edge) => {
+      edge.sourceHandle = ConnectionSourceID.Top;
+      edge.targetHandle = ConnectionTargetID.Bottom;
+    });
+  }
 
   treeLevels.forEach((level, levelIndex) => {
     const levelWidth = level.reduce((sum, node) => {

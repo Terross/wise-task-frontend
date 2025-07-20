@@ -116,6 +116,7 @@ export type ImplementationResult = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  changePassword: Scalars['String']['output'];
   checkPluginImplementation: ImplementationResult;
   checkPluginSolution: Scalars['String']['output'];
   /** graph */
@@ -130,6 +131,8 @@ export type Mutation = {
   /** task */
   deleteTask: Scalars['String']['output'];
   generateGraph?: Maybe<Graph>;
+  resetPassword: Token;
+  sendResetPasswordEmail: Scalars['String']['output'];
   signIn: Token;
   /** profile */
   signUp: Token;
@@ -140,6 +143,13 @@ export type Mutation = {
   updateTaskGraph: TaskGraph;
   updateTaskImplementation: TaskImplementation;
   validatePlugin: Scalars['String']['output'];
+};
+
+
+export type MutationChangePasswordArgs = {
+  id: Scalars['ID']['input'];
+  newPassword: Scalars['String']['input'];
+  oldPassword: Scalars['String']['input'];
 };
 
 
@@ -196,6 +206,16 @@ export type MutationDeleteTaskArgs = {
 
 export type MutationGenerateGraphArgs = {
   generateGraphRequest: GenerateGraphRequest;
+};
+
+
+export type MutationResetPasswordArgs = {
+  resetPasswordRequest: ResetPasswordRequest;
+};
+
+
+export type MutationSendResetPasswordEmailArgs = {
+  email: Scalars['String']['input'];
 };
 
 
@@ -310,6 +330,12 @@ export type PluginResult = {
   value: Scalars['String']['output'];
 };
 
+/**  --------------------------------------------------------------------------------- */
+export type PluginStringInput = {
+  key: Scalars['String']['input'];
+  value: Scalars['String']['input'];
+};
+
 export enum PluginType {
   GraphCharacteristic = 'GRAPH_CHARACTERISTIC',
   GraphNewGraph = 'GRAPH_NEW_GRAPH',
@@ -395,6 +421,11 @@ export type QueryGetUserSolutionStatisticArgs = {
   userId: Scalars['ID']['input'];
 };
 
+export type ResetPasswordRequest = {
+  newPassword: Scalars['String']['input'];
+  recoveryToken: Scalars['String']['input'];
+};
+
 export enum Role {
   Admin = 'ADMIN',
   Captain = 'CAPTAIN',
@@ -444,11 +475,11 @@ export type SolutionGraph = Solution & {
   taskId: Scalars['String']['output'];
 };
 
-/**  --------------------------------------------------------------------------------- */
 export type SolutionGraphInput = {
   authorId: Scalars['String']['input'];
   graph: GraphInput;
   id: Scalars['ID']['input'];
+  pluginsInput?: InputMaybe<Array<PluginStringInput>>;
   taskId: Scalars['String']['input'];
 };
 

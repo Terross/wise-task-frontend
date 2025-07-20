@@ -34,7 +34,7 @@ export interface NodeShiftRestore extends BaseRestore {
   type: "node:change_shift";
   properties: {
     nodeId: string;
-    coords: { x: number; y: number };
+    position: { x: number; y: number };
   };
 }
 

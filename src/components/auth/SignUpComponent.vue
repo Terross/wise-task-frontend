@@ -7,10 +7,12 @@
           max-width="228"
           src="https://etu.ru/assets/files/ru/universitet/korporativnyj-stil/logo-leti-sin-rus-2017.png"
         ></v-img>
-        <v-card class="mx-auto pa-12 pb-8"
-            elevation="8"
-            max-width="448"
-            rounded="lg">
+        <v-card
+          class="mx-auto pa-12 pb-8"
+          elevation="8"
+          max-width="448"
+          rounded="lg"
+        >
           <v-card-title>Регистрация</v-card-title>
           <v-card-text>
             <v-form validate-on="submit lazy" @submit.prevent="signUp">
@@ -39,7 +41,8 @@
                 prepend-inner-icon="mdi-account"
                 variant="outlined"
                 color="primary"
-                v-model="patronymic">
+                v-model="patronymic"
+              >
               </v-text-field>
               <v-text-field
                 density="compact"
@@ -74,15 +77,8 @@
                 v-model="repeatedPassword"
               >
               </v-text-field>
-              <v-select
-                label="Роль"
-                :items="['Студент', 'Преподаватель']"
-                v-model="role"
-                density="compact"
-                variant="outlined"
-                color="primary"
-              ></v-select>
-              <v-text-field v-if="role=='Студент'"
+              <v-text-field
+                v-if="role == 'Студент'"
                 placeholder="Введите группу"
                 prepend-inner-icon="mdi-account-group"
                 color="primary"
@@ -95,17 +91,16 @@
                 <v-col>
                   <v-btn
                     class="my-4"
+                    style="width: 100%"
                     :loading="loading"
                     type="submit"
-                    block
-                    @click="signUp"
+                    blockd
                     color="primary"
                     text="Зарегистрироваться"
                     variant="outlined"
                   ></v-btn>
                   <v-btn
                     :loading="loading"
-                    type="submit"
                     @click="signIn"
                     block
                     color="primary"
@@ -114,7 +109,7 @@
                   ></v-btn>
                 </v-col>
               </v-row>
-            </v-form>		
+            </v-form>
           </v-card-text>
         </v-card>
       </v-col>
@@ -123,39 +118,41 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { useProfileStore } from '@/store/profile'
-import { SIGN_UP } from '@/api/Mutations'
-import { useMutation } from '@vue/apollo-composable'
-import { Role } from '@/common/Role'
+import { defineComponent } from "vue";
+import { useProfileStore } from "@/store/profile";
+import { SIGN_UP } from "@/api/Mutations";
+import { useMutation } from "@vue/apollo-composable";
+import { Role } from "@/common/Role";
+import { UserStorageSetters } from "@/entities/user/storage/setters";
 
 export default defineComponent({
-  data () {
+  data() {
     return {
       loading: false,
-      email :'',
-      firstName: '',
-      lastName: '',
-      patronymic: '',
-      password: '',
-      repeatedPassword: '',
-      role: 'Студент',
+      email: "",
+      firstName: "",
+      lastName: "",
+      patronymic: "",
+      password: "",
+      repeatedPassword: "",
+      role: "Студент",
       visible: false,
-      group: '',
+      group: "",
       profileStore: useProfileStore(),
       firstNameRules: [
-      (value: string) => {
-          if (value?.length > 3) return true
+        (value: string) => {
+          if (value?.length > 3) return true;
 
-          return 'Имя должно состоять хотя бы из 3 символов'
+          return "Имя должно состоять хотя бы из 3 символов";
         },
       ],
-    }
+    };
   },
   methods: {
     signUp() {
-      this.loading = true
-      const { mutate, onDone, onError } = useMutation(SIGN_UP)
+      this.loading = true;
+      UserStorageSetters.removeToken();
+      const { mutate, onDone, onError } = useMutation(SIGN_UP);
 
       const request = {
         signUpRequest: {
@@ -165,40 +162,42 @@ export default defineComponent({
             firstName: this.firstName,
             lastName: this.lastName,
             patronymic: this.patronymic,
-            profileRole: Role[this.role as keyof typeof Role],
+            profileRole: "STUDENT",
             studentGroup: this.group,
-          }
-        }
-      }
+          },
+        },
+      };
 
-      mutate(request)
+      mutate(request);
 
-      onDone(response => {
-        this.loading = false
-        const token = response.data.signUp.token
-        const jwtData = token.split('.')[1]
-        const decodedJwtJsonData = window.atob(jwtData)
-        const decodedJwtData = JSON.parse(decodedJwtJsonData)
+      onDone((response) => {
+        this.loading = false;
+        const token = response.data.signUp.token;
+        UserStorageSetters.setToken(token);
+        const jwtData = token.split(".")[1];
+        const decodedJwtJsonData = window.atob(jwtData);
+        const decodedJwtData = JSON.parse(decodedJwtJsonData);
         const user = {
-            role: decodedJwtData.role,
-            id: decodedJwtData.id,
-            email: decodedJwtData.email
-        }
-        this.profileStore.activeUser = user
-      })
+          role: decodedJwtData.role,
+          id: decodedJwtData.id,
+          email: decodedJwtData.email,
+        };
+        this.profileStore.activeUser = user;
+      });
+      this.$router.push("/plugins");
 
-      onError(({graphQLErrors}) => {
-        this.loading = false
+      onError(({ graphQLErrors }) => {
+        this.loading = false;
         if (graphQLErrors) {
-          graphQLErrors.map(({message}) => {
-            console.error(message)
-          })
-        } 
-      })
+          graphQLErrors.map(({ message }) => {
+            console.error(message);
+          });
+        }
+      });
     },
     signIn() {
-      this.$router.push('/auth/signin')
-    }
-  }
-})
+      this.$router.push("/auth/signin");
+    },
+  },
+});
 </script>

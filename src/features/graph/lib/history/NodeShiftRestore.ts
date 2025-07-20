@@ -4,12 +4,12 @@ import { NodesStoreState } from "@/features/graph/types/NodesStore";
 
 export class NodeShiftRestoreObjet extends RestoreObject {
   private readonly nodeId: string;
-  private readonly coords: { x: number; y: number };
+  private readonly position: { x: number; y: number };
 
   constructor(properties: NodeShiftRestore) {
     super(properties as Restore);
     this.nodeId = properties.properties.nodeId;
-    this.coords = properties.properties.coords;
+    this.position = properties.properties.position;
   }
 
   public restore = (state: NodesStoreState): NodesStoreState => {
@@ -17,7 +17,7 @@ export class NodeShiftRestoreObjet extends RestoreObject {
     if (nodeIndex === -1) {
       return state;
     }
-    state.nodes[nodeIndex].position = this.coords;
+    state.nodes[nodeIndex].position = this.position;
     return state;
   };
 }

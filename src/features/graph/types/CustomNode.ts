@@ -18,3 +18,21 @@ export type NodeGroup = {
   nodeIds: string[];
   color: string;
 };
+
+export function createCustomNode(
+  id: string,
+  position: { x: number; y: number },
+  data?: {
+    size?: { width: number; height: number };
+    weight?: number;
+    label?: string;
+    color?: string;
+  },
+): CustomNode {
+  return {
+    id,
+    position,
+    type: "special",
+    data: data || {},
+  };
+}
