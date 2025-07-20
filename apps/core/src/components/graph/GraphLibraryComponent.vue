@@ -5,7 +5,7 @@
         <!--				<control-panel-component></control-panel-component>-->
         <!--        <graph-constructor-component></graph-constructor-component>-->
         <Graph
-          :style="{
+            :style="{
             width: '100%',
             height: '100%',
             border: '1px solid black',

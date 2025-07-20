@@ -76,6 +76,19 @@ onUnmounted(() => {
   document.removeEventListener("pointerdown", handleInteractionOutside);
   document.removeEventListener("mousedown", handleInteractionOutside);
 });
+
+const textColor = computed(() => {
+  if (!props.data.color) return "white"; // по умолчанию
+
+  const hex = props.data.color.replace("#", "");
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+
+  return brightness > 128 ? "black" : "white";
+});
 </script>
 
 <template>
@@ -92,13 +105,13 @@ onUnmounted(() => {
       cursor: 'pointer',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: data.color || '#00FFFF',
+      backgroundColor: data.color || '#b2b2b2',
       position: 'relative',
     }"
     @click="handleNodeClick"
   >
     <div v-if="!isEditing" :style="{ color: 'white', textAlign: 'center' }">
-      <div>{{ data.label }}</div>
+      <div style="font-size: 20px">{{ data.label }}</div>
       <div v-if="data.weight !== undefined">Weight: {{ data.weight }}</div>
     </div>
 
@@ -123,6 +136,7 @@ onUnmounted(() => {
     <NodeHandles :isEditing="isEditing" />
 
     <NodeControls
+      :coordinates="{ x: props.position.x, y: props.position.y }"
       v-if="isControlsVisible"
       :nodeId="props.id"
       :size="data.size || { width: 100, height: 100 }"

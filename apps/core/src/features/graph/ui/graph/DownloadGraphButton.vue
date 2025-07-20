@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { convertToGqlFormat } from "@/features/graph/lib/helpers/convertToGqlFormat";
+import { convertToGqlFormat } from "@/features/graph/lib/helpers/GqlFormatter";
 import { useNodeStore } from "@/features/graph/stores/nodes";
 
 const nodeStore = useNodeStore();

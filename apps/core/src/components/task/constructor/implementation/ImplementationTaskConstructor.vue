@@ -5,11 +5,13 @@
       <v-textarea
         variant="outlined"
         v-model="taskImplementationInput.description"
+        :maxLength="MAX_INPUT_LENGTH()"
       ></v-textarea>
       <v-container>
         <v-row>
           <v-text-field
             class="ma-2"
+            :maxLength="MAX_INPUT_LENGTH()"
             label="Название задачи"
             variant="outlined"
             v-model="nameModel"
@@ -19,6 +21,7 @@
             label="Категория задачи"
             variant="outlined"
             v-model="categoryModel"
+            :maxLength="MAX_INPUT_LENGTH()"
           ></v-text-field>
         </v-row>
       </v-container>
@@ -47,6 +50,7 @@ import { useMutation, useQuery } from "@vue/apollo-composable";
 import { GET_ALL_PLUGINS } from "@/api/Queries";
 import { usePluginStore } from "@/store/plugin";
 import { CREATE_TASK_IMPLEMENTATION } from "@/api/Mutations";
+import { MAX_INPUT_LENGTH } from "@/shared/config/SIZES";
 
 export default defineComponent({
   setup() {
@@ -88,6 +92,9 @@ export default defineComponent({
     };
   },
   methods: {
+    MAX_INPUT_LENGTH() {
+      return MAX_INPUT_LENGTH;
+    },
     createTask() {
       this.taskImplementationInput.id = self.crypto.randomUUID();
       this.taskImplementationInput.authorId =

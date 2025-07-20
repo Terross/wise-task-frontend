@@ -25,12 +25,6 @@
         @click="showPluginPage"
       ></v-list-item>
       <v-list-item
-        prepend-icon="mdi-face-man-profile"
-        title="Пользователи"
-        value="profile"
-        @click="showProfileList"
-      ></v-list-item>
-      <v-list-item
         prepend-icon="mdi-library"
         title="Библиотека графов"
         value="graphLibrary"

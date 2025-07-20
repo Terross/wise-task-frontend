@@ -241,7 +241,7 @@ export const useNodeStore = defineStore("nodes", {
       }
       history.onStateUpdate({
         type: "node:change_shift",
-        properties: { nodeId: nodeId, coords: coords },
+        properties: { nodeId: nodeId, position: coords },
       });
     },
 

@@ -41,29 +41,3 @@ export function getTreeLevels(
 
   return levels.reverse();
 }
-
-export const getTreeLevelMinWidth = (
-  nodes: CustomNode[],
-  horizontalSpacing: number,
-): number => {
-  let sum: number = 0;
-  for (let node of nodes) {
-    sum += node.data.size?.width || DEFAULT_NODE_SIZE.width;
-    sum += horizontalSpacing;
-  }
-  sum -= horizontalSpacing;
-  return sum;
-};
-
-export const getTreeLevelSpacing = (
-  nodes: CustomNode[],
-  width: number,
-): number => {
-  let nodesWidthSum: number = 0;
-
-  for (let node of nodes) {
-    nodesWidthSum += node.data.size?.width || DEFAULT_NODE_SIZE.width;
-  }
-
-  return (width - nodesWidthSum) / nodes.length;
-};

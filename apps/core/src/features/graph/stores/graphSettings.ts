@@ -1,4 +1,3 @@
-// graphSettings.ts
 import { defineStore } from "pinia";
 import {
   DEFAULT_CIRCLE_PADDING,
@@ -24,6 +23,7 @@ interface GraphSettingsStore {
   patternGap: number;
   patternSize: number;
   patternColor: string;
+  isOneHandle: boolean;
 }
 
 const STORAGE_KEY: string = "graphSettings";
@@ -38,11 +38,23 @@ const getDefaultSettings = (): GraphSettingsStore => ({
   patternGap: BACKGROUND_DEFAULT_GAP,
   patternSize: BACKGROUND_DEFAULT_SIZE,
   patternColor: BACKGROUND_DEFAULT_COLOR,
+  isOneHandle: false,
 });
 
 const loadSettings = (): GraphSettingsStore => {
   const saved: string | null = localStorage.getItem(STORAGE_KEY);
-  return saved ? JSON.parse(saved) : getDefaultSettings();
+  const defaultSettings = getDefaultSettings();
+
+  if (saved) {
+    try {
+      const parsedSettings: GraphSettingsStore = JSON.parse(saved);
+      return { ...defaultSettings, ...parsedSettings };
+    } catch (e) {
+      console.error("Error parsing saved graph settings, loading defaults.", e);
+      return defaultSettings;
+    }
+  }
+  return defaultSettings;
 };
 
 const useGraphSettings = defineStore("graphSettings", {
