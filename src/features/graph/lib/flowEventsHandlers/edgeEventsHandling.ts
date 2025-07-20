@@ -26,7 +26,6 @@ export function setupEdgeChangesHandler() {
       }
       nodeStore.edgesMassRemove(edgeIds);
     }
-    console.log(changes);
     changes.forEach((change) => {
       if (change.type === "add") {
         // @ts-ignore

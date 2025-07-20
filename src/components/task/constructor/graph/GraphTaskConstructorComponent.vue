@@ -15,6 +15,7 @@
         <v-textarea
           variant="outlined"
           auto-grow
+          :maxLength="MAX_INPUT_LENGTH()"
           v-model="taskTextModel"
         ></v-textarea>
         <task-condition-component></task-condition-component>
@@ -32,8 +33,14 @@ import { useQuery } from "@vue/apollo-composable";
 import { GET_ALL_PLUGINS } from "@/api/Queries";
 import { useTaskStore } from "@/store/task";
 import Graph from "@/features/graph/ui/graph/Graph.vue";
+import { MAX_INPUT_LENGTH } from "@/shared/config/SIZES";
 
 export default defineComponent({
+  methods: {
+    MAX_INPUT_LENGTH() {
+      return MAX_INPUT_LENGTH;
+    },
+  },
   components: { Graph },
   setup() {
     const { plugins } = storeToRefs(usePluginStore());

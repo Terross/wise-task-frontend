@@ -1,5 +1,5 @@
 <template>
-	<v-container class="fill-height" fluid>
+  <v-container class="fill-height" fluid>
     <v-row>
       <v-col>
         <v-img
@@ -7,10 +7,12 @@
           max-width="228"
           src="https://etu.ru/assets/files/ru/universitet/korporativnyj-stil/logo-leti-sin-rus-2017.png"
         ></v-img>
-        <v-card class="mx-auto pa-12 pb-8"
-            elevation="8"
-            max-width="448"
-            rounded="lg">
+        <v-card
+          class="mx-auto pa-12 pb-8"
+          elevation="8"
+          max-width="448"
+          rounded="lg"
+        >
           <v-card-title>Вход</v-card-title>
           <v-card-text>
             <v-form validate-on="submit lazy" @submit.prevent="signIn">
@@ -58,74 +60,67 @@
                   ></v-btn>
                 </v-col>
               </v-row>
-            </v-form>		
+            </v-form>
           </v-card-text>
         </v-card>
-      </v-col>  
+      </v-col>
     </v-row>
-	</v-container>
+  </v-container>
 </template>
 
 <script lang="ts">
-import { useProfileStore } from '@/store/profile'
-import { SIGN_IN } from '@/api/Mutations'
-import { useMutation, useQuery } from '@vue/apollo-composable'
-import { defineComponent } from 'vue'
+import { useProfileStore } from "@/store/profile";
+import { SIGN_IN } from "@/api/Mutations";
+import { useMutation, useQuery } from "@vue/apollo-composable";
+import { defineComponent } from "vue";
+import { UserStorageSetters } from "@/entities/user/storage/setters";
 
 export default defineComponent({
-    data () {
-			return {
-					loading: false,
-					email: '',
-					password: '',
-          profileStore: useProfileStore(),
-          visible: false
-			}
+  data() {
+    return {
+      loading: false,
+      email: "",
+      password: "",
+      profileStore: useProfileStore(),
+      visible: false,
+    };
+  },
+  methods: {
+    signIn(event: any) {
+      UserStorageSetters.removeToken();
+      this.loading = true;
+      const { mutate: signIn, onDone, onError } = useMutation(SIGN_IN);
+
+      const request = {
+        signInRequest: {
+          email: this.email,
+          password: this.password,
+        },
+      };
+
+      signIn(request);
+
+      onDone((response) => {
+        this.loading = false;
+        const token = response.data.signIn.token;
+        UserStorageSetters.setToken(token);
+        setTimeout(() => this.$router.push("/plugins"), 30);
+      });
+
+      onError(({ networkError, graphQLErrors }) => {
+        this.loading = false;
+        if (graphQLErrors) {
+          graphQLErrors.map(({ message }) => {
+            if (message === "NOT_FOUND") {
+              console.log("profile not found");
+            }
+          });
+        }
+      });
     },
-    methods: {
-			signIn(event: any) {
-                this.loading = true
-				const { mutate: signIn, onDone, onError } = useMutation(SIGN_IN)
-				
-				const request = {
-					signInRequest: {
-							email: this.email,
-							password: this.password
-						}
-				}
-
-				signIn(request)
-
-				onDone(response => {
-          this.loading = false
-          const token = response.data.signIn.token
-          const jwtData = token.split('.')[1]
-          const decodedJwtJsonData = window.atob(jwtData)
-          const decodedJwtData = JSON.parse(decodedJwtJsonData)
-          const user = {
-              role: decodedJwtData.role,
-              id: decodedJwtData.id,
-              email: decodedJwtData.email
-          }
-          this.profileStore.activeUser = user
-				})
-
-				onError(({networkError, graphQLErrors}) => {
-          this.loading = false
-          if (graphQLErrors) {
-            graphQLErrors.map(({message}) => {
-              if (message === 'NOT_FOUND') {
-                console.log("profile not found")
-              }
-            })
-          }
-            
-				})
-			},
-      signUp() {
-        this.$router.push('/auth/signup')
-      }
-   }
-
-})
+    signUp() {
+      this.$router.push("/auth/signup");
+    },
+  },
+});
 </script>

@@ -27,9 +27,13 @@ export const drawNearlyFullGraph = (
     node.position.y = centerY + Math.sin(angle) * radius;
   });
 
+  const reformattedEdgesPositions = !graphSettingsStore.isOneHandle
+    ? changeDirectionsInCircularGraph(nodes, edges)
+    : edges;
+
   return {
     nodes,
-    edges: changeDirectionsInCircularGraph(nodes, edges),
+    edges: reformattedEdgesPositions,
     width: radius * 2,
     height: radius * 2,
   };

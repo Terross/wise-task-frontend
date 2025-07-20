@@ -147,7 +147,7 @@ const normalize = () => {
       <SettingsDropDown />
     </div>
     <VueFlow
-      :connection-radius="30"
+      :connection-radius="50"
       v-model:nodes="nodeStore.nodes"
       v-model:edges="nodeStore.edges"
       class="pinia-flow"

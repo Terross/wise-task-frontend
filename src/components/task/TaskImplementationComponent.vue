@@ -83,6 +83,13 @@ import { storeToRefs } from "pinia";
 import { defineComponent } from "vue";
 
 export default defineComponent({
+  props: {
+    id: String,
+    onCorrectSolution: {
+      type: Function,
+      default: null,
+    },
+  },
   setup(props) {
     const { activeTask } = storeToRefs(useTaskStore());
     const { onResult } = useQuery(GET_TASK, { id: props.id });
@@ -105,7 +112,6 @@ export default defineComponent({
       jarFileModel: [],
     };
   },
-  props: ["id"],
   methods: {
     toBase64(file: File) {
       return new Promise((resolve, reject) => {
@@ -138,6 +144,9 @@ export default defineComponent({
           if (response.data.solveTaskImplementation.isCorrect) {
             this.successAlert = true;
             this.errorAlert = false;
+            if (this.onCorrectSolution) {
+              this.onCorrectSolution();
+            }
           } else {
             this.errorAlert = true;
             this.successAlert = false;
