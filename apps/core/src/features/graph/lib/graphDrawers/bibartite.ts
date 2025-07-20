@@ -26,17 +26,19 @@ export const drawBipartiteGraph = (
   const redVerticalSpacing = getVerticalSpacing(redNodes, minHeight);
   const blueVerticalSpacing = getVerticalSpacing(blueNodes, minHeight);
 
-  edges.forEach((edge) => {
-    const isRedToBlue =
-      redNodes.some((n) => n.id === edge.source) &&
-      blueNodes.some((n) => n.id === edge.target);
-    edge.sourceHandle = isRedToBlue
-      ? ConnectionSourceID.Right
-      : ConnectionSourceID.Left;
-    edge.targetHandle = isRedToBlue
-      ? ConnectionTargetID.Left
-      : ConnectionTargetID.Right;
-  });
+  if (!graphSettingsStore.isOneHandle) {
+    edges.forEach((edge) => {
+      const isRedToBlue =
+        redNodes.some((n) => n.id === edge.source) &&
+        blueNodes.some((n) => n.id === edge.target);
+      edge.sourceHandle = isRedToBlue
+        ? ConnectionSourceID.Right
+        : ConnectionSourceID.Left;
+      edge.targetHandle = isRedToBlue
+        ? ConnectionTargetID.Left
+        : ConnectionTargetID.Right;
+    });
+  }
 
   let currentY = 0;
   redNodes.forEach((node) => {

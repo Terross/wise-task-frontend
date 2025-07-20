@@ -9,6 +9,7 @@ const props = defineProps<{
   label: string;
   weight: number;
   color: string;
+  coordinates: { x: number; y: number };
 }>();
 
 const nodeStore = useNodeStore();
@@ -90,6 +91,11 @@ const selectColor = (color: string) => {
         class="weight-input"
         @click.stop
       />
+    </div>
+
+    <div class="align-self-start">
+      x: {{ props.coordinates.x.toFixed() }}, y:
+      {{ props.coordinates.y.toFixed() }}
     </div>
 
     <div class="controls-row">

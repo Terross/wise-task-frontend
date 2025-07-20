@@ -9,12 +9,14 @@
             label="Название задачи"
             variant="outlined"
             v-model="taskNameModel"
+            :maxLength="MAX_INPUT_LENGTH()"
           ></v-text-field>
           <v-text-field
             class="ma-2"
             label="Категория задачи"
             variant="outlined"
             v-model="taskCategoryModel"
+            :maxLength="MAX_INPUT_LENGTH()"
           ></v-text-field>
         </v-row>
       </v-container>
@@ -74,7 +76,8 @@ import { useGraphStore } from "@/store/graph";
 import { CREATE_TASK_GRAPH } from "@/api/Mutations";
 import { useMutation } from "@vue/apollo-composable";
 import { useNodeStore } from "@/features/graph/stores/nodes";
-import { convertToGqlFormat } from "@/features/graph/lib/helpers/convertToGqlFormat";
+import { convertToGqlFormat } from "@/features/graph/lib/helpers/GqlFormatter";
+import { MAX_INPUT_LENGTH } from "@/shared/config/SIZES";
 
 const nodeStore = useNodeStore();
 
@@ -192,6 +195,9 @@ export default defineComponent({
     };
   },
   methods: {
+    MAX_INPUT_LENGTH() {
+      return MAX_INPUT_LENGTH;
+    },
     createTask() {
       if (!this.activeGraph.id) {
         this.activeGraph.id = self.crypto.randomUUID();

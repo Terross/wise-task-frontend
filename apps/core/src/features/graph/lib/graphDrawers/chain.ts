@@ -18,10 +18,12 @@ export const drawChainGraph = (
   let xPositionTaken = 0;
   const linked = buildLinkedListFromGraph(nodes, edges);
 
-  edges.forEach((edge) => {
-    edge.sourceHandle = ConnectionSourceID.Left;
-    edge.targetHandle = ConnectionTargetID.Right;
-  });
+  if (!graphSettingsStore.isOneHandle) {
+    edges.forEach((edge) => {
+      edge.sourceHandle = ConnectionSourceID.Left;
+      edge.targetHandle = ConnectionTargetID.Right;
+    });
+  }
 
   if (!linked) {
     return {
