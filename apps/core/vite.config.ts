@@ -5,6 +5,7 @@ import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 import ViteFonts from 'unplugin-fonts/vite'
 import Layouts from 'vite-plugin-vue-layouts'
 import VueRouter from 'unplugin-vue-router/vite'
+import federation from '@originjs/vite-plugin-federation';
 
 // Utilities
 import { defineConfig } from 'vite'
@@ -13,12 +14,18 @@ import { fileURLToPath, URL } from 'node:url'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
+      federation({
+        name: "host",
+        remotes: {
+          graph: "http://localhost:5173/assets/remoteEntry.js"
+        },
+        shared: ["vue"]
+      }),
     VueRouter(),
     Layouts(),
     Vue({
       template: { transformAssetUrls },
     }),
-    // https://github.com/vuetifyjs/vuetify-loader/tree/master/packages/vite-plugin#readme
     Vuetify({
       autoImport: true,
       styles: {
