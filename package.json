@@ -1,0 +1,13 @@
+{
+  "name": "@wise-frontend/source",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {},
+  "private": true,
+  "dependencies": {},
+  "devDependencies": {
+    "@nx/js": "21.3.2",
+    "@nx/workspace": "21.3.2",
+    "nx": "21.3.2"
+  }
+}
