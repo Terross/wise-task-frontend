@@ -29,7 +29,7 @@
         "vue": "^3.3.0",
         "vue-react-wrapper": "^0.3.1",
         "vuedraggable": "^4.1.0",
-        "vuetify": "^3.0.0",
+        "vuetify": "^3.9.2",
       },
       "devDependencies": {
         "@babel/types": "^7.23.0",
@@ -2035,7 +2035,7 @@
 
     "vuedraggable": ["vuedraggable@4.1.0", "", { "dependencies": { "sortablejs": "1.14.0" }, "peerDependencies": { "vue": "^3.0.1" } }, "sha512-FU5HCWBmsf20GpP3eudURW3WdWTKIbEIQxh9/8GE806hydR9qZqRRxRE3RjqX7PkuLuMQG/A7n3cfj9rCEchww=="],
 
-    "vuetify": ["vuetify@3.4.9", "", { "peerDependencies": { "typescript": ">=4.7", "vite-plugin-vuetify": ">=1.0.0-alpha.12", "vue": "^3.3.0", "vue-i18n": "^9.0.0", "webpack-plugin-vuetify": ">=2.0.0-alpha.11" }, "optionalPeers": ["vue-i18n", "webpack-plugin-vuetify"] }, "sha512-pgBPdbgrHHHZWRybWevzRFezMax6CP2MccTivjOZSOF0XsnzoNOJGGpkTgIfBrk4UCp9jKx6JOJIztGtx/IcSw=="],
+    "vuetify": ["vuetify@3.9.2", "", { "peerDependencies": { "typescript": ">=4.7", "vite-plugin-vuetify": ">=2.1.0", "vue": "^3.5.0", "webpack-plugin-vuetify": ">=3.1.0" }, "optionalPeers": ["typescript", "vite-plugin-vuetify", "webpack-plugin-vuetify"] }, "sha512-Pax7YCgbE5SArY8CDM0A9dTVHnG1oU79eIBA+FEEg3dDFV7bc+0AppJJLfG2+aoaBlJf2UH7tOCflJ/U23YU1Q=="],
 
     "walker": ["walker@1.0.8", "", { "dependencies": { "makeerror": "1.0.12" } }, "sha512-ts/8E8l5b7kY0vlWLewOkDXMmPdLcVV4GmOQLyxuSswIJsweeFZtAsMF7k1Nszz+TYBQrlYRmzOnr398y1JemQ=="],
 
