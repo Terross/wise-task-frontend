@@ -30,7 +30,9 @@
     "v-network-graph": "^0.9.15",
     "vue": "^3.3.0",
     "vuedraggable": "^4.1.0",
-    "vuetify": "^3.0.0"
+    "vuetify": "^3.0.0",
+    "vis-network": "^9.1.6",
+    "vis-data": "^7.1.7"
   },
   "devDependencies": {
     "@babel/types": "^7.23.0",
@@ -56,6 +58,7 @@
     "vite-plugin-vue-layouts": "^0.10.0",
     "vite-plugin-vuetify": "^2.0.0",
     "vue-router": "^4.2.0",
-    "vue-tsc": "^1.8.0"
+    "vue-tsc": "^1.8.0",
+    "@types/vis": "^4.21.25"
   }
 }

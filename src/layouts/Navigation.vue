@@ -42,6 +42,12 @@
         value="exam"
         @click="showExamPage"
       ></v-list-item>
+      <v-list-item
+          prepend-icon="mdi-relation-one-to-one"
+          title="Бинарные отношения"
+          value="binaryRelationships"
+          @click="showBinaryRelationshipsPage"
+      ></v-list-item>
     </v-list>
   </v-navigation-drawer>
 </template>
@@ -78,6 +84,10 @@ export default defineComponent({
     },
     showExamPage() {
       this.$router.push("/exam");
+      this.$emit("hideMenu");
+    },
+    showBinaryRelationshipsPage() {
+      this.$router.push("/relations/demonstration");
       this.$emit("hideMenu");
     },
   },
