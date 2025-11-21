@@ -52,6 +52,7 @@ declare module 'vue' {
     RelationsGraphVisualization: typeof import('./src/components/relations/ui/RelationsGraphVisualization.vue')['default']
     RelationsMultiplySelect: typeof import('./src/components/relations/ui/RelationsMultiplySelect.vue')['default']
     RelationsNavigation: typeof import('./src/components/relations/RelationsNavigation.vue')['default']
+    RelationsSpeedControl: typeof import('./src/components/relations/ui/RelationsSpeedControl.vue')['default']
     RelationsTrainingComponent: typeof import('./src/components/relations/RelationsTrainingComponent.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

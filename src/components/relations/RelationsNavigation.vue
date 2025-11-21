@@ -1,26 +1,28 @@
 <template>
   <nav class="relations-navigation">
-    <router-link
-        to="/relations/demonstration"
-        class="nav-button"
-        :class="{ active: $route.path.includes('demonstration') }"
-    >
-      Демонстрация
-    </router-link>
-    <router-link
-        to="/relations/training"
-        class="nav-button"
-        :class="{ active: $route.path.includes('training') }"
-    >
-      Тренировка
-    </router-link>
-    <router-link
-        to="/relations/check"
-        class="nav-button"
-        :class="{ active: $route.path.includes('check') }"
-    >
-      Проверка
-    </router-link>
+    <div class="nav-container">
+      <router-link
+          to="/relations/demonstration"
+          class="nav-button"
+          :class="{ active: $route.path.includes('demonstration') }"
+      >
+        <span class="button-text">Демонстрация</span>
+      </router-link>
+      <router-link
+          to="/relations/training"
+          class="nav-button"
+          :class="{ active: $route.path.includes('training') }"
+      >
+        <span class="button-text">Тренировка</span>
+      </router-link>
+      <router-link
+          to="/relations/check"
+          class="nav-button"
+          :class="{ active: $route.path.includes('check') }"
+      >
+        <span class="button-text">Проверка</span>
+      </router-link>
+    </div>
   </nav>
 </template>
 
@@ -33,29 +35,71 @@ const route = useRoute()
 <style scoped>
 .relations-navigation {
   display: flex;
-  gap: 1rem;
-  padding: 1rem;
-  background: #fff;
-  border-bottom: 1px solid #e0e0e0;
+  justify-content: center;
+}
+
+.nav-container {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  align-items: flex-end;
 }
 
 .nav-button {
-  padding: 0.5rem 1rem;
-  border: 1px solid #ccc;
-  background: white;
-  border-radius: 4px;
+  position: relative;
+  padding: 1.2rem 2.5rem 0.8rem 2.5rem;
+  background: transparent;
+  border: none;
   text-decoration: none;
-  color: #333;
+  color: #286bbf;;
+  text-align: center;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  z-index: 1;
+  flex: 1;
+  min-width: 200px;
+  max-width: 400px;
+}
+
+.nav-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 15%;
+  right: 15%;
+  bottom: 0;
+  border-radius: 0 0 20px 20px;
+  transform: perspective(100px) rotateX(-35deg);
+  transform-origin: bottom;
+  z-index: -1;
+  transition: all 0.3s ease;
+  border: 3px solid #286bbf;
+}
+
+.nav-button:hover::before {
+  background: #5184bf;
+  transform: perspective(100px) rotateX(-35deg) translateY(-2px);
+}
+
+.nav-button.active::before {
+  background: #286bbf;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.button-text {
+  font-weight: 600;
+  font-size: 1.1rem;
+  display: block;
+  transform: translateY(-5px);
   transition: all 0.3s ease;
 }
 
-.nav-button:hover {
-  background: #f5f5f5;
+.nav-button:hover .button-text {
+  color: white;
 }
 
-.nav-button.active {
-  background: #007bff;
+.nav-button.active .button-text {
   color: white;
-  border-color: #007bff;
+  font-weight: 700;
 }
 </style>

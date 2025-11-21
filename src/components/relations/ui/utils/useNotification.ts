@@ -1,13 +1,17 @@
-import { ref, type Component, h, render } from 'vue'
+import { h, render } from 'vue'
 import NotificationMessage from '@/components/relations/ui/NotificationMessages.vue'
 
+
 type NotificationType = 'success' | 'error' | 'warning'
+
 
 interface NotificationOptions {
     duration?: number
 }
 
+
 let notificationInstance: any = null
+
 
 export const useNotifications = () => {
     const showNotification = (
@@ -33,6 +37,7 @@ export const useNotifications = () => {
         notificationInstance = { vnode, container }
     }
 
+
     const hideNotification = () => {
         if (notificationInstance) {
             render(null, notificationInstance.container)
@@ -41,25 +46,31 @@ export const useNotifications = () => {
         }
     }
 
+
     const showCompletionMessage = () => {
         showNotification('success', '✅ Задание выполнено верно!')
     }
+
 
     const showFailMessage = () => {
         showNotification('error', '❌ Задание выполнено неверно!')
     }
 
+
     const showErrorSelectMessage = () => {
         showNotification('error', 'Для создания графа выберите его параметры')
     }
+
 
     const showErrorSelectEdgesMessage = () => {
         showNotification('error', 'Не удастся создать граф с таким количеством ребер')
     }
 
+
     const showErrorCreateGraphMessage = () => {
         showNotification('error', 'Вначале создайте граф')
     }
+
 
     return {
         showCompletionMessage,

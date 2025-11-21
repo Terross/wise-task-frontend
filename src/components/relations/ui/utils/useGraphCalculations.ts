@@ -1,6 +1,7 @@
-import { ref, computed, type Ref } from 'vue';
+import { computed, type Ref } from 'vue';
 import type { GraphGenerationType } from '@/components/relations/types/RelationsGraph';
 import { SelectOption } from "@/components/relations/ui/types/types";
+
 
 export function useGraphCalculations(vertexCount: Ref<number>, graphType: Ref<GraphGenerationType>) {
     const getMaxEdges = (vertices: number, type: GraphGenerationType): number => {
@@ -17,16 +18,19 @@ export function useGraphCalculations(vertexCount: Ref<number>, graphType: Ref<Gr
         }
     };
 
+
     const minEdges = computed(() => {
         const vertices = vertexCount.value;
         return vertices > 0 ? vertices - 1 : 0;
     });
+
 
     const maxEdges = computed(() => {
         const vertices = vertexCount.value;
         const type = graphType.value;
         return vertices > 0 ? getMaxEdges(vertices, type) : 0;
     });
+
 
     const edgeOptions = computed((): SelectOption[] => {
         const min = minEdges.value;
@@ -42,6 +46,7 @@ export function useGraphCalculations(vertexCount: Ref<number>, graphType: Ref<Gr
         }
         return options;
     });
+
 
     return {
         minEdges,

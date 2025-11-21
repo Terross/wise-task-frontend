@@ -31,7 +31,6 @@ export class RelationsGraph {
             this.genType = GraphGenerationType.DEFAULT;
             return;
         }
-
         this.size = size;
         this.edgeNumber = edgeNumber ?? 0;
         this.genType = genType;
@@ -246,10 +245,12 @@ export class RelationsGraph {
 
     get GenType(): GraphGenerationType { return this.genType; }
 
+
     get Size(): number { return this.size; }
 
 
     get EdgeNumber(): number { return this.edgeNumber; }
+
 
     isEquals(otherGraph: RelationsGraph): boolean {
         for (let i = 0; i < this.size; i++) {
@@ -280,7 +281,6 @@ export function classicMatrixMultiply(first: number[][], second: number[][]): nu
     const cols1 = first[0].length;
     const rows2 = second.length;
     const cols2 = second[0].length;
-
     if (cols1 !== rows2) {
         throw new Error("Number of columns in first matrix must equal number of rows in second matrix");
     }
@@ -339,6 +339,7 @@ function tropicalMatrixMultiply(first: number[][], second: number[][]): number[]
         throw new Error(
             "Number of columns in first matrix must equal number of rows in second matrix");
     }
+
     let newMatrix =
         Array.from({ length: rows1 }, () => new Array(cols2).fill(-Infinity));
 

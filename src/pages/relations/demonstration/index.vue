@@ -1,7 +1,5 @@
 <template>
-  <RelationsComponent>
-    <RelationsDemonstrationComponent />
-  </RelationsComponent>
+  <RelationsDemonstrationComponent />
 </template>
 
 <script lang="ts">

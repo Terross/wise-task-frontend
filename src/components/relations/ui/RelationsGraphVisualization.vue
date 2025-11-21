@@ -9,6 +9,7 @@ import { DataSet } from 'vis-data';
 import { RelationsGraph, GraphGenerationType } from '../types/RelationsGraph';
 import { createGraphData } from './utils/utils';
 
+
 interface Props {
   graph: RelationsGraph;
   answerGraph?: RelationsGraph;
@@ -16,12 +17,13 @@ interface Props {
   mode: string;
 }
 
-const props = defineProps<Props>();
 
+const props = defineProps<Props>();
 const containerRef = ref<HTMLDivElement>();
 const network = ref<Network | null>(null);
 const nodes = ref<DataSet<Node>>(new DataSet());
 const edges = ref<DataSet<Edge>>(new DataSet());
+
 
 const options = {
   layout: { improvedLayout: false, randomSeed: 42 },
@@ -70,7 +72,6 @@ const options = {
       color: '#2c3e50',
       align: 'middle'
     },
-
   },
   interaction: {
     zoomView: false,
@@ -92,6 +93,7 @@ const options = {
   }
 };
 
+
 const initializeGraph = () => {
   if (!containerRef.value) return;
 
@@ -111,9 +113,9 @@ const initializeGraph = () => {
       y: center.y + radius * Math.sin(angle)
     });
   });
-
   network.value = new Network(containerRef.value, { nodes: nodes.value, edges: edges.value }, options);
 };
+
 
 const updateEdgeHighlight = (from: number, to: number, highlight: boolean) => {
   const edge = edges.value.get({
@@ -122,9 +124,7 @@ const updateEdgeHighlight = (from: number, to: number, highlight: boolean) => {
   })[0];
 
   if (edge) {
-
     const originalColor = (edge.color as any)?.originalColor || '#027cff';
-
     edges.value.update({
       id: edge.id,
       color: {
@@ -136,9 +136,12 @@ const updateEdgeHighlight = (from: number, to: number, highlight: boolean) => {
   }
 };
 
+
 onMounted(initializeGraph);
 
+
 watch(() => props.graph, initializeGraph, { deep: true });
+
 
 watch(() => props.highlightEdge, (newHighlight, oldHighlight) => {
   if (oldHighlight) {
@@ -148,6 +151,7 @@ watch(() => props.highlightEdge, (newHighlight, oldHighlight) => {
     updateEdgeHighlight(newHighlight.from, newHighlight.to, true);
   }
 });
+
 
 onUnmounted(() => {
   network.value?.destroy();

@@ -1,14 +1,14 @@
 import { RelationsGraph, GraphGenerationType } from '@/components/relations/types/RelationsGraph';
-import { GraphData, MatrixCell, GraphUIOptions } from '@/components/relations/ui/types/types';
+import { GraphData, GraphUIOptions } from '@/components/relations/ui/types/types';
 import { DataSet } from 'vis-data';
 import type { Node, Edge } from 'vis-network';
+
 
 export function createGraphData(
     graph: RelationsGraph,
     answerGraph: RelationsGraph | null = null,
     mode: string = 'default'
 ): GraphData {
-
     const nodes = new DataSet<Node>([]);
     const edges = new DataSet<Edge>([]);
     const matrix = graph.Matrix;

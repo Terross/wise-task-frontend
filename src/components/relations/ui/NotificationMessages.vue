@@ -13,29 +13,36 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 
+
 interface Props {
   type: 'success' | 'error' | 'warning'
   message: string
   duration?: number
 }
 
+
 const props = withDefaults(defineProps<Props>(), {
   duration: 3000
 })
 
+
 const visible = ref(false)
 
+
 const typeClass = computed(() => `notification--${props.type}`)
+
 
 const hide = () => {
   visible.value = false
 }
+
 
 onMounted(() => {
   visible.value = true
   const timer = setTimeout(hide, props.duration)
   return () => clearTimeout(timer)
 })
+
 
 defineExpose({
   hide
@@ -63,14 +70,13 @@ defineExpose({
 }
 
 .notification--error {
-  background-color: #d84747;
+  background-color: #f17575;
 }
 
 .notification--warning {
   background-color: #ff9800;
 }
 
-/* Анимации */
 .notification-enter-active {
   animation: fadeIn 0.5s;
 }

@@ -1,65 +1,75 @@
 <template>
-  <div class="check-component">
-    <h1>Режим проверки</h1>
-
-    <div class="content">
-      <button class="next-button button" @click="clickNextButton" v-if="isCompleted">Следующая степень</button>
-      <button class="check-button button" @click="clickCheckButton" v-if="isChecking">Проверить</button>
-      <div
-          v-for="(graph, index) in graphs"
-          :key="index"
-          class="graph-container"
-      >
-        <RelationsGraphRenderer
-            :graph="graph.currentGraph"
-            :answer-graph="graph.answerGraph"
-            :mode="graph.mode"
-            :is-locked="graph.isLocked"
-        >
-          <template #text-content>
-            <h3>Степень {{ graph.power }}</h3>
-          </template>
-        </RelationsGraphRenderer>
+  <RelationsComponent
+      :description-name="checkDescription.name"
+      :description-text="checkDescription.text"
+      :isCompleted="isCompleted"
+      :isChecking="isChecking"
+      @click-check="clickCheckButton"
+  >
+    <div class="check-component">
+      <div class="content">
+        <div class="graphs-grid">
+          <div
+              v-for="(graph, index) in graphs"
+              :key="index"
+              class="graph-item"
+          >
+            <RelationsGraphRenderer
+                :graph="graph.currentGraph"
+                :answer-graph="graph.answerGraph"
+                :mode="graph.mode"
+                :is-locked="graph.isLocked"
+            >
+              <template #text-content>
+                <h3>{{ graph.text }}</h3>
+              </template>
+            </RelationsGraphRenderer>
+          </div>
+         </div>
       </div>
     </div>
-  </div>
+  </RelationsComponent>
 </template>
 
 <script setup lang="ts">
 import { useRelationsGraphStore, useSelectMultiplyStore } from '@/store/relations'
-import {RelationsGraph} from "@/components/relations/types/RelationsGraph";
-import {onMounted, ref, watch} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import {useNotifications} from "@/components/relations/ui/utils/useNotification";
-
-interface GraphInstance {
-  currentGraph: RelationsGraph;
-  answerGraph: RelationsGraph;
-  mode: 'default' | 'check';
-  isLocked: boolean;
-  power: number;
-}
+import {GraphInstance} from "@/components/relations/ui/types/types";
+import RelationsComponent from "@/components/relations/RelationsComponent.vue";
+import { checkDescription } from "@/components/relations/ui/types/descriptions";
 
 const graphs = ref<GraphInstance[]>([]);
 
 const {
   showCompletionMessage,
-  showFailMessage,
-  showErrorSelectMessage,
-  showNotification
+  showFailMessage
 } = useNotifications();
-
-
 
 const graphStore = useRelationsGraphStore();
 const multiplyStore = useSelectMultiplyStore();
 
 const isCompleted = ref(false);
-const isChecking = ref(false);
+
+let isFinished = false;
+
+const isChecking = computed(() => {
+  return graphStore.countGraphs > 1 && !isCompleted.value && !isFinished;
+});
 
 const updateGraphs = () => {
   graphs.value = [];
-  for (let i = graphStore.graphCount - 1; i >= 1; i--)  {
+  if (graphStore.created){
+    graphs.value.push({
+      currentGraph: graphStore.firstGraph,
+      answerGraph: graphStore.firstGraph,
+      mode: 'default',
+      isLocked: true,
+      text: 'Начальный граф'
+    });
+  }
 
+  for (let i = graphStore.graphCount - 1; i >= 1; i--)  {
     let mode = 'default';
     let isLocked = true;
     if (!graphStore.getStateById(i)) {
@@ -72,11 +82,12 @@ const updateGraphs = () => {
       answerGraph: graphStore.getAnswerGraphById(i),
       mode: mode,
       isLocked: isLocked,
-      power: graphStore.getCurrentPower - (graphStore.graphCount - i - 1)
+      text: `Степень: ${graphStore.getCurrentPower - (graphStore.graphCount - i - 1)}`
     });
   }
-  isChecking.value = graphs.value.length > 0;
+  isFinished = false;
 };
+
 
 watch(
     [
@@ -90,36 +101,31 @@ watch(
     { immediate: true }
 );
 
-onMounted(() => {
-  isCompleted.value = false;
-  isChecking.value = false;
-  const isCreated = graphStore.created;
-  if (isCreated) {
-    const tempGraph = graphStore.firstGraph;
-    graphStore.createGraph(tempGraph.Size, tempGraph.EdgeNumber, tempGraph.GenType);
-    graphStore.addGraph(multiplyStore.multiplyType, multiplyStore.multiplyPower);
-    isChecking.value = true;
-  }
-  updateGraphs();
-});
-
-const clickNextButton = () => {
-  graphStore.addGraph();
-  isCompleted.value = false;
-}
-
 const clickCheckButton = () => {
   if (graphStore.lastGraph.isEquals(graphStore.lastAnswerGraph)){
     showCompletionMessage();
-    isCompleted.value = true;
-    isChecking.value = false;
+    graphs.value[graphs.value.length - 1].isLocked = true;
+    if (graphStore.getCurrentPower < 5){
+      isCompleted.value = true;
+    } else{
+      isFinished = true;
+    }
     graphs.value[graphs.value.length - 1].isLocked = true;
   } else {
     showFailMessage();
   }
 }
 
-
+onMounted(() => {
+  isCompleted.value = false;
+  const isCreated = graphStore.created;
+  if (isCreated) {
+    const tempGraph = graphStore.firstGraph;
+    graphStore.createGraph(tempGraph.Size, tempGraph.EdgeNumber, tempGraph.GenType);
+    graphStore.addGraph(multiplyStore.multiplyType, multiplyStore.multiplyPower);
+  }
+  updateGraphs();
+});
 </script>
 
 <style scoped>
@@ -129,24 +135,15 @@ const clickCheckButton = () => {
   gap: 20px;
 }
 
-.graph-container {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 15px;
-  background: #f9f9f9;
+.graphs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  width: 100%;
 }
 
-.button {
-  padding: 0.5rem 1rem;
-  border: 1px solid #ccc;
-  background: #007bff;
-  border-radius: 4px;
-  text-decoration: none;
-  color: #ffffff;
-  transition: all 0.3s ease;
-}
-
-.button:hover {
-  background: #0074e8;
+.graph-item {
+  display: flex;
+  flex-direction: column;
 }
 </style>

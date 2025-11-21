@@ -1,61 +1,73 @@
 <template>
-  <div class="training-component">
-    <h1>Режим тренажера</h1>
-
-    <div class="content">
-      <button class="next-button button" @click="clickNextButton" v-if="isCompleted">Следующая степень</button>
-      <div
-          v-for="(graph, index) in graphs"
-          :key="index"
-          class="graph-container"
-      >
-        <RelationsGraphRenderer
-            :graph="graph.currentGraph"
-            :answer-graph="graph.answerGraph"
-            :mode="graph.mode"
-            :is-locked="graph.isLocked"
-            @completed="handleTrainingCompleted"
-        >
-          <template #text-content>
-            <h3>Степень {{ graph.power }}</h3>
-          </template>
-        </RelationsGraphRenderer>
+  <RelationsComponent
+      :description-name="trainingDescription.name"
+      :description-text="trainingDescription.text"
+      :isCompleted="isCompleted"
+  >
+    <div class="training-component">
+      <div class="content">
+        <div class="graphs-grid">
+          <div
+              v-for="(graph, index) in graphs"
+              :key="index"
+              class="graph-item"
+          >
+            <RelationsGraphRenderer
+                :graph="graph.currentGraph"
+                :answer-graph="graph.answerGraph"
+                :mode="graph.mode"
+                :is-locked="graph.isLocked"
+                @completed="handleTrainingCompleted"
+            >
+              <template #text-content>
+                <h3>{{ graph.text }}</h3>
+              </template>
+            </RelationsGraphRenderer>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
+  </RelationsComponent>
 </template>
 
 <script setup lang="ts">
 import { useRelationsGraphStore } from '@/store/relations'
-import {RelationsGraph} from "@/components/relations/types/RelationsGraph";
 import {onMounted, ref, watch} from "vue";
 import { useNotifications } from "./ui/utils/useNotification"
+import { GraphInstance } from "@/components/relations/ui/types/types";
+import RelationsComponent from "@/components/relations/RelationsComponent.vue";
+import { trainingDescription } from "@/components/relations/ui/types/descriptions";
 
-interface GraphInstance {
-  currentGraph: RelationsGraph;
-  answerGraph: RelationsGraph;
-  mode: 'default' | 'training';
-  isLocked: boolean;
-  power: number;
-}
 
 const graphs = ref<GraphInstance[]>([]);
-
 const graphStore = useRelationsGraphStore();
 
+
 const {
-  showCompletionMessage,
-  showFailMessage,
-  showErrorSelectMessage,
-  showNotification
+  showCompletionMessage
 } = useNotifications();
+
 
 const isCompleted = ref(false);
 
-const updateGraphs = () => {
-  graphs.value = [];
-  for (let i = graphStore.graphCount - 1; i >= 1; i--)  {
 
+const updateGraphs = () => {
+  if (graphStore.created){
+    isCompleted.value = graphStore.lastGraph.isEquals(graphStore.lastAnswerGraph) && graphStore.graphCount > 1;
+  }
+  graphs.value = [];
+
+  if (graphStore.created){
+    graphs.value.push({
+      currentGraph: graphStore.firstGraph,
+      answerGraph: graphStore.firstGraph,
+      mode: 'default',
+      isLocked: true,
+      text: 'Начальный граф'
+    });
+  }
+
+  for (let i = graphStore.graphCount - 1; i >= 1; i--)  {
     let mode = 'default';
     let isLocked = true;
     if (!graphStore.getStateById(i)) {
@@ -68,11 +80,11 @@ const updateGraphs = () => {
       answerGraph: graphStore.getAnswerGraphById(i),
       mode: mode,
       isLocked: isLocked,
-      power: graphStore.getCurrentPower - (graphStore.graphCount - i - 1)
+      text: `Степень: ${graphStore.getCurrentPower - (graphStore.graphCount - i - 1)}`
     });
-
   }
 };
+
 
 watch(
     [
@@ -85,26 +97,17 @@ watch(
     { immediate: true }
 );
 
+
 onMounted(() => {
-  if (graphStore.created){
-    isCompleted.value = graphStore.lastGraph.isEquals(graphStore.lastAnswerGraph);
-  }
   updateGraphs();
 });
 
+
 const handleTrainingCompleted = () => {
   showCompletionMessage();
-  if (graphStore.getCurrentPower < 5) {
-    isCompleted.value = true;
-  }
+  graphs.value[1].isLocked = true;
+  isCompleted.value = true;
 };
-
-const clickNextButton = () => {
-  graphStore.addGraph();
-  isCompleted.value = false;
-}
-
-
 </script>
 
 <style scoped>
@@ -114,24 +117,15 @@ const clickNextButton = () => {
   gap: 20px;
 }
 
-.graph-container {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 15px;
-  background: #f9f9f9;
+.graphs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  width: 100%;
 }
 
-.button {
-  padding: 0.5rem 1rem;
-  border: 1px solid #ccc;
-  background: #007bff;
-  border-radius: 4px;
-  text-decoration: none;
-  color: #ffffff;
-  transition: all 0.3s ease;
-}
-
-.button:hover {
-  background: #0074e8;
+.graph-item {
+  display: flex;
+  flex-direction: column;
 }
 </style>

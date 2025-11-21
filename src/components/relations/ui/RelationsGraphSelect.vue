@@ -1,12 +1,11 @@
 <template>
   <div class="graph-selects">
-    <!-- Выбор типа графа -->
     <div class="select-group">
       <label for="graph-type">Тип графа:</label>
       <select
           id="graph-type"
           v-model="selectedGraphType"
-          class="form-select"
+          class="select-item"
       >
         <option value="">Не выбрано</option>
         <option value="DEFAULT">Любой</option>
@@ -16,13 +15,12 @@
       </select>
     </div>
 
-    <!-- Выбор количества вершин -->
     <div class="select-group">
       <label for="vertex-count">Количество вершин:</label>
       <select
           id="vertex-count"
           v-model="selectedVertexCount"
-          class="form-select"
+          class="select-item"
       >
         <option value="-1">Не выбрано</option>
         <option
@@ -35,14 +33,13 @@
       </select>
     </div>
 
-    <!-- Выбор количества рёбер -->
     <div class="select-group">
       <label for="edge-count">Количество рёбер:</label>
       <select
           id="edge-count"
           v-model="selectedEdgeCount"
           :disabled="!isEdgeSelectEnabled"
-          class="form-select"
+          class="select-item"
       >
         <option
             v-for="option in computedEdgeOptions"
@@ -63,11 +60,14 @@ import type { GraphGenerationType } from '@/components/relations/types/Relations
 import {SelectOption} from "@/components/relations/ui/types/types";
 import {useSelectGraphStore} from "@/store/relations";
 
+
 const selectStore = useSelectGraphStore();
+
 
 const selectedGraphType = ref<GraphGenerationType>(selectStore.graphGenType);
 const selectedVertexCount = ref<string>(selectStore.countVertex);
 const selectedEdgeCount = ref<string>(selectStore.countEdge);
+
 
 const vertexOptions: SelectOption[] = [
   { value: '3', text: '3' },
@@ -77,22 +77,25 @@ const vertexOptions: SelectOption[] = [
   { value: '7', text: '7' },
   { value: '8', text: '8' },
   { value: '9', text: '9' },
-  { value: '9', text: '9' },
 ];
+
 
 const numericVertexCount = computed(() => {
   const value = parseInt(selectedVertexCount.value);
   return isNaN(value) || value < 0 ? -1 : value;
 });
 
+
 const { edgeOptions, minEdges, maxEdges } = useGraphCalculations(
     numericVertexCount,
     selectedGraphType
 );
 
+
 const isEdgeSelectEnabled = computed(() => {
   return numericVertexCount.value > 0 && selectedGraphType.value !== '';
 });
+
 
 const computedEdgeOptions = computed(() => {
   if (!isEdgeSelectEnabled.value) {
@@ -101,9 +104,11 @@ const computedEdgeOptions = computed(() => {
   return edgeOptions.value;
 });
 
+
 watch([selectedGraphType, selectedVertexCount], () => {
   updateEdgeCountSelection();
 });
+
 
 const updateEdgeCountSelection = () => {
   if (!isEdgeSelectEnabled.value) {
@@ -120,9 +125,12 @@ const updateEdgeCountSelection = () => {
   }
 };
 
+
 const getGraphType = (): GraphGenerationType => selectedGraphType.value;
 
+
 const getVertexCount = (): number => numericVertexCount.value;
+
 
 const getEdgeCount = (): number => {
   const value = parseInt(selectedEdgeCount.value);
@@ -134,6 +142,7 @@ const getEdgeCount = (): number => {
   }
   return value;
 };
+
 
 const getMinEdges = (): number => minEdges.value;
 const getMaxEdges = (): number => maxEdges.value;
@@ -165,18 +174,14 @@ defineExpose({
 }
 
 .select-group label {
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 1.1rem;
 }
 
-.form-select {
+.select-item {
   padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: white;
-}
-
-.form-select:disabled {
-  background-color: #f5f5f5;
-  color: #999;
+  border: 3px solid #d0dcf2;
+  border-radius: 15px;
+  background: white;
 }
 </style>

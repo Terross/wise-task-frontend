@@ -18,7 +18,7 @@
             @mouseleave="onCellLeave(row-1, col-1)"
         >
           <input
-              v-if="isEditable && !isDemonstrationMode"
+              v-if="isEditable"
               :ref="el => setInputRef(el, row-1, col-1)"
               type="text"
               :value="getInputValue(row-1, col-1)"
@@ -40,6 +40,7 @@
 import {ref, computed, watch} from 'vue';
 import { RelationsGraph } from '../types/RelationsGraph';
 
+
 interface Props {
   graph: RelationsGraph;
   answerGraph?: RelationsGraph;
@@ -52,6 +53,7 @@ interface Props {
   totalSteps?: number;
 }
 
+
 const props = withDefaults(defineProps<Props>(), {
   isLocked: false,
   onCellChange: () => {},
@@ -61,14 +63,18 @@ const props = withDefaults(defineProps<Props>(), {
   totalSteps: 0
 });
 
+
 const emit = defineEmits<{
   demonstrationCellRevealed: [row: number, col: number, value: number];
 }>();
 
+
 const inputRefs = ref<Record<string, HTMLInputElement>>({});
 const localInputValues = ref<Record<string, string>>({});
 const size = computed(() => props.graph.size);
-const isEditable = computed(() => ['training', 'check'].includes(props.mode));
+const isEditable = computed(() =>
+    ['training', 'check'].includes(props.mode) && !props.isLocked
+);
 const isDemonstrationMode = computed(() => props.mode === 'demonstration');
 const maxLength = computed(() => {
   const maxWeight = props.answerGraph?.findMaxWeight() || props.graph.findMaxWeight();
@@ -79,8 +85,10 @@ const maxLength = computed(() => {
 const activeRow = ref<number | null>(null);
 const activeCol = ref<number | null>(null);
 
+
 watch(() => props.demonstrationStep, (newStep, oldStep) => {
   if (!isDemonstrationMode.value || !props.answerGraph) return;
+  if (newStep === undefined || oldStep === undefined) return;
 
   const currentStep = Math.max(newStep, oldStep ? oldStep : 0);
   const row = Math.floor((currentStep > 0 ? currentStep - 1 : 0) / size.value);
@@ -90,6 +98,7 @@ watch(() => props.demonstrationStep, (newStep, oldStep) => {
   emit('demonstrationCellRevealed', row, col, value);
 }, { immediate: true });
 
+
 const getInputValue = (row: number, col: number): string => {
   const key = `${row}-${col}`;
   if (localInputValues.value[key] !== undefined) {
@@ -98,10 +107,12 @@ const getInputValue = (row: number, col: number): string => {
   return getCellValue(row, col);
 };
 
+
 const getCellValue = (row: number, col: number): string => {
   const value = props.graph.Matrix[row][col];
   return value === -1 ? '' : String(value);
 };
+
 
 const getDisplayValue = (row: number, col: number): string => {
   if (isDemonstrationMode.value && props.answerGraph) {
@@ -117,14 +128,12 @@ const getDisplayValue = (row: number, col: number): string => {
     const answerValue = props.answerGraph.Matrix[row][col];
     return answerValue === -1 ? '' : String(answerValue);
   }
-
-  const value = props.graph.Matrix[row][col];
-  return value === -1 ? '' : String(value);
+  return getCellValue(row, col);
 };
+
 
 const getCellClass = (row: number, col: number): string => {
   const classes = [];
-
   if (props.mode === 'training' && props.answerGraph) {
     const isCorrect = props.graph.Matrix[row][col] === props.answerGraph.Matrix[row][col];
     classes.push(isCorrect ? 'cell-correct' : 'cell-incorrect');
@@ -144,17 +153,19 @@ const getCellClass = (row: number, col: number): string => {
       classes.push('cell-hidden');
     }
   }
-
   return classes.join(' ');
 };
+
 
 const getRowHeaderClass = (row: number): string => {
   return activeRow.value === row ? 'row-header-highlighted' : '';
 };
 
+
 const getColumnHeaderClass = (col: number): string => {
   return activeCol.value === col ? 'column-header-highlighted' : '';
 };
+
 
 const setInputRef = (el: any, row: number, col: number) => {
   if (el) {
@@ -162,11 +173,13 @@ const setInputRef = (el: any, row: number, col: number) => {
   }
 };
 
+
 const onCellHover = (row: number, col: number) => {
   activeRow.value = row;
   activeCol.value = col;
   props.onCellHover(row, col);
 };
+
 
 const onCellLeave = (row: number, col: number) => {
   activeRow.value = null;
@@ -174,20 +187,21 @@ const onCellLeave = (row: number, col: number) => {
   props.onCellLeave(row, col);
 };
 
+
 const onInputChange = (event: Event, row: number, col: number) => {
   const target = event.target as HTMLInputElement;
   const value = target.value.replace(/[^\d]/g, '');
-
   const key = `${row}-${col}`;
   localInputValues.value[key] = value;
-
   target.value = value;
 };
+
 
 const onInputBlur = (event: Event, row: number, col: number) => {
   const target = event.target as HTMLInputElement;
   commitValue(target.value, row, col);
 };
+
 
 const onInputEnter = (event: Event, row: number, col: number) => {
   const target = event.target as HTMLInputElement;
@@ -195,11 +209,10 @@ const onInputEnter = (event: Event, row: number, col: number) => {
   target.blur();
 };
 
+
 const commitValue = (value: string, row: number, col: number) => {
   const key = `${row}-${col}`;
-
   delete localInputValues.value[key];
-
   const numericValue = value === '' ? -1 : parseInt(value, 10);
   props.onCellChange(row, col, isNaN(numericValue) ? -1 : numericValue);
 };
@@ -238,15 +251,12 @@ defineExpose({
   font-weight: bold;
 }
 
-
 .row-header-highlighted {
   background-color: #d4ebff !important;
-  font-weight: bold !important;
 }
 
 .column-header-highlighted {
   background-color: #d4ebff !important;
-  font-weight: bold !important;
 }
 
 .cell-correct {
@@ -254,7 +264,7 @@ defineExpose({
 }
 
 .cell-incorrect {
-  background-color: #ffaaaa;
+  background-color: #ecbbbb;
 }
 
 .cell-revealed {
