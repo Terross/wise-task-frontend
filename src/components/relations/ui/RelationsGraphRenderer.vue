@@ -100,6 +100,7 @@ const onDemonstrationCellRevealed = (row: number, col: number, value: number) =>
 .graph-renderer {
   width: 100%;
   min-width: 0;
+  max-width: 100%;
   border: 3px solid #ccc;
   border-radius: 50px;
   padding: 15px;

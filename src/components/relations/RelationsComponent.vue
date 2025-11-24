@@ -184,7 +184,8 @@ defineExpose({
 .controls-section {
   padding-top: 2rem;
   display: flex;
-  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   gap: 2rem;
   padding-left: 2rem;
   padding-right: 2rem;
@@ -194,6 +195,8 @@ defineExpose({
   flex: 1;
   padding: 2rem;
   border-radius: 50px;
+  min-width: 0;
+  max-width: 100%;
   border: 3px solid #d0dcf2;
 }
 
