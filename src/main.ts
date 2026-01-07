@@ -33,7 +33,7 @@ async function getAuthToken(): Promise<string | null> {
 const cache = new InMemoryCache({ addTypename: false });
 
 const httpLink = new HttpLink({
-  uri: "http://localhost:8084/graphql",
+  uri: "https://wisetask.ru:82/graphql",
 });
 
 const authLink = setContext(async (_, { headers }) => {
