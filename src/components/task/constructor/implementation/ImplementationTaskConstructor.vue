@@ -51,6 +51,7 @@ import { GET_ALL_PLUGINS } from "@/api/Queries";
 import { usePluginStore } from "@/store/plugin";
 import { CREATE_TASK_IMPLEMENTATION } from "@/api/Mutations";
 import { MAX_INPUT_LENGTH } from "@/shared/config/SIZES";
+import { bulkIndexTasks } from "@/services/semanticSearchApi";
 
 export default defineComponent({
   setup() {
@@ -110,6 +111,7 @@ export default defineComponent({
       onDone((response) => {
         console.log(response);
         this.alert = true;
+        this.indexTaskForSemantic();
       });
 
       onError(({ graphQLErrors }) => {
@@ -119,6 +121,20 @@ export default defineComponent({
           });
         }
       });
+    },
+    async indexTaskForSemantic() {
+      try {
+        await bulkIndexTasks([
+          {
+            id: this.taskImplementationInput.id,
+            name: this.taskImplementationInput.name,
+            description: this.taskImplementationInput.description,
+            category: this.taskImplementationInput.category,
+          },
+        ]);
+      } catch (error) {
+        console.error("Failed to sync implementation task with semantic search", error);
+      }
     },
   },
 });
