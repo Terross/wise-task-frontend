@@ -18,8 +18,7 @@ export type SemanticPluginInput = {
 
 export type SemanticPluginWithScore = SemanticPluginInput & { score: number };
 
-const SEMANTIC_SEARCH_API_URL =
-  import.meta.env.VITE_SEMANTIC_SEARCH_API_URL ?? "http://localhost:8001";
+const SEMANTIC_SEARCH_API_URL = "http://localhost:8001";
 
 export async function bulkIndexTasks(
   tasks: SemanticTaskInput[],
