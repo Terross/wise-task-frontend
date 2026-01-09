@@ -221,3 +221,17 @@ export const GET_ALL_TASKS = gql`
     }
   }
 `;
+
+export const GET_STATISTIC = gql`
+  query GetStatistic($request: StatisticRequestInput!) {
+    getStatistic(request: $request) {
+      scope
+      type
+      updated_at
+      task_id
+      user_id
+      value
+      event_type
+    }
+  }
+`

@@ -114,15 +114,41 @@
             </v-list>
           </v-card-text>
         </v-card>
+        <v-card>
+            <v-card-text class="text-center">
+            <!-- Загрузка -->
+            <div v-if="statisticLoading" class="d-flex align-center justify-center">
+                <v-progress-circular indeterminate size="20" width="2" class="mr-2" />
+                <span class="text-caption">Загрузка...</span>
+            </div>
+            
+            <!-- Данные -->
+            <div v-else-if="statistic">
+                <div class="text-h5 font-weight-bold primary--text mb-1">
+                {{ formatPercentage(statistic.value) }}
+                </div>
+                <div class="text-body-2">
+                успешно решили задачу
+                </div>
+            </div>
+            
+            <!-- Если данных нет -->
+            <div v-else class="text-body-2">
+                Ошибка загрузки сервиса статистики
+            </div>
+            </v-card-text>
+        </v-card>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
+
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
 import { SOLVE_TASK_GRAPH } from "@/api/Mutations";
-import { GET_GRAPH_BY_ID, GET_TASK } from "@/api/Queries";
+import { GET_GRAPH_BY_ID, GET_TASK, GET_STATISTIC } from "@/api/Queries";
+import { StatisticRequestInput, StatisticResponse} from "@/api/Statistic";
 import { useTaskStore } from "@/store/task";
 import { useMutation, useQuery } from "@vue/apollo-composable";
 import { storeToRefs } from "pinia";
@@ -135,6 +161,7 @@ import {
   directGraphConfigs,
   undirectGraphConfigs,
 } from "@/components/graph/network/helper/graphConfig";
+
 
 const props = defineProps({
   id: String,
@@ -155,6 +182,11 @@ const errorAlert = ref(false);
 const result = ref<PluginResult[]>([]);
 const extraGraph = ref<null | GraphType>(null);
 
+// статистика
+const statistic = ref<StatisticResponse | null>(null);
+const statisticLoading = ref(false);
+//
+
 const { onResult: onTaskResult } = useQuery(GET_TASK, { id: props.id });
 onTaskResult((response) => {
   if (response.data) {
@@ -174,9 +206,44 @@ watch(
     onGraphResult((response) => {
       extraGraph.value = response.data.getGraphById;
     });
+    if (newValue?.id) { // статистика
+      loadStatisticForTask(newValue.id);
+    }
   },
   { immediate: true },
 );
+
+// cтатистика
+const loadStatisticForTask = (taskId: string) => {
+  if (!taskId) return;
+  
+  statisticLoading.value = true;
+  
+  const request: StatisticRequestInput = {
+    type: 'SUCCESS_RATE',
+    scope: 'TASK',
+    event_type: 'task_success,task_wrong',
+    task_id: taskId
+  };
+  
+  const { onResult } = useQuery(
+    GET_STATISTIC,
+    { request },
+    { fetchPolicy: 'cache-first' }
+  );
+  
+  onResult((result) => {
+    if (result.data?.getStatistic) {
+      statistic.value = result.data.getStatistic;
+    }
+    statisticLoading.value = false;
+  });
+};
+
+const formatPercentage = (value: number) => {
+  return `${value.toFixed(1)}%`;
+};
+// статистика
 
 const getColorCode = (color: string) => {
   console.log(color);
