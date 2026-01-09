@@ -78,6 +78,7 @@ import { useMutation } from "@vue/apollo-composable";
 import { useNodeStore } from "@/features/graph/stores/nodes";
 import { convertToGqlFormat } from "@/features/graph/lib/helpers/GqlFormatter";
 import { MAX_INPUT_LENGTH } from "@/shared/config/SIZES";
+import { bulkIndexTasks } from "@/services/semanticSearchApi";
 
 const nodeStore = useNodeStore();
 
@@ -220,6 +221,7 @@ export default defineComponent({
       onDone((response) => {
         console.log(response);
         this.alert = true;
+        this.indexTaskForSemantic();
       });
 
       onError(({ graphQLErrors }) => {
@@ -229,6 +231,20 @@ export default defineComponent({
           });
         }
       });
+    },
+    async indexTaskForSemantic() {
+      try {
+        await bulkIndexTasks([
+          {
+            id: this.taskGraphInput.id,
+            name: this.taskGraphInput.name,
+            description: this.taskGraphInput.description,
+            category: this.taskGraphInput.category,
+          },
+        ]);
+      } catch (error) {
+        console.error("Failed to sync task with semantic search", error);
+      }
     },
   },
 });
