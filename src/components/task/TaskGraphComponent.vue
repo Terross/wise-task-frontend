@@ -145,10 +145,10 @@
 
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { SOLVE_TASK_GRAPH } from "@/api/Mutations";
 import { GET_GRAPH_BY_ID, GET_TASK, GET_STATISTIC } from "@/api/Queries";
-import { StatisticRequestInput, StatisticResponse} from "@/api/Statistic";
+import { StatisticRequestInput, StatisticResponse } from "@/api/Statistic";
 import { useTaskStore } from "@/store/task";
 import { useMutation, useQuery } from "@vue/apollo-composable";
 import { storeToRefs } from "pinia";
@@ -161,7 +161,7 @@ import {
   directGraphConfigs,
   undirectGraphConfigs,
 } from "@/components/graph/network/helper/graphConfig";
-
+import { eventsApi } from "@/api/rest";
 
 const props = defineProps({
   id: String,
@@ -182,11 +182,10 @@ const errorAlert = ref(false);
 const result = ref<PluginResult[]>([]);
 const extraGraph = ref<null | GraphType>(null);
 
-// статистика
-const statistic = ref<StatisticResponse | null>(null);
-const statisticLoading = ref(false);
-//
+// Для событий
+const isTaskOpened = ref(false);
 
+// Загрузка задачи
 const { onResult: onTaskResult } = useQuery(GET_TASK, { id: props.id });
 onTaskResult((response) => {
   if (response.data) {
@@ -194,24 +193,28 @@ onTaskResult((response) => {
   }
 });
 
-watch(
-  activeTask,
-  (newValue) => {
-    if (!newValue.graph?.id) return;
-
-    const { onResult: onGraphResult } = useQuery(GET_GRAPH_BY_ID, {
-      id: newValue.graph.id,
-    });
-
-    onGraphResult((response) => {
-      extraGraph.value = response.data.getGraphById;
-    });
-    if (newValue?.id) { // статистика
-      loadStatisticForTask(newValue.id);
-    }
-  },
-  { immediate: true },
+// Загрузка графика
+const { onResult: onGraphResult } = useQuery(
+  GET_GRAPH_BY_ID,
+  () => ({
+    id: activeTask.value?.graph?.id || "",
+  }),
+  () => ({
+    enabled: !!activeTask.value?.graph?.id,
+    fetchPolicy: "cache-first",
+  })
 );
+
+onGraphResult((response) => {
+  if (response.data?.getGraphById) {
+    extraGraph.value = response.data.getGraphById;
+  }
+});
+
+// статистика
+const statistic = ref<StatisticResponse | null>(null);
+const statisticLoading = ref(false);
+//
 
 // cтатистика
 const loadStatisticForTask = (taskId: string) => {
@@ -236,17 +239,153 @@ const loadStatisticForTask = (taskId: string) => {
     if (result.data?.getStatistic) {
       statistic.value = result.data.getStatistic;
     }
+    console.log(statistic);
     statisticLoading.value = false;
   });
 };
 
 const formatPercentage = (value: number) => {
-  return `${value.toFixed(1)}%`;
+  return `${(value || 0).toFixed(1)}%`;
 };
 // статистика
 
+// Отслеживаем изменения активной задачи
+watch(
+  () => activeTask.value,
+  (newValue) => {
+    if (!newValue?.graph?.id) return;
+
+    const { onResult: onGraphResult } = useQuery(GET_GRAPH_BY_ID, {
+      id: newValue.graph.id,
+    });
+
+    onGraphResult((response) => {
+      extraGraph.value = response.data.getGraphById;
+    });
+    
+    if (newValue?.id) {
+      console.log("Загружаем статистику")
+      loadStatisticForTask(newValue.id);
+      
+    }
+  },
+  { immediate: true },
+);
+
+// === ФУНКЦИИ ДЛЯ ОТПРАВКИ СОБЫТИЙ ===
+
+/**
+ * Универсальная функция отправки события
+ */
+const sendEvent = async (eventType: string, eventValue: string): Promise<boolean> => {
+  try {
+    console.group(`Отправка события: ${eventType}`);
+    
+    if (!activeTask.value?.id) {
+      console.warn("ID задачи не найден");
+      console.groupEnd();
+      return false;
+    }
+
+    const currentToken = eventsApi.getCurrentToken?.();
+    if (!currentToken) {
+      console.warn("Токен не установлен");
+    }
+
+    const eventData = {
+      taskId: activeTask.value.id,
+      eventType: eventType,
+      eventEntityId: 0,
+      eventValue: eventValue
+    };
+
+    console.log("Данные события:", eventData);
+    
+    const result = await eventsApi.createEvent(eventData);
+    
+    if (typeof result === 'object' && 'detail' in result) {
+      console.error(`Ошибка API: ${result.detail}`);
+      console.groupEnd();
+      return false;
+    } else {
+      console.log(`Событие отправлено`);
+      console.groupEnd();
+      return true;
+    }
+  } catch (error) {
+    console.error(`Ошибка при отправке события ${eventType}:`, error);
+    console.groupEnd();
+    return false;
+  }
+};
+
+/**
+ * Отправка события открытия задачи
+ */
+const sendOpenTaskEvent = async (): Promise<void> => {
+  if (!isTaskOpened.value && activeTask.value?.id && activeTask.value?.name) {
+    const success = await sendEvent(
+      "open_task",
+      `Открыта задача: ${activeTask.value.name}`
+    );
+    if (success) {
+      isTaskOpened.value = true;
+    }
+  }
+};
+
+/**
+ * Отправка события отправки решения
+ */
+const sendSubmitEvent = async (): Promise<void> => {
+  if (activeTask.value?.name) {
+    await sendEvent(
+      "submit",
+      `Отправлено решение для задачи: ${activeTask.value.name}`
+    );
+  }
+};
+
+/**
+ * Отправка события успешного решения
+ */
+const sendTaskSuccessEvent = async (): Promise<void> => {
+  if (activeTask.value?.name) {
+    await sendEvent(
+      "task_success",
+      `Задача успешно решена: ${activeTask.value.name}`
+    );
+  }
+};
+
+/**
+ * Отправка события ошибочного решения
+ */
+const sendTaskWrongEvent = async (): Promise<void> => {
+  if (activeTask.value?.name) {
+    await sendEvent(
+      "task_wrong",
+      `Задача решена с ошибками: ${activeTask.value.name}`
+    );
+  }
+};
+
+// Отправляем событие открытия задачи
+watch(
+  () => activeTask.value,
+  (newTask) => {
+    if (newTask?.id && newTask?.name && !isTaskOpened.value) {
+      setTimeout(() => {
+        sendOpenTaskEvent();
+      }, 500);
+    }
+  },
+  { immediate: true }
+);
+
+// === КОНЕЦ ФУНКЦИЙ ДЛЯ СОБЫТИЙ ===
+
 const getColorCode = (color: string) => {
-  console.log(color);
   switch (color) {
     case "RED":
       return "#ff0000";
@@ -274,8 +413,8 @@ const graphData = computed(() => {
       label: String(vertex.label),
       weight: vertex.weight,
       color: vertex.color,
-      xCoordinate: vertex.xCoordinate, // Add xCoordinate
-      yCoordinate: vertex.yCoordinate, // Add yCoordinate
+      xCoordinate: vertex.xCoordinate,
+      yCoordinate: vertex.yCoordinate,
     };
     layouts.nodes[vertex.id] = {
       x: vertex.xCoordinate,
@@ -348,6 +487,14 @@ const formatDescription = (description: string) => {
 };
 
 const solveTask = async () => {
+  if (!activeTask.value?.id || !activeTask.value?.name) {
+    console.error("Данные задачи не загружены");
+    return;
+  }
+
+  // Отправляем событие submit
+  await sendSubmitEvent();
+
   const graph = convertToGqlFormat(nodeStore);
   graph.id = self.crypto.randomUUID();
 
@@ -371,11 +518,13 @@ const solveTask = async () => {
     const { isCorrect, pluginResults } = response.data.solveTaskGraph;
 
     if (isCorrect) {
+      await sendTaskSuccessEvent();
       successAlert.value = true;
       errorAlert.value = false;
       emit("isCorrect", true);
       props.onCorrectSolution?.();
     } else {
+      await sendTaskWrongEvent();
       errorAlert.value = true;
       successAlert.value = false;
 
@@ -401,6 +550,28 @@ const solveTask = async () => {
     successAlert.value = false;
   }
 };
+
+// Функция для отладки
+declare global {
+  interface Window {
+    checkEventsStatus?: () => void;
+  }
+}
+
+onMounted(() => {
+  window.checkEventsStatus = () => {
+    console.group('📊 Статус Events API');
+    const token = eventsApi.getCurrentToken?.();
+    console.log('Токен установлен:', token ? '✅ Да' : '❌ Нет');
+    if (token) {
+      console.log('Длина токена:', token.length);
+      console.log('Первые 30 символов:', token.substring(0, 30) + '...');
+    }
+    const state = eventsApi.getState?.();
+    console.log('Состояние:', state);
+    console.groupEnd();
+  };
+});
 </script>
 
 <style scoped>
