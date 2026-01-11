@@ -25,6 +25,7 @@ import router from "./router";
 import { setContext } from "@apollo/client/link/context";
 import { UserStorageKeys } from "@/entities/user/storage/config";
 import { UserStorageGetters } from "@/entities/user/storage/getters";
+import "@/api/rest/eventsInit";
 
 async function getAuthToken(): Promise<string | null> {
   return await UserStorageGetters.getToken();
@@ -33,7 +34,7 @@ async function getAuthToken(): Promise<string | null> {
 const cache = new InMemoryCache({ addTypename: false });
 
 const httpLink = new HttpLink({
-  uri: "https://wisetask.ru:82/graphql",
+  uri: "http://localhost:8084/graphql",
 });
 
 const authLink = setContext(async (_, { headers }) => {
