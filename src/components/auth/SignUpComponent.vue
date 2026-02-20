@@ -77,16 +77,6 @@
                 v-model="repeatedPassword"
               >
               </v-text-field>
-              <v-text-field
-                v-if="role == 'Студент'"
-                placeholder="Введите группу"
-                prepend-inner-icon="mdi-account-group"
-                color="primary"
-                v-model="group"
-                density="compact"
-                variant="outlined"
-              >
-              </v-text-field>
               <v-row>
                 <v-col>
                   <v-btn
@@ -135,7 +125,6 @@ export default defineComponent({
       patronymic: "",
       password: "",
       repeatedPassword: "",
-      role: "Студент",
       visible: false,
       group: "",
       profileStore: useProfileStore(),
@@ -162,7 +151,6 @@ export default defineComponent({
             firstName: this.firstName,
             lastName: this.lastName,
             patronymic: this.patronymic,
-            profileRole: "STUDENT",
             studentGroup: this.group,
           },
         },

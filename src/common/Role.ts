@@ -1,6 +1,6 @@
 export enum Role {
-    Студент = <any>"STUDENT",
-    Преподаватель = <any>"TEACHER",
+    Пользователь = <any>"USER",
+    Автор = <any>"AUTHOR",
     Админ = <any>"ADMIN"
 }
 
