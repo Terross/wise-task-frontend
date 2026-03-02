@@ -31,11 +31,9 @@ export interface ApiConfig {
 }
 
 export interface EventsApiMethods {
-  // Состояния
   loading: Ref<boolean>;
   error: Ref<string | null>;
-  
-  // Методы
+
   setToken: (token: string) => void;
   clearToken: () => void;
   getCurrentToken: () => string | undefined;
