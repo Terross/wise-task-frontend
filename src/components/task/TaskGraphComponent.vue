@@ -116,13 +116,11 @@
         </v-card>
         <v-card>
             <v-card-text class="text-center">
-            <!-- Загрузка -->
             <div v-if="statisticLoading" class="d-flex align-center justify-center">
                 <v-progress-circular indeterminate size="20" width="2" class="mr-2" />
                 <span class="text-caption">Загрузка...</span>
             </div>
-            
-            <!-- Данные -->
+
             <div v-else-if="statistic">
                 <div class="text-h5 font-weight-bold primary--text mb-1">
                 {{ formatPercentage(statistic.value) }}
@@ -182,10 +180,8 @@ const errorAlert = ref(false);
 const result = ref<PluginResult[]>([]);
 const extraGraph = ref<null | GraphType>(null);
 
-// Для событий
 const isTaskOpened = ref(false);
 
-// Загрузка задачи
 const { onResult: onTaskResult } = useQuery(GET_TASK, { id: props.id });
 onTaskResult((response) => {
   if (response.data) {
@@ -193,7 +189,6 @@ onTaskResult((response) => {
   }
 });
 
-// Загрузка графика
 const { onResult: onGraphResult } = useQuery(
   GET_GRAPH_BY_ID,
   () => ({
@@ -211,12 +206,9 @@ onGraphResult((response) => {
   }
 });
 
-// статистика
 const statistic = ref<StatisticResponse | null>(null);
 const statisticLoading = ref(false);
-//
 
-// cтатистика
 const loadStatisticForTask = (taskId: string) => {
   if (!taskId) return;
   
@@ -247,9 +239,7 @@ const loadStatisticForTask = (taskId: string) => {
 const formatPercentage = (value: number) => {
   return `${(value || 0).toFixed(1)}%`;
 };
-// статистика
 
-// Отслеживаем изменения активной задачи
 watch(
   () => activeTask.value,
   (newValue) => {
@@ -264,7 +254,6 @@ watch(
     });
     
     if (newValue?.id) {
-      console.log("Загружаем статистику")
       loadStatisticForTask(newValue.id);
       
     }
@@ -272,25 +261,13 @@ watch(
   { immediate: true },
 );
 
-// === ФУНКЦИИ ДЛЯ ОТПРАВКИ СОБЫТИЙ ===
-
-/**
- * Универсальная функция отправки события
- */
 const sendEvent = async (eventType: string, eventValue: string): Promise<boolean> => {
   try {
-    console.group(`Отправка события: ${eventType}`);
-    
     if (!activeTask.value?.id) {
-      console.warn("ID задачи не найден");
-      console.groupEnd();
       return false;
     }
 
     const currentToken = eventsApi.getCurrentToken?.();
-    if (!currentToken) {
-      console.warn("Токен не установлен");
-    }
 
     const eventData = {
       taskId: activeTask.value.id,
@@ -298,30 +275,20 @@ const sendEvent = async (eventType: string, eventValue: string): Promise<boolean
       eventEntityId: 0,
       eventValue: eventValue
     };
-
-    console.log("Данные события:", eventData);
     
     const result = await eventsApi.createEvent(eventData);
     
     if (typeof result === 'object' && 'detail' in result) {
-      console.error(`Ошибка API: ${result.detail}`);
-      console.groupEnd();
       return false;
     } else {
-      console.log(`Событие отправлено`);
-      console.groupEnd();
       return true;
     }
   } catch (error) {
-    console.error(`Ошибка при отправке события ${eventType}:`, error);
-    console.groupEnd();
+    console.error(`Error during sending event: ${eventType}:`, error);
     return false;
   }
 };
 
-/**
- * Отправка события открытия задачи
- */
 const sendOpenTaskEvent = async (): Promise<void> => {
   if (!isTaskOpened.value && activeTask.value?.id && activeTask.value?.name) {
     const success = await sendEvent(
@@ -334,9 +301,6 @@ const sendOpenTaskEvent = async (): Promise<void> => {
   }
 };
 
-/**
- * Отправка события отправки решения
- */
 const sendSubmitEvent = async (): Promise<void> => {
   if (activeTask.value?.name) {
     await sendEvent(
@@ -346,9 +310,6 @@ const sendSubmitEvent = async (): Promise<void> => {
   }
 };
 
-/**
- * Отправка события успешного решения
- */
 const sendTaskSuccessEvent = async (): Promise<void> => {
   if (activeTask.value?.name) {
     await sendEvent(
@@ -358,9 +319,6 @@ const sendTaskSuccessEvent = async (): Promise<void> => {
   }
 };
 
-/**
- * Отправка события ошибочного решения
- */
 const sendTaskWrongEvent = async (): Promise<void> => {
   if (activeTask.value?.name) {
     await sendEvent(
@@ -370,7 +328,6 @@ const sendTaskWrongEvent = async (): Promise<void> => {
   }
 };
 
-// Отправляем событие открытия задачи
 watch(
   () => activeTask.value,
   (newTask) => {
@@ -383,7 +340,6 @@ watch(
   { immediate: true }
 );
 
-// === КОНЕЦ ФУНКЦИЙ ДЛЯ СОБЫТИЙ ===
 
 const getColorCode = (color: string) => {
   switch (color) {
@@ -492,7 +448,6 @@ const solveTask = async () => {
     return;
   }
 
-  // Отправляем событие submit
   await sendSubmitEvent();
 
   const graph = convertToGqlFormat(nodeStore);
