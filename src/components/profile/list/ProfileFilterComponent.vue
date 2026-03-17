@@ -29,18 +29,11 @@
           </v-text-field>
           <v-select
             label="Роль"
-            :items="['Студент', 'Преподаватель']"
+            :items="[Role.ADMIN, Role.AUTHOR, Role.USER]"
             v-model="role"
             variant="solo-filled"
           ></v-select>
-          <v-text-field v-if="role=='Студент'"
-            label="Группа"
-            color="primary"
-            v-model="group"
-            density="compact"
-            variant="outlined"
-          >
-          </v-text-field>
+
           <v-row>
             <v-col>
               <v-btn
@@ -60,31 +53,33 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { useProfileStore } from '@/store/profile'
-
+import {defineComponent} from 'vue'
+import {useProfileStore} from '@/store/profile'
+import {Role} from '@/common/Role'
 export default defineComponent({
+  computed: {
+    Role() {
+      return Role
+    }
+  },
   data () {
     return {
       loading: false,
       email:'',
       firstName: '',
       lastName: '',
-      role: 'Студент',
-      group: '',
+      role: Role.USER,
       profileStore: useProfileStore(),
     }
   },
   methods: {
     search() {
-      const filterState = {
+      this.profileStore.filterState = {
         email: this.email,
         firstName: this.firstName,
         lastName: this.lastName,
-        role: null, //TODO: fix role filter
-        group: this.group,
+        role: this.role, //TODO: fix role filter
       }
-      this.profileStore.filterState = filterState
     }
   }
 })

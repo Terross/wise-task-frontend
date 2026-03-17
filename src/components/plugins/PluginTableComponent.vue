@@ -3,39 +3,39 @@
     <template v-slot:text>
       <v-row>
         <v-text-field
-          v-model="search"
-          label="Поиск"
-          prepend-inner-icon="mdi-magnify"
-          variant="outlined"
-          hide-details
-          single-line
+            v-model="search"
+            label="Поиск"
+            prepend-inner-icon="mdi-magnify"
+            variant="outlined"
+            hide-details
+            single-line
         ></v-text-field>
-        <v-btn class="ma-2" @click="addPlugin" icon="mdi-plus"> </v-btn>
+        <v-btn class="ma-2" @click="addPlugin" icon="mdi-plus" />
       </v-row>
     </template>
     <v-data-table
-      :headers="headers"
-      :search="search"
-      :items="getFilteredPlugins"
-      :group-by="groupBy"
+        :headers="headers"
+        :search="search"
+        :items="getFilteredPlugins"
+        :group-by="groupBy"
     >
       <template v-slot:item.actions="{ item }">
         <v-icon class="me-2" size="small" @click="editPlugin(item)">
           mdi-pencil
         </v-icon>
         <v-icon
-          v-if="isUserTeacher"
-          class="me-2"
-          size="small"
-          @click="deletePlugin(item)"
+            v-if="isUserAdmin"
+            class="me-2"
+            size="small"
+            @click="deletePlugin(item)"
         >
           mdi-delete
         </v-icon>
         <v-icon
-          v-if="isUserTeacher"
-          class="me-2"
-          size="small"
-          @click="approvePlugin(item)"
+            v-if="isUserAdmin"
+            class="me-2"
+            size="small"
+            @click="approvePlugin(item)"
         >
           mdi-check-decagram
         </v-icon>
@@ -53,12 +53,14 @@ import { defineComponent, ref, onMounted } from "vue";
 import { useProfileStore } from "@/store/profile";
 import { UserStorageGetters } from "@/entities/user/storage/getters";
 import { getUserFromToken } from "@/entities/user/lib/getUserFromToken";
+import { Plugin as GraphQLPlugin } from "@/__generated__/graphql"; // Переименовываем импорт
 
 export default defineComponent({
   setup() {
     const { getFilteredPlugins, plugins, dialog, pluginInput } =
-      storeToRefs(usePluginStore());
+        storeToRefs(usePluginStore());
     const profileStore = useProfileStore();
+
     const headers = [
       { key: "name", title: "Название" },
       { key: "description", title: "Описание" },
@@ -67,15 +69,15 @@ export default defineComponent({
       { key: "graphType", title: "Тип графа" },
       { key: "actions", title: "Действия", sortable: false },
     ];
+
     const search = ref("");
     const groupBy = [
       {
         key: "category",
-        order: "asc",
+        order: "asc" as const,
       },
     ];
 
-    // Загружаем пользователя при инициализации компонента
     onMounted(async () => {
       if (!profileStore.activeUser) {
         const token = await UserStorageGetters.getToken();
@@ -97,12 +99,12 @@ export default defineComponent({
     };
   },
   computed: {
-    isUserTeacher(): boolean {
-      return this.profileStore.activeUser?.role === "TEACHER";
+    isUserAdmin(): boolean {
+      return this.profileStore.activeUser?.role === "ADMIN";
     },
   },
   methods: {
-    editPlugin(plugin: Plugin) {
+    editPlugin(plugin: GraphQLPlugin) { // Используем переименованный тип
       this.pluginInput = {
         id: plugin.id,
         name: plugin.name,
@@ -113,27 +115,27 @@ export default defineComponent({
       };
       this.dialog = true;
     },
-    async deletePlugin(plugin: Plugin) {
+    async deletePlugin(plugin: GraphQLPlugin) {
       try {
         const { mutate } = useMutation(DELETE_PLUGIN);
         await mutate({ id: plugin.id });
-        this.plugins = this.plugins.filter((item) => item.id !== plugin.id);
+        this.plugins = this.plugins.filter((item: GraphQLPlugin) => item.id !== plugin.id);
       } catch (error) {
         console.error("Ошибка при удалении плагина:", error);
       }
     },
-    async approvePlugin(plugin: Plugin) {
+    async approvePlugin(plugin: GraphQLPlugin) {
       try {
         const { mutate } = useMutation(VALIDATE_PLUGIN);
         await mutate({ id: plugin.id });
 
-        const index = this.plugins.findIndex((item) => item.id === plugin.id);
+        const index = this.plugins.findIndex((item: GraphQLPlugin) => item.id === plugin.id);
         if (index !== -1) {
           this.plugins = [
             ...this.plugins.slice(0, index),
             { ...this.plugins[index], isValid: true },
             ...this.plugins.slice(index + 1),
-          ];
+          ] as GraphQLPlugin[];
         }
       } catch (error) {
         console.error("Ошибка при подтверждении плагина:", error);

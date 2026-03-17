@@ -8,61 +8,59 @@
         <v-card>
           <v-card-title>{{ activeTask.name }}</v-card-title>
           <v-card-text
-            class="text-pre-wrap"
-            v-html="formatDescription(activeTask.description)"
-          >
-          </v-card-text>
+              class="text-pre-wrap"
+              v-html="formatDescription(activeTask.description)"
+          />
           <v-card-actions>
             <v-btn color="primary" variant="outlined" @click="solveTask">
               Отправить решение
             </v-btn>
           </v-card-actions>
           <v-card
-            v-if="extraGraph && extraGraph.vertexList.length !== 0"
-            class="mt-4"
+              v-if="extraGraph && extraGraph.vertexList.length !== 0"
+              class="mt-4"
           >
             <v-card-text>
               <v-network-graph
-                :style="{
+                  :style="{
                   width: '100%',
                   height: '500px',
                   border: '1px solid #000',
                 }"
-                :nodes="graphData.nodes"
-                :edges="graphData.edges"
-                :layouts="graphData.layouts"
-                :configs="graphConfigs"
+                  :nodes="graphData.nodes"
+                  :edges="graphData.edges"
+                  :layouts="graphData.layouts"
+                  :configs="graphConfigs"
               >
                 <template #override-node="{ nodeId, ...props }">
                   <circle
-                    :r="20"
-                    :fill="getColorCode(props.config.color)"
-                    stroke="#000"
-                    stroke-width="1"
+                      :r="20"
+                      :fill="getColorCode(props.config.color)"
+                      stroke="#000"
+                      stroke-width="1"
                   />
                   <text
-                    v-if="graphData.nodes[nodeId].weight !== undefined"
-                    font-size="12"
-                    text-anchor="middle"
-                    fill="#000000"
-                    style="margin-top: 30px"
-                    y="45"
+                      v-if="graphData.nodes[nodeId].weight !== undefined"
+                      font-size="12"
+                      text-anchor="middle"
+                      fill="#000000"
+                      y="45"
                   >
                     Вес: {{ graphData.nodes[nodeId].weight }}
                   </text>
                   <text
-                    font-size="12"
-                    text-anchor="middle"
-                    fill="#000000"
-                    y="30"
+                      font-size="12"
+                      text-anchor="middle"
+                      fill="#000000"
+                      y="30"
                   >
                     {{ graphData.nodes[nodeId].label }}
                   </text>
                   <text
-                    font-size="12"
-                    text-anchor="middle"
-                    fill="#000000"
-                    y="60"
+                      font-size="12"
+                      text-anchor="middle"
+                      fill="#000000"
+                      y="60"
                   >
                     Координаты: ({{ graphData.nodes[nodeId].xCoordinate }},
                     {{ graphData.nodes[nodeId].yCoordinate }})
@@ -70,85 +68,80 @@
                 </template>
                 <template #edge-label="{ edgeId, ...slotProps }">
                   <v-edge-label
-                    :text="`${graphData.edges[edgeId].weight}`"
-                    align="center"
-                    vertical-align="below"
-                    v-bind="slotProps"
+                      :text="`${graphData.edges[edgeId].weight}`"
+                      align="center"
+                      vertical-align="below"
+                      v-bind="slotProps"
                   />
                   <v-edge-label
-                    :text="`${graphData.edges[edgeId].label}`"
-                    align="center"
-                    vertical-align="above"
-                    v-bind="slotProps"
+                      :text="`${graphData.edges[edgeId].label}`"
+                      align="center"
+                      vertical-align="above"
+                      v-bind="slotProps"
                   />
                 </template>
               </v-network-graph>
             </v-card-text>
           </v-card>
         </v-card>
+
         <v-alert
-          v-model="successAlert"
-          text="Задача решена верно"
-          title="Успех!"
-          type="success"
-          closable
-          variant="tonal"
-        ></v-alert>
+            v-model="successAlert"
+            text="Задача решена верно"
+            title="Успех!"
+            type="success"
+            closable
+            variant="tonal"
+        />
         <v-alert
-          v-model="errorAlert"
-          text="В решении есть ошибка"
-          title="Ошибка!"
-          type="error"
-          closable
-          variant="tonal"
-        ></v-alert>
+            v-model="errorAlert"
+            text="В решении есть ошибка"
+            title="Ошибка!"
+            type="error"
+            closable
+            variant="tonal"
+        />
+
         <v-card v-if="errorAlert">
           <v-card-title>Ошибки в модулях</v-card-title>
           <v-card-text>
             <v-list lines="one">
               <v-list-item
-                v-for="(item, i) in result"
-                :key="i"
-                :title="i + 1 + '. ' + item.mistakeText + ' = ' + item.value"
-              ></v-list-item>
+                  v-for="(item, i) in result"
+                  :key="i"
+                  :title="`${i + 1}. ${item.mistakeText} = ${item.value}`"
+              />
             </v-list>
           </v-card-text>
         </v-card>
+
         <v-card>
-            <v-card-text class="text-center">
-            <!-- Загрузка -->
+          <v-card-text class="text-center">
             <div v-if="statisticLoading" class="d-flex align-center justify-center">
-                <v-progress-circular indeterminate size="20" width="2" class="mr-2" />
-                <span class="text-caption">Загрузка...</span>
+              <v-progress-circular indeterminate size="20" width="2" class="mr-2" />
+              <span class="text-caption">Загрузка...</span>
             </div>
-            
-            <!-- Данные -->
             <div v-else-if="statistic">
-                <div class="text-h5 font-weight-bold primary--text mb-1">
+              <div class="text-h5 font-weight-bold primary--text mb-1">
                 {{ formatPercentage(statistic.value) }}
-                </div>
-                <div class="text-body-2">
-                успешно решили задачу
-                </div>
+              </div>
+              <div class="text-body-2">успешно решили задачу</div>
             </div>
-            
-            <!-- Если данных нет -->
             <div v-else class="text-body-2">
-                Ошибка загрузки сервиса статистики
+              Ошибка загрузки сервиса статистики
             </div>
-            </v-card-text>
+          </v-card-text>
         </v-card>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
-
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
 import { SOLVE_TASK_GRAPH } from "@/api/Mutations";
 import { GET_GRAPH_BY_ID, GET_TASK, GET_STATISTIC } from "@/api/Queries";
-import { StatisticRequestInput, StatisticResponse} from "@/api/Statistic";
+import { StatisticRequestInput, StatisticResponse } from "@/api/Statistic";
 import { useTaskStore } from "@/store/task";
 import { useMutation, useQuery } from "@vue/apollo-composable";
 import { storeToRefs } from "pinia";
@@ -157,11 +150,9 @@ import Graph from "@/features/graph/ui/graph/Graph.vue";
 import { useNodeStore } from "@/features/graph/stores/nodes";
 import { convertToGqlFormat } from "@/features/graph/lib/helpers/GqlFormatter";
 import * as vNG from "v-network-graph";
-import {
+import undirectGraphConfigs, {
   directGraphConfigs,
-  undirectGraphConfigs,
 } from "@/components/graph/network/helper/graphConfig";
-
 
 const props = defineProps({
   id: String,
@@ -182,56 +173,29 @@ const errorAlert = ref(false);
 const result = ref<PluginResult[]>([]);
 const extraGraph = ref<null | GraphType>(null);
 
-// статистика
+// Статистика
 const statistic = ref<StatisticResponse | null>(null);
 const statisticLoading = ref(false);
-//
 
-const { onResult: onTaskResult } = useQuery(GET_TASK, { id: props.id });
-onTaskResult((response) => {
-  if (response.data) {
-    activeTask.value = response.data.getTask;
-  }
-});
-
-watch(
-  activeTask,
-  (newValue) => {
-    if (!newValue.graph?.id) return;
-
-    const { onResult: onGraphResult } = useQuery(GET_GRAPH_BY_ID, {
-      id: newValue.graph.id,
-    });
-
-    onGraphResult((response) => {
-      extraGraph.value = response.data.getGraphById;
-    });
-    if (newValue?.id) { // статистика
-      loadStatisticForTask(newValue.id);
-    }
-  },
-  { immediate: true },
-);
-
-// cтатистика
+// Функции ДО их использования
 const loadStatisticForTask = (taskId: string) => {
   if (!taskId) return;
-  
+
   statisticLoading.value = true;
-  
+
   const request: StatisticRequestInput = {
     type: 'SUCCESS_RATE',
     scope: 'TASK',
     event_type: 'task_success,task_wrong',
     task_id: taskId
   };
-  
+
   const { onResult } = useQuery(
-    GET_STATISTIC,
-    { request },
-    { fetchPolicy: 'cache-first' }
+      GET_STATISTIC,
+      { request },
+      { fetchPolicy: 'cache-first' }
   );
-  
+
   onResult((result) => {
     if (result.data?.getStatistic) {
       statistic.value = result.data.getStatistic;
@@ -240,30 +204,32 @@ const loadStatisticForTask = (taskId: string) => {
   });
 };
 
-const formatPercentage = (value: number) => {
-  return `${value.toFixed(1)}%`;
-};
-// статистика
-
 const getColorCode = (color: string) => {
-  console.log(color);
   switch (color) {
-    case "RED":
-      return "#ff0000";
-    case "GREEN":
-      return "#00ff00";
-    case "BLUE":
-      return "#0000ff";
-    case "GRAY":
-    default:
-      return "#808080";
+    case "RED": return "#ff0000";
+    case "GREEN": return "#00ff00";
+    case "BLUE": return "#0000ff";
+    case "GRAY": default: return "#808080";
   }
 };
+
+const formatDescription = (description: string) => {
+  if (!description) return "";
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  return description.replace(urlRegex, (url) => {
+    const escapedUrl = url
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    return `<a href="${escapedUrl}" target="_blank" rel="noopener noreferrer">${escapedUrl}</a>`;
+  });
+};
+
+const formatPercentage = (value: number) => `${value.toFixed(1)}%`;
 
 const graphData = computed(() => {
-  if (!extraGraph.value) {
-    return { nodes: {}, edges: {}, layouts: { nodes: {} } };
-  }
+  if (!extraGraph.value) return { nodes: {}, edges: {}, layouts: { nodes: {} } };
 
   const nodes: vNG.Nodes = {};
   const layouts: vNG.Layouts = { nodes: {} };
@@ -274,8 +240,8 @@ const graphData = computed(() => {
       label: String(vertex.label),
       weight: vertex.weight,
       color: vertex.color,
-      xCoordinate: vertex.xCoordinate, // Add xCoordinate
-      yCoordinate: vertex.yCoordinate, // Add yCoordinate
+      xCoordinate: vertex.xCoordinate,
+      yCoordinate: vertex.yCoordinate,
     };
     layouts.nodes[vertex.id] = {
       x: vertex.xCoordinate,
@@ -300,8 +266,8 @@ const graphData = computed(() => {
 
 const graphConfigs = computed(() => {
   const config = extraGraph.value?.isDirect
-    ? directGraphConfigs
-    : undirectGraphConfigs;
+      ? directGraphConfigs
+      : undirectGraphConfigs;
 
   return {
     ...config,
@@ -309,7 +275,7 @@ const graphConfigs = computed(() => {
       ...config.node,
       color: (node: any) => {
         const vertex = extraGraph.value?.vertexList.find(
-          (v) => v?.id === node.id,
+            (v) => v?.id === node.id,
         );
         return getColorCode(vertex?.color || "GRAY");
       },
@@ -322,7 +288,7 @@ const graphConfigs = computed(() => {
       ...config.edge,
       color: (edge: any) => {
         const edgeData = extraGraph.value?.edgeList.find(
-          (e) => e?.source === edge.source && e?.target === edge.target,
+            (e) => e?.source === edge.source && e?.target === edge.target,
         );
         return getColorCode(edgeData?.color || "GRAY");
       },
@@ -330,22 +296,31 @@ const graphConfigs = computed(() => {
   };
 });
 
-const { mutate: solveTaskMutation } = useMutation(SOLVE_TASK_GRAPH);
+// Запросы
+const { onResult: onTaskResult } = useQuery(GET_TASK, { id: props.id });
+onTaskResult((response) => {
+  if (response.data) {
+    activeTask.value = response.data.getTask;
+  }
+});
 
-const formatDescription = (description: string) => {
-  if (!description) return "";
+watch(activeTask, (newValue) => {
+  if (!newValue?.graph?.id) return;
 
-  const urlRegex = /(https?:\/\/[^\s]+)/g;
-  return description.replace(urlRegex, (url) => {
-    const escapedUrl = url
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;");
-
-    return `<a href="${escapedUrl}" target="_blank" rel="noopener noreferrer">${escapedUrl}</a>`;
+  const { onResult: onGraphResult } = useQuery(GET_GRAPH_BY_ID, {
+    id: newValue.graph.id,
   });
-};
+
+  onGraphResult((response) => {
+    extraGraph.value = response.data.getGraphById;
+  });
+
+  if (newValue?.id) {
+    loadStatisticForTask(newValue.id);
+  }
+}, { immediate: true });
+
+const { mutate: solveTaskMutation } = useMutation(SOLVE_TASK_GRAPH);
 
 const solveTask = async () => {
   const graph = convertToGqlFormat(nodeStore);
@@ -380,19 +355,19 @@ const solveTask = async () => {
       successAlert.value = false;
 
       const incorrectResults = pluginResults.filter(
-        (item: PluginResult) => !item.isCorrect,
+          (item: PluginResult) => !item.isCorrect,
       );
 
       result.value = activeTask.value.isHiddenMistake
-        ? [incorrectResults[0]]
-        : incorrectResults;
+          ? [incorrectResults[0]]
+          : incorrectResults;
 
       result.value = result.value.map((item) => ({
         ...item,
         mistakeText:
-          activeTask.value.condition.find(
-            (element: any) => element.pluginId === item.pluginId,
-          )?.mistakeText || "",
+            activeTask.value.condition.find(
+                (element: any) => element.pluginId === item.pluginId,
+            )?.mistakeText || "",
       }));
     }
   } catch (error) {

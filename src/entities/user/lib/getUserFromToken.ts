@@ -7,7 +7,7 @@ export const getUserFromToken = async (
   const jwtData = token.split(".")[1];
   const decodedJwtJsonData = window.atob(jwtData);
   const decodedJwtData = JSON.parse(decodedJwtJsonData);
-  await localStorage.setItem(UserStorageKeys.Token, token);
+  localStorage.setItem(UserStorageKeys.Token, token);
   return {
     role: decodedJwtData.role,
     id: decodedJwtData.id,

@@ -29,8 +29,10 @@
 <script lang="ts">
 import { Role } from '@/__generated__/graphql'
 import { computed, defineComponent, reactive, ref, toRefs } from 'vue'
+import ProfileDialogComponent from "@/components/profile/ProfileDialogComponent.vue";
 
 export default defineComponent({
+  components: {ProfileDialogComponent},
   props: {
     profile: Object,
     loading: Boolean
@@ -62,14 +64,6 @@ export default defineComponent({
             value: 5,
           }
         )
-        if (profile.value.profileRole === Role.Student) {
-          result.push(
-            {
-              title: "Группа: " + profile.value.studentGroup,
-              value: 6,
-            }
-          )
-        }
         return result
       } else {
         return []

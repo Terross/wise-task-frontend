@@ -1,7 +1,7 @@
 import * as vNG from "v-network-graph"
 import { Node, Edge } from "./graph"
 
-export const undirectGraphConfigs = vNG.defineConfigs<Node, Edge>({
+const undirectGraphConfigs = vNG.defineConfigs<Node, Edge>({
     view: {
       autoPanAndZoomOnLoad: "fit-content",
       fitContentMargin: "8%"
@@ -9,7 +9,7 @@ export const undirectGraphConfigs = vNG.defineConfigs<Node, Edge>({
     node: {
         normal: {
           type: "circle",
-          color: node => node.color
+          color: node => node.color,
         },
         hover: {
           color: node => node.color
@@ -48,6 +48,7 @@ export const undirectGraphConfigs = vNG.defineConfigs<Node, Edge>({
         }
       }
 })
+export default undirectGraphConfigs
 
 export const directGraphConfigs = vNG.defineConfigs<Node, Edge>({
   view: {

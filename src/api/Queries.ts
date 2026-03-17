@@ -10,7 +10,6 @@ export const GET_ALL_PROFILES_QUERY = gql`
       lastName
       patronymic
       profileRole
-      studentGroup
     }
   }
 `;
@@ -25,7 +24,6 @@ export const GET_PROFILE = gql`
       lastName
       patronymic
       profileRole
-      studentGroup
     }
   }
 `;

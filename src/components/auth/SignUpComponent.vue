@@ -126,7 +126,6 @@ export default defineComponent({
       password: "",
       repeatedPassword: "",
       visible: false,
-      group: "",
       profileStore: useProfileStore(),
       firstNameRules: [
         (value: string) => {
@@ -151,7 +150,6 @@ export default defineComponent({
             firstName: this.firstName,
             lastName: this.lastName,
             patronymic: this.patronymic,
-            studentGroup: this.group,
           },
         },
       };

@@ -18,13 +18,6 @@
         @click="login"
         >
       </v-btn>
-      <v-btn
-        v-if="activeUser != null"
-        density="comfortable"
-        icon="mdi-login"
-        @click="login"
-        >
-      </v-btn>
     </v-app-bar>
     <navigation :drawer="drawer" @hideMenu="drawer = !drawer"></navigation>
 </template>

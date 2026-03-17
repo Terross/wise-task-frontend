@@ -103,7 +103,7 @@ import { ConstructionMode, useGraphStore } from '@/store/graph';
 import { storeToRefs } from 'pinia';
 import { defineComponent, computed, ref } from 'vue'
 import * as vNG from "v-network-graph"
-import { undirectGraphConfigs, directGraphConfigs } from "@/components/graph/network/helper/graphConfig"
+import undirectGraphConfigs, { directGraphConfigs } from "@/components/graph/network/helper/graphConfig"
 import { useDisplay } from 'vuetify/lib/framework.mjs';
 import { useLinkMode } from "@/components/graph/network/helper/linkMode";
 import { createEventHandlers } from './helper/events';
