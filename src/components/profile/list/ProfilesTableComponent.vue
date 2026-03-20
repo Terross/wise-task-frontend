@@ -21,23 +21,45 @@
       >
         mdi-eye
       </v-icon>
+      <v-icon
+          v-if="isUserAdmin"
+          class="me-2"
+          size="small"
+          @click="deleteProfile((item as Profile).id)"
+      >
+        mdi-delete
+      </v-icon>
     </template>
   </v-data-table>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, onMounted, computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useProfileStore } from '@/store/profile'
-import { useQuery } from '@vue/apollo-composable'
+import { useMutation, useQuery } from '@vue/apollo-composable'
 import { GET_ALL_PROFILES_QUERY } from '@/api/Queries'
 import { Role, getKeyByValue } from '@/common/Role'
-import type { Profile } from '@/__generated__/graphql'
+import { Profile } from '@/__generated__/graphql'
+import { DELETE_PROFILE } from "@/api/Mutations"
+import { UserStorageGetters } from "@/entities/user/storage/getters"
+import { getUserFromToken } from "@/entities/user/lib/getUserFromToken"
 
 export default defineComponent({
   setup() {
+    const router = useRouter()
     const profileStore = useProfileStore()
 
     const { loading, onResult } = useQuery(GET_ALL_PROFILES_QUERY)
+
+    const headers = [
+      { title: 'Имя', align: 'start' as const, key: 'firstName' },
+      { title: 'Фамилия', align: 'start' as const, key: 'lastName' },
+      { title: 'Отчество', align: 'start' as const, key: 'patronymic' },
+      { title: 'E-mail', align: 'start' as const, key: 'email' },
+      { title: 'Роль', align: 'start' as const, key: 'profileRole' },
+      { title: 'Действия', align: 'start' as const, key: 'actions', sortable: false }
+    ]
 
     onResult(queryResult => {
       if (!queryResult.loading) {
@@ -45,30 +67,48 @@ export default defineComponent({
       }
     })
 
+    onMounted(async () => {
+      if (!profileStore.activeUser) {
+        const token = await UserStorageGetters.getToken()
+        if (token) {
+          profileStore.activeUser = await getUserFromToken(token)
+        }
+      }
+    })
+
+    const isUserAdmin = computed(() => {
+      return profileStore.activeUser?.role === "ADMIN"
+    })
+
+    const mapRole = (role: string) => {
+      return getKeyByValue(role)
+    }
+
+    const toProfile = (id: string) => {
+      router.push('/profiles/' + id)
+    }
+
+    const deleteProfile = async (id: string) => {
+      try {
+        const { mutate } = useMutation(DELETE_PROFILE)
+        await mutate({ id: id })
+        profileStore.userList = profileStore.userList.filter(
+            (profile: Profile) => profile.id !== id
+        )
+      } catch(error) {
+        console.error("Ошибка при удалении профиля:", error)
+      }
+    }
+
     return {
       profileStore,
-      loading
-    }
-  },
-  data () {
-    return {
-      Role,
-      headers: [
-        { title: 'Имя', align: 'start' as const, key: 'firstName' },
-        { title: 'Фамилия', align: 'start' as const, key: 'lastName' },
-        { title: 'Отчество', align: 'start' as const, key: 'patronymic' },
-        { title: 'E-mail', align: 'start' as const, key: 'email' },
-        { title: 'Роль', align: 'start' as const, key: 'profileRole' },
-        { title: '', align: 'start' as const, key: 'actions', sortable: false }
-      ] as const
-    }
-  },
-  methods: {
-    mapRole(role: string) {
-      return getKeyByValue(role)
-    },
-    toProfile(id: string) {
-      this.$router.push('/profiles/' + id)
+      loading,
+      headers,
+      isUserAdmin,
+      mapRole,
+      toProfile,
+      deleteProfile,
+      Role
     }
   }
 })

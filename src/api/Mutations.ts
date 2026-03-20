@@ -30,6 +30,12 @@ export const UPDATE_PROFILE = gql`
     }
 `
 
+export const DELETE_PROFILE = gql`
+    mutation DeleteProfile ($id: ID!) {
+        deleteProfile (id: $id)
+    }
+`
+
 export const CREATE_GRAPH = gql`
     mutation createGraph ($graph: GraphInput!) {
         createGraph (graph: $graph) {

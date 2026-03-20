@@ -5,17 +5,17 @@
       >
       <template v-slot:prepend>
         <v-app-bar-nav-icon @click.stop="drawer = !drawer">
-          
+
         </v-app-bar-nav-icon>
-        
+
       </template>
 
-      <v-app-bar-title>WiseTasks</v-app-bar-title>
+      <v-app-bar-title>Wise Task</v-app-bar-title>
       <v-btn
         v-if="activeUser != null"
         density="comfortable"
-        icon="mdi-login"
-        @click="login"
+        icon="mdi-logout"
+        @click="logout"
         >
       </v-btn>
     </v-app-bar>
@@ -27,6 +27,7 @@ import { defineComponent } from 'vue'
 import { useProfileStore } from '@/store/profile'
 import { mapState } from 'pinia'
 import Navigation from './Navigation.vue'
+import {UserStorageGetters} from "@/entities/user/storage/getters";
 
 
 export default defineComponent({
@@ -40,9 +41,12 @@ export default defineComponent({
     }
   },
   methods: {
-    login() {
+    logout () {
+      UserStorageGetters.removeToken()
+      this.activeUser = null
       this.$router.push('/auth/signin')
     },
+
     toSelfProfile() {
       this.$router.push('/auth/signin') //TODO: redirect to self profile page
     }

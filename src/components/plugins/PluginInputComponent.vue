@@ -66,7 +66,7 @@
 <script lang="ts">
 import { usePluginStore } from "@/store/plugin";
 import { storeToRefs } from "pinia";
-import { defineComponent, computed, ref, watch } from "vue"; // Import 'ref' and 'watch'
+import { defineComponent, ref, watch } from "vue"; // Import 'ref' and 'watch'
 import { buildPluginInputModels } from "./helper/inputModel";
 import { useMutation } from "@vue/apollo-composable";
 import { CREATE_PLUGIN, UPDATE_PLUGIN } from "@/api/Mutations";

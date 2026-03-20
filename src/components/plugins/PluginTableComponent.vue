@@ -53,7 +53,7 @@ import { defineComponent, ref, onMounted } from "vue";
 import { useProfileStore } from "@/store/profile";
 import { UserStorageGetters } from "@/entities/user/storage/getters";
 import { getUserFromToken } from "@/entities/user/lib/getUserFromToken";
-import { Plugin as GraphQLPlugin } from "@/__generated__/graphql"; // Переименовываем импорт
+import { Plugin as GraphQLPlugin } from "@/__generated__/graphql";
 
 export default defineComponent({
   setup() {
@@ -104,7 +104,7 @@ export default defineComponent({
     },
   },
   methods: {
-    editPlugin(plugin: GraphQLPlugin) { // Используем переименованный тип
+    editPlugin(plugin: GraphQLPlugin) {
       this.pluginInput = {
         id: plugin.id,
         name: plugin.name,
