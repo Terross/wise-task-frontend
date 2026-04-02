@@ -116,13 +116,11 @@
         </v-card>
         <v-card>
             <v-card-text class="text-center">
-            <!-- Загрузка -->
             <div v-if="statisticLoading" class="d-flex align-center justify-center">
                 <v-progress-circular indeterminate size="20" width="2" class="mr-2" />
                 <span class="text-caption">Загрузка...</span>
             </div>
-            
-            <!-- Данные -->
+
             <div v-else-if="statistic">
                 <div class="text-h5 font-weight-bold primary--text mb-1">
                 {{ formatPercentage(statistic.value) }}
@@ -145,10 +143,10 @@
 
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { SOLVE_TASK_GRAPH } from "@/api/Mutations";
 import { GET_GRAPH_BY_ID, GET_TASK, GET_STATISTIC } from "@/api/Queries";
-import { StatisticRequestInput, StatisticResponse} from "@/api/Statistic";
+import { StatisticRequestInput, StatisticResponse } from "@/api/Statistic";
 import { useTaskStore } from "@/store/task";
 import { useMutation, useQuery } from "@vue/apollo-composable";
 import { storeToRefs } from "pinia";
@@ -161,7 +159,7 @@ import {
   directGraphConfigs,
   undirectGraphConfigs,
 } from "@/components/graph/network/helper/graphConfig";
-
+import { eventsApi } from "@/api/rest";
 
 const props = defineProps({
   id: String,
@@ -182,10 +180,7 @@ const errorAlert = ref(false);
 const result = ref<PluginResult[]>([]);
 const extraGraph = ref<null | GraphType>(null);
 
-// статистика
-const statistic = ref<StatisticResponse | null>(null);
-const statisticLoading = ref(false);
-//
+const isTaskOpened = ref(false);
 
 const { onResult: onTaskResult } = useQuery(GET_TASK, { id: props.id });
 onTaskResult((response) => {
@@ -194,26 +189,26 @@ onTaskResult((response) => {
   }
 });
 
-watch(
-  activeTask,
-  (newValue) => {
-    if (!newValue.graph?.id) return;
-
-    const { onResult: onGraphResult } = useQuery(GET_GRAPH_BY_ID, {
-      id: newValue.graph.id,
-    });
-
-    onGraphResult((response) => {
-      extraGraph.value = response.data.getGraphById;
-    });
-    if (newValue?.id) { // статистика
-      loadStatisticForTask(newValue.id);
-    }
-  },
-  { immediate: true },
+const { onResult: onGraphResult } = useQuery(
+  GET_GRAPH_BY_ID,
+  () => ({
+    id: activeTask.value?.graph?.id || "",
+  }),
+  () => ({
+    enabled: !!activeTask.value?.graph?.id,
+    fetchPolicy: "cache-first",
+  })
 );
 
-// cтатистика
+onGraphResult((response) => {
+  if (response.data?.getGraphById) {
+    extraGraph.value = response.data.getGraphById;
+  }
+});
+
+const statistic = ref<StatisticResponse | null>(null);
+const statisticLoading = ref(false);
+
 const loadStatisticForTask = (taskId: string) => {
   if (!taskId) return;
   
@@ -236,17 +231,117 @@ const loadStatisticForTask = (taskId: string) => {
     if (result.data?.getStatistic) {
       statistic.value = result.data.getStatistic;
     }
+    console.log(statistic);
     statisticLoading.value = false;
   });
 };
 
 const formatPercentage = (value: number) => {
-  return `${value.toFixed(1)}%`;
+  return `${(value || 0).toFixed(1)}%`;
 };
-// статистика
+
+watch(
+  () => activeTask.value,
+  (newValue) => {
+    if (!newValue?.graph?.id) return;
+
+    const { onResult: onGraphResult } = useQuery(GET_GRAPH_BY_ID, {
+      id: newValue.graph.id,
+    });
+
+    onGraphResult((response) => {
+      extraGraph.value = response.data.getGraphById;
+    });
+    
+    if (newValue?.id) {
+      loadStatisticForTask(newValue.id);
+      
+    }
+  },
+  { immediate: true },
+);
+
+const sendEvent = async (eventType: string, eventValue: string): Promise<boolean> => {
+  try {
+    if (!activeTask.value?.id) {
+      return false;
+    }
+
+    const currentToken = eventsApi.getCurrentToken?.();
+
+    const eventData = {
+      taskId: activeTask.value.id,
+      eventType: eventType,
+      eventEntityId: 0,
+      eventValue: eventValue
+    };
+    
+    const result = await eventsApi.createEvent(eventData);
+    
+    if (typeof result === 'object' && 'detail' in result) {
+      return false;
+    } else {
+      return true;
+    }
+  } catch (error) {
+    console.error(`Error during sending event: ${eventType}:`, error);
+    return false;
+  }
+};
+
+const sendOpenTaskEvent = async (): Promise<void> => {
+  if (!isTaskOpened.value && activeTask.value?.id && activeTask.value?.name) {
+    const success = await sendEvent(
+      "open_task",
+      `Открыта задача: ${activeTask.value.name}`
+    );
+    if (success) {
+      isTaskOpened.value = true;
+    }
+  }
+};
+
+const sendSubmitEvent = async (): Promise<void> => {
+  if (activeTask.value?.name) {
+    await sendEvent(
+      "submit",
+      `Отправлено решение для задачи: ${activeTask.value.name}`
+    );
+  }
+};
+
+const sendTaskSuccessEvent = async (): Promise<void> => {
+  if (activeTask.value?.name) {
+    await sendEvent(
+      "task_success",
+      `Задача успешно решена: ${activeTask.value.name}`
+    );
+  }
+};
+
+const sendTaskWrongEvent = async (): Promise<void> => {
+  if (activeTask.value?.name) {
+    await sendEvent(
+      "task_wrong",
+      `Задача решена с ошибками: ${activeTask.value.name}`
+    );
+  }
+};
+
+watch(
+  () => activeTask.value,
+  (newTask) => {
+    if (newTask?.id && newTask?.name && !isTaskOpened.value) {
+      setTimeout(() => {
+        sendOpenTaskEvent();
+      }, 500);
+    }
+  },
+  { immediate: true }
+);
+
 
 const getColorCode = (color: string) => {
-  console.log(color);
   switch (color) {
     case "RED":
       return "#ff0000";
@@ -274,8 +369,8 @@ const graphData = computed(() => {
       label: String(vertex.label),
       weight: vertex.weight,
       color: vertex.color,
-      xCoordinate: vertex.xCoordinate, // Add xCoordinate
-      yCoordinate: vertex.yCoordinate, // Add yCoordinate
+      xCoordinate: vertex.xCoordinate,
+      yCoordinate: vertex.yCoordinate,
     };
     layouts.nodes[vertex.id] = {
       x: vertex.xCoordinate,
@@ -348,6 +443,13 @@ const formatDescription = (description: string) => {
 };
 
 const solveTask = async () => {
+  if (!activeTask.value?.id || !activeTask.value?.name) {
+    console.error("Данные задачи не загружены");
+    return;
+  }
+
+  await sendSubmitEvent();
+
   const graph = convertToGqlFormat(nodeStore);
   graph.id = self.crypto.randomUUID();
 
@@ -371,11 +473,13 @@ const solveTask = async () => {
     const { isCorrect, pluginResults } = response.data.solveTaskGraph;
 
     if (isCorrect) {
+      await sendTaskSuccessEvent();
       successAlert.value = true;
       errorAlert.value = false;
       emit("isCorrect", true);
       props.onCorrectSolution?.();
     } else {
+      await sendTaskWrongEvent();
       errorAlert.value = true;
       successAlert.value = false;
 
@@ -401,6 +505,28 @@ const solveTask = async () => {
     successAlert.value = false;
   }
 };
+
+// Функция для отладки
+declare global {
+  interface Window {
+    checkEventsStatus?: () => void;
+  }
+}
+
+onMounted(() => {
+  window.checkEventsStatus = () => {
+    console.group('📊 Статус Events API');
+    const token = eventsApi.getCurrentToken?.();
+    console.log('Токен установлен:', token ? '✅ Да' : '❌ Нет');
+    if (token) {
+      console.log('Длина токена:', token.length);
+      console.log('Первые 30 символов:', token.substring(0, 30) + '...');
+    }
+    const state = eventsApi.getState?.();
+    console.log('Состояние:', state);
+    console.groupEnd();
+  };
+});
 </script>
 
 <style scoped>

@@ -151,7 +151,6 @@ export default defineComponent({
             firstName: this.firstName,
             lastName: this.lastName,
             patronymic: this.patronymic,
-            studentGroup: this.group,
           },
         },
       };
