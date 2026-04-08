@@ -13,10 +13,9 @@
       </v-row>
     </template>
     <v-data-table
-        :headers="headers"
-        :search="search"
-        :items="tasks"
-        :group-by="groupBy"
+      :headers="headers"
+      :items="displayedTasks"
+      :group-by="groupBy"
     >
       <template v-slot:item.solve="{ item }">
         <v-icon class="me-2" size="small" @click="solveTask(item)">
@@ -38,12 +37,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent, ref, watch, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useTaskStore } from "@/store/task";
 import { Task, TaskType } from "@/__generated__/graphql";
 import { useQuery, useMutation } from "@vue/apollo-composable";
 import { GET_ALL_TASKS } from "@/api/Queries";
+import {
+  bulkIndexTasks,
+  searchTasks,
+  SemanticTaskWithScore,
+} from "@/services/semanticSearchApi";
 import { DELETE_TASK } from "@/api/Mutations";
 import { getUserFromToken } from "@/entities/user/lib/getUserFromToken";
 import { UserStorageGetters } from "@/entities/user/storage/getters";
@@ -66,6 +70,7 @@ export default defineComponent({
     ];
 
     const search = ref("");
+    const searchResults = ref<Array<Task & { score?: number }>>([]);
     const groupBy = [
       {
         key: "category",
@@ -82,12 +87,104 @@ export default defineComponent({
       }
     });
 
+
+    const displayedTasks = computed(() =>
+      search.value.trim() ? searchResults.value : tasks.value,
+    );
+
+    const fallbackSearch = (query: string): Array<Task & { score?: number }> => {
+      const normalizedQuery = query.trim().toLowerCase();
+
+      if (!normalizedQuery) {
+        return tasks.value;
+      }
+
+      return tasks.value.filter((task) => {
+        const haystack = [
+          task.name,
+          task.description ?? "",
+          task.category ?? "",
+        ]
+          .join(" ")
+          .toLowerCase();
+
+        return haystack.includes(normalizedQuery);
+      });
+    };
+
+    const syncWithSemanticSearch = async (taskList: Task[]) => {
+      const payload = taskList.map((task) => ({
+        id: task.id,
+        name: task.name,
+        description: task.description ?? "",
+        category: task.category ?? "",
+      }));
+
+      try {
+        await bulkIndexTasks(payload);
+      } catch (error) {
+        console.error("Failed to sync tasks with semantic search", error);
+      }
+    };
+
+    const mapSemanticResults = (
+      results: SemanticTaskWithScore[],
+    ): Array<Task & { score: number }> =>
+      results
+        .map((result) => {
+          const baseTask = tasks.value.find((task) => task.id === result.id);
+
+          if (!baseTask) {
+            console.warn(
+              `Task with id ${result.id} not found in store for semantic result`,
+            );
+            return null;
+          }
+
+          return { ...baseTask, score: result.score };
+        })
+        .filter((task): task is Task & { score: number } => Boolean(task));
+
+    const performSearch = async (value: string) => {
+      if (!value.trim()) {
+        searchResults.value = [];
+        return;
+      }
+
+      try {
+        const results = await searchTasks(value.trim(), 3);
+        searchResults.value = mapSemanticResults(results);
+      } catch (error) {
+        console.error("Semantic search request failed", error);
+        searchResults.value = fallbackSearch(value);
+      }
+    };
+
+    let searchTimeout: number | undefined;
+
+    watch(
+      search,
+      (value) => {
+        if (searchTimeout) {
+          window.clearTimeout(searchTimeout);
+        }
+
+        searchTimeout = window.setTimeout(() => performSearch(value), 300);
+      },
+      { immediate: false },
+    );
+
     onResult((response) => {
+      console.log(response);
+
       if (response.data) {
-        tasks.value = response.data.getAllTasks.map((task: Task) => ({
+        const normalizedTasks = response.data.getAllTasks.map((task: Task) => ({
           ...task,
-          description: task.description[0],
+          description: task.description ?? "",
         }));
+
+        tasks.value = normalizedTasks;
+        syncWithSemanticSearch(normalizedTasks);
       }
     });
 
@@ -97,6 +194,7 @@ export default defineComponent({
       headers,
       tasks,
       profileStore,
+      displayedTasks,
     };
   },
   computed: {
