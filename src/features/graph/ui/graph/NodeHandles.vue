@@ -4,8 +4,9 @@ import {
   ConnectionSourceID,
   ConnectionTargetID,
 } from "@/features/graph/types/CustomEdge";
-import { computed } from "vue";
+import { computed, inject } from "vue";
 import { graphSettingsStore } from "@/features/graph/stores/graphSettings";
+import { graphNodeDraggingActiveKey } from "@/features/graph/ui/graph/graphConstructorPolicy";
 
 const props = defineProps<{
   isEditing: boolean;
@@ -15,8 +16,30 @@ const isOneHandle = computed(() => {
   return graphSettingsStore.isOneHandle;
 });
 
+const isNodeDraggingActive = inject(
+  graphNodeDraggingActiveKey,
+  computed(() => false),
+);
+
+const sourceHandles = [
+  { id: ConnectionSourceID.Right, position: Position.Right },
+  { id: ConnectionSourceID.Left, position: Position.Left },
+  { id: ConnectionSourceID.Top, position: Position.Top },
+  { id: ConnectionSourceID.Bottom, position: Position.Bottom },
+];
+
+const targetHandles = [
+  { id: ConnectionTargetID.Right, position: Position.Right },
+  { id: ConnectionTargetID.Left, position: Position.Left },
+  { id: ConnectionTargetID.Top, position: Position.Top },
+  { id: ConnectionTargetID.Bottom, position: Position.Bottom },
+];
+
 const checkValidConnection = (connection: any) => {
   if (isOneHandle.value) {
+    if (isNodeDraggingActive.value) {
+      return false;
+    }
     return !props.isEditing;
   }
 
@@ -36,81 +59,61 @@ const checkValidConnection = (connection: any) => {
 
   return !props.isEditing;
 };
+
+const isConnectionOverlayActive = computed(
+  () => isOneHandle.value && !props.isEditing && !isNodeDraggingActive.value,
+);
 </script>
 
 <template>
   <div v-if="isOneHandle">
     <Handle
+      v-for="handle in sourceHandles"
+      :key="handle.id"
       type="source"
-      :id="ConnectionSourceID.Right"
-      :position="Position.Right"
+      :id="handle.id"
+      :position="handle.position"
       :is-valid-connection="checkValidConnection"
-      class="center-handle"
+      class="geometry-handle geometry-handle--hidden"
+    />
+    <Handle
+      v-for="handle in targetHandles"
+      :key="handle.id"
+      type="target"
+      :id="handle.id"
+      :position="handle.position"
+      :is-valid-connection="checkValidConnection"
+      class="geometry-handle geometry-handle--hidden"
     />
 
-    <Handle
-      type="target"
-      :id="ConnectionTargetID.Right"
-      :position="Position.Right"
-      :is-valid-connection="checkValidConnection"
-      class="center-handle"
-    />
+    <div v-if="isConnectionOverlayActive" class="full-surface-handle-anchor">
+      <Handle
+        type="source"
+        :id="ConnectionSourceID.Center"
+        :position="Position.Right"
+        :is-valid-connection="checkValidConnection"
+        :connectable-start="true"
+        :connectable-end="true"
+        class="full-surface-overlay-handle"
+      />
+    </div>
   </div>
   <div v-else>
     <Handle
+      v-for="handle in sourceHandles"
+      :key="handle.id"
       type="source"
-      :id="ConnectionSourceID.Right"
-      :position="Position.Right"
+      :id="handle.id"
+      :position="handle.position"
       :is-valid-connection="checkValidConnection"
       class="full-node-handle"
     />
     <Handle
-      type="source"
-      :id="ConnectionSourceID.Left"
-      :position="Position.Left"
-      :is-valid-connection="checkValidConnection"
-      class="full-node-handle"
-    />
-    <Handle
-      type="source"
-      :id="ConnectionSourceID.Top"
-      :position="Position.Top"
-      :is-valid-connection="checkValidConnection"
-      class="full-node-handle"
-    />
-    <Handle
-      type="source"
-      :id="ConnectionSourceID.Bottom"
-      :position="Position.Bottom"
-      :is-valid-connection="checkValidConnection"
-      class="full-node-handle"
-    />
-
-    <Handle
+      v-for="handle in targetHandles"
+      :key="handle.id"
       type="target"
-      :id="ConnectionTargetID.Right"
-      :position="Position.Right"
-      :is-valid-connection="checkValidConnection"
-      class="full-node-handle"
-    />
-    <Handle
-      type="target"
-      :id="ConnectionTargetID.Left"
-      :position="Position.Left"
-      :is-valid-connection="checkValidConnection"
-      class="full-node-handle"
-    />
-    <Handle
-      type="target"
-      :id="ConnectionTargetID.Top"
-      :position="Position.Top"
-      :is-valid-connection="checkValidConnection"
-      class="full-node-handle"
-    />
-    <Handle
-      type="target"
-      :id="ConnectionTargetID.Bottom"
-      :position="Position.Bottom"
+      :id="handle.id"
+      :position="handle.position"
       :is-valid-connection="checkValidConnection"
       class="full-node-handle"
     />
@@ -118,33 +121,46 @@ const checkValidConnection = (connection: any) => {
 </template>
 
 <style>
-.center-handle {
+.geometry-handle {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 30px;
-  height: 30px;
+  width: 12px;
+  height: 12px;
+  pointer-events: auto;
+}
+
+.geometry-handle--hidden {
+  opacity: 0;
+  pointer-events: none;
+  border: none;
+  background: transparent;
+}
+
+.full-surface-handle-anchor {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+.full-surface-overlay-handle {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  transform: none !important;
   opacity: 0;
   pointer-events: auto;
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+}
+
+.full-surface-overlay-handle--passive {
+  pointer-events: none;
 }
 
 .full-node-handle {
   position: absolute;
   padding: 2px;
   pointer-events: auto;
-}
-
-.center-handle::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 20px;
-  height: 20px;
-  background: #4caf50;
-  border-radius: 50%;
-  opacity: 0.3;
 }
 </style>

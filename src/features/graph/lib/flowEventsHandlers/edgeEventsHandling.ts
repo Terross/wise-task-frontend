@@ -1,20 +1,55 @@
 import { useNodeStore } from "@/features/graph/stores/nodes";
 import { useVueFlowBus } from "@/features/graph/stores/vueFlowBus";
+import { createEdgeFromConnection } from "@/features/graph/lib/helpers/createEdgeFromConnection";
+import { resolveConnectionHandles } from "@/features/graph/lib/helpers/resolveConnectionHandles";
 
 export function setupEdgeChangesHandler() {
   const nodeStore = useNodeStore();
   const { vueFlowState } = useVueFlowBus();
 
-  const { onConnect, addEdges, onEdgesChange, getSelectedEdges } = vueFlowState;
+  const {
+    onConnect,
+    addEdges,
+    onEdgesChange,
+    onEdgeUpdate,
+    findNode,
+    updateEdge,
+    getSelectedEdges,
+  } = vueFlowState;
 
-  onConnect((connection) => {
-    console.log(connection);
-    // @ts-ignore
-    connection.type = "special";
-    addEdges(connection);
+  const connectHook = onConnect((connection) => {
+    const edge = createEdgeFromConnection(
+      resolveConnectionHandles(
+        connection,
+        findNode(connection.source),
+        findNode(connection.target),
+      ),
+      {
+        type: "special",
+        updatable: true,
+      },
+    );
+
+    addEdges(edge);
   });
 
-  onEdgesChange((changes) => {
+  const edgeUpdateHook = onEdgeUpdate(({ edge, connection }) => {
+    updateEdge(
+      edge,
+      resolveConnectionHandles(
+        {
+          ...connection,
+          sourceHandle: connection.sourceHandle ?? edge.sourceHandle,
+          targetHandle: connection.targetHandle ?? edge.targetHandle,
+        },
+        findNode(connection.source),
+        findNode(connection.target),
+      ),
+      false,
+    );
+  });
+
+  const edgesChangeHook = onEdgesChange((changes) => {
     if (changes.length === 0) {
       return;
     }
@@ -34,6 +69,12 @@ export function setupEdgeChangesHandler() {
     });
     return true;
   });
+
+  return () => {
+    connectHook.off();
+    edgeUpdateHook.off();
+    edgesChangeHook.off();
+  };
 }
 
 export const isEdgeSelected = (edgeId: string): boolean => {

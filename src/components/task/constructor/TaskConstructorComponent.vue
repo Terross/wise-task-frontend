@@ -8,6 +8,7 @@
 						<v-radio-group v-model="radios">
 							<v-radio label="Задача на редактирование графа" value="1"></v-radio>
 							<v-radio label="Задача на реализацию алгоритма" value="2"></v-radio>
+							<v-radio label="Задача на редактирование графа v2" value="3"></v-radio>
 						</v-radio-group>
 					</v-card-text>
 					<v-card-actions>
@@ -48,6 +49,9 @@ export default defineComponent({
 					break
 				case '2': 
 					this.$router.push('/taskconstructor/implementation')
+					break
+				case '3': 
+					this.$router.push('/taskconstructor/graph_2')
 					break
 			}
 		}

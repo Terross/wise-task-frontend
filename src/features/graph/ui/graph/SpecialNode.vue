@@ -1,17 +1,24 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch, computed } from "vue";
+import { ref, onMounted, onUnmounted, computed, inject } from "vue";
 import type { NodeProps } from "@vue-flow/core";
 import { useNodeStore } from "@/features/graph/stores/nodes";
 import NodeControls from "./NodeButtons.vue";
 import NodeHandles from "@/features/graph/ui/graph/NodeHandles.vue";
+import { useVueFlowBus } from "@/features/graph/stores/vueFlowBus";
+import { graphNodeDraggingActiveKey } from "@/features/graph/ui/graph/graphConstructorPolicy";
 
 const props = defineProps<NodeProps>();
 
 const nodeStore = useNodeStore();
+const { vueFlowState } = useVueFlowBus();
 
 const isEditing = ref(false);
 const newTitle = ref(props.data.label || "");
 const isControlsVisible = ref(false);
+const isNodeDraggingActive = inject(
+  graphNodeDraggingActiveKey,
+  computed(() => false),
+);
 
 const isSelected = computed(() => props.selected);
 
@@ -30,10 +37,13 @@ const finishEditing = (e: Event) => {
     const data = nodeStore.getNodeData(props.id);
     if (!data) return;
 
-    nodeStore.updateNodeData(props.id, {
+    const updatedData = {
       ...data,
       label: newTitle.value,
-    });
+    };
+
+    nodeStore.updateNodeData(props.id, updatedData);
+    vueFlowState.updateNodeData(props.id, updatedData, { replace: false });
   }
   isEditing.value = false;
 };
@@ -102,7 +112,7 @@ const textColor = computed(() => {
       border: `3px solid ${isSelected ? '#4CAF50' : '#333'}`,
       borderRadius: '50%',
       display: 'flex',
-      cursor: 'pointer',
+      cursor: isNodeDraggingActive ? 'grab' : 'pointer',
       alignItems: 'center',
       justifyContent: 'center',
       backgroundColor: data.color || '#b2b2b2',

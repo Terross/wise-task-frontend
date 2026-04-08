@@ -109,13 +109,17 @@ export default defineComponent({
       set(value) {
         switch (value) {
           case "Любой":
-            return (taskGraphConstructorInfo.value.graphType = GraphType.Any);
+            taskGraphConstructorInfo.value.graphType = GraphType.Any;
+            nodeStore.isDirected = true;
+            return;
           case "Ориентированный":
-            return (taskGraphConstructorInfo.value.graphType =
-              GraphType.Direct);
+            taskGraphConstructorInfo.value.graphType = GraphType.Direct;
+            nodeStore.isDirected = true;
+            return;
           case "Неориентированный":
-            return (taskGraphConstructorInfo.value.graphType =
-              GraphType.Undirect);
+            taskGraphConstructorInfo.value.graphType = GraphType.Undirect;
+            nodeStore.isDirected = false;
+            return;
         }
       },
     });

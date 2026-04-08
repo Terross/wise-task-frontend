@@ -5,21 +5,24 @@ import {
   getBezierPath,
   getSmoothStepPath,
   getStraightPath,
-  MarkerType,
   Position,
 } from "@vue-flow/core";
-import { computed, ref, onMounted, onUnmounted } from "vue";
+import { computed, inject, ref, onMounted, onUnmounted } from "vue";
 import { useNodeStore } from "@/features/graph/stores/nodes";
 import { COLORS } from "@/features/graph/config/colors";
 import { CustomEdge } from "@/features/graph/types/CustomEdge";
 import { isEdgeSelected } from "@/features/graph/lib/flowEventsHandlers/edgeEventsHandling";
 import { graphSettingsStore } from "@/features/graph/stores/graphSettings";
+import { graphCanColorKey } from "@/features/graph/ui/graph/graphConstructorPolicy";
 
 const props = defineProps<CustomEdge>();
 
 const nodeStore = useNodeStore();
+const canColor = inject(graphCanColorKey, computed(() => true));
 const isPanelVisible = ref(false);
 const tempWeight = ref(props.data?.weight || 0);
+const markerId = computed(() => `edge-arrow-${props.id}`);
+const markerUrl = computed(() => `url(#${markerId.value})`);
 
 const weight = computed({
   get: () => props.data?.weight || 0,
@@ -164,6 +167,12 @@ const setColor = (colorValue: string) => {
   color.value = colorValue;
 };
 
+const handleWeightInput = (event: Event) => {
+  const target = event.target as HTMLInputElement | null;
+  if (!target) return;
+  tempWeight.value = Number(target.value);
+};
+
 const handleClickOutside = (event: MouseEvent) => {
   const edgePanel = document.querySelector(".edge-panel");
   if (edgePanel && !edgePanel.contains(event.target as Node)) {
@@ -190,10 +199,13 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <svg style="position: absolute; width: 0; height: 0">
+  <svg
+    v-if="nodeStore.isDirected"
+    style="position: absolute; width: 0; height: 0"
+  >
     <defs>
       <marker
-        id="arrow"
+        :id="markerId"
         viewBox="0 0 10 10"
         refX="8"
         refY="5"
@@ -201,7 +213,7 @@ onUnmounted(() => {
         markerHeight="6"
         orient="auto-start-reverse"
       >
-        <path d="M 0 0 L 10 5 L 0 10 z" fill="#555" />
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="context-stroke" />
       </marker>
     </defs>
   </svg>
@@ -215,14 +227,11 @@ onUnmounted(() => {
         filter: isSelected ? 'drop-shadow(0 0 1px currentColor)' : 'none',
         transition: '',
       }"
-      :marker-start="
-        nodeStore.isDirected ? `url(#${MarkerType.Arrow})` : undefined
-      "
+      :marker-end="nodeStore.isDirected ? markerUrl : undefined"
     />
 
     <div v-if="!!weight">
       <EdgeLabelRenderer>
-        <
         <div
           :style="{
             transform: `translate(-50%, -50%) translate(${labelPosition.x}px,${labelPosition.y}px)`,
@@ -245,17 +254,19 @@ onUnmounted(() => {
           type="text"
           inputmode="numeric"
           :value="weight"
-          @input="(e) => (tempWeight = Number(e.target.value))"
+          @input="handleWeightInput"
           @blur="updateEdgeData"
           class="edge-input"
         />
-        <button
-          v-for="(colorValue, colorName) in COLORS"
-          :key="colorName"
-          @click="setColor(colorValue)"
-          :style="{ backgroundColor: colorValue }"
-          class="color-button"
-        ></button>
+        <template v-if="canColor">
+          <button
+            v-for="(colorValue, colorName) in COLORS"
+            :key="colorName"
+            @click="setColor(colorValue)"
+            :style="{ backgroundColor: colorValue }"
+            class="color-button"
+          ></button>
+        </template>
 
         <button @click="deleteEdge" class="delete-button">✖</button>
       </div>

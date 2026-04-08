@@ -58,6 +58,7 @@ declare module 'vue-router/auto/routes' {
     '/relations/training/': RouteRecordInfo<'/relations/training/', '/relations/training', Record<never, never>, Record<never, never>>,
     '/taskconstructor/': RouteRecordInfo<'/taskconstructor/', '/taskconstructor', Record<never, never>, Record<never, never>>,
     '/taskconstructor/graph/': RouteRecordInfo<'/taskconstructor/graph/', '/taskconstructor/graph', Record<never, never>, Record<never, never>>,
+    '/taskconstructor/graph_2/': RouteRecordInfo<'/taskconstructor/graph_2/', '/taskconstructor/graph_2', Record<never, never>, Record<never, never>>,
     '/taskconstructor/implementation/': RouteRecordInfo<'/taskconstructor/implementation/', '/taskconstructor/implementation', Record<never, never>, Record<never, never>>,
     '/tasks/': RouteRecordInfo<'/tasks/', '/tasks', Record<never, never>, Record<never, never>>,
     '/tasks/graph/[id]': RouteRecordInfo<'/tasks/graph/[id]', '/tasks/graph/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,

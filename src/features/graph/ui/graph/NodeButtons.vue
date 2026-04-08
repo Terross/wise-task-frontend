@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { computed, inject, ref, watch } from "vue";
 import { useNodeStore } from "@/features/graph/stores/nodes";
 import { COLORS } from "@/features/graph/config/colors";
+import { graphCanColorKey } from "@/features/graph/ui/graph/graphConstructorPolicy";
+import { useVueFlowBus } from "@/features/graph/stores/vueFlowBus";
 
 const props = defineProps<{
   nodeId: string;
@@ -13,6 +15,8 @@ const props = defineProps<{
 }>();
 
 const nodeStore = useNodeStore();
+const canColor = inject(graphCanColorKey, computed(() => true));
+const { vueFlowState } = useVueFlowBus();
 
 const emit = defineEmits<{
   (e: "delete"): void;
@@ -55,20 +59,26 @@ const handleWeightChange = () => {
   const data = nodeStore.getNodeData(props.nodeId);
   if (!data) return;
 
-  nodeStore.updateNodeData(props.nodeId, {
+  const updatedData = {
     ...data,
     weight: value,
-  });
+  };
+
+  nodeStore.updateNodeData(props.nodeId, updatedData);
+  vueFlowState.updateNodeData(props.nodeId, updatedData, { replace: false });
 };
 
 const selectColor = (color: string) => {
   const data = nodeStore.getNodeData(props.nodeId);
   if (!data) return;
 
-  nodeStore.updateNodeData(props.nodeId, {
+  const updatedData = {
     ...data,
     color: color,
-  });
+  };
+
+  nodeStore.updateNodeData(props.nodeId, updatedData);
+  vueFlowState.updateNodeData(props.nodeId, updatedData, { replace: false });
 };
 </script>
 
@@ -98,7 +108,7 @@ const selectColor = (color: string) => {
       {{ props.coordinates.y.toFixed() }}
     </div>
 
-    <div class="controls-row">
+    <div v-if="canColor" class="controls-row">
       <button
         v-for="(key, value) in COLORS"
         :key="props.nodeId + 'color_picker' + key"

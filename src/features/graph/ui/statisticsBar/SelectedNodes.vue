@@ -74,7 +74,7 @@ const togglePanel = () => {
                     </span>
                   </div>
 
-                  <div v-if="node.data.weight" class="detail-row">
+                  <div v-if="node.data.weight !== undefined" class="detail-row">
                     <span class="detail-label">Вес:</span>
                     <span class="detail-value">{{ node.data.weight }}</span>
                   </div>

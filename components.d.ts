@@ -63,6 +63,7 @@ declare module 'vue' {
     TaskConditionComponent: typeof import('./src/components/task/constructor/graph/TaskConditionComponent.vue')['default']
     TaskConditionListComponent: typeof import('./src/components/task/constructor/graph/TaskConditionListComponent.vue')['default']
     TaskConstructorComponent: typeof import('./src/components/task/constructor/TaskConstructorComponent.vue')['default']
+    TaskConstructorPage: typeof import('./src/components/constructor_v2/TaskConstructorPage.vue')['default']
     TaskGraphComponent: typeof import('./src/components/task/TaskGraphComponent.vue')['default']
     TaskGraphLibraryComponent: typeof import('./src/components/task/constructor/graph/TaskGraphLibraryComponent.vue')['default']
     TaskGraphPluginTableComponent: typeof import('./src/components/task/constructor/graph/TaskGraphPluginTableComponent.vue')['default']
