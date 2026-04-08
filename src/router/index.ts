@@ -15,7 +15,7 @@ const router = createRouter({
     ...setupLayouts(routes),
 
     {
-      path: "/*",
+      path: "/**",
       redirect: () => {
         const { activeUser } = useProfileStore();
         return activeUser == null ? "auth/signIn" : "profiles";

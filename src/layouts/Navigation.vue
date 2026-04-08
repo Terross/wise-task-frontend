@@ -44,6 +44,7 @@
 <!--          @click="showExamPage"-->
 <!--      ></v-list-item>-->
       <v-list-item
+          v-if="profileStore.activeUser",
           prepend-icon="mdi-relation-one-to-one"
           title="Бинарные отношения"
           value="binaryRelationships"
@@ -118,7 +119,7 @@ export default defineComponent({
     }
 
     const showMaterialPage = () => {
-      router.push("/materials")
+      router.push("/")
       emit("hideMenu")
     }
 
@@ -143,7 +144,9 @@ export default defineComponent({
       showMaterialPage,
       showExamPage,
       showBinaryRelationshipsPage,
+      profileStore
     }
   },
 })
 </script>
+
