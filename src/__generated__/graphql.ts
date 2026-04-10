@@ -352,7 +352,6 @@ export type Profile = {
   patronymic?: Maybe<Scalars['String']['output']>;
   profilePassword: Scalars['String']['output'];
   profileRole: Role;
-  studentGroup?: Maybe<Scalars['String']['output']>;
 };
 
 export type ProfileInput = {
@@ -362,8 +361,7 @@ export type ProfileInput = {
   lastName: Scalars['String']['input'];
   patronymic?: InputMaybe<Scalars['String']['input']>;
   profilePassword: Scalars['String']['input'];
-  profileRole: Role;
-  studentGroup?: InputMaybe<Scalars['String']['input']>;
+  profileRole?: InputMaybe<Role>;
 };
 
 export type Query = {
@@ -379,6 +377,8 @@ export type Query = {
   getGraphLibrary: Array<Maybe<Graph>>;
   getPlugin: Plugin;
   getProfile: Profile;
+  /** event */
+  getStatistic: StatisticResponse;
   /** task */
   getTask: Task;
   getTaskSolution: Solution;
@@ -407,6 +407,11 @@ export type QueryGetProfileArgs = {
 };
 
 
+export type QueryGetStatisticArgs = {
+  request: StatisticRequestInput;
+};
+
+
 export type QueryGetTaskArgs = {
   id: Scalars['ID']['input'];
 };
@@ -428,9 +433,8 @@ export type ResetPasswordRequest = {
 
 export enum Role {
   Admin = 'ADMIN',
-  Captain = 'CAPTAIN',
-  Student = 'STUDENT',
-  Teacher = 'TEACHER'
+  Author = 'AUTHOR',
+  User = 'USER'
 }
 
 export type Rule = {
@@ -505,6 +509,38 @@ export type SolutionInput = {
   pluginId: Scalars['ID']['input'];
   pluginType: PluginType;
 };
+
+export type StatisticRequestInput = {
+  event_type?: InputMaybe<Scalars['String']['input']>;
+  scope: StatisticScope;
+  task_id?: InputMaybe<Scalars['ID']['input']>;
+  type: StatisticType;
+  user_id?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type StatisticResponse = {
+  __typename?: 'StatisticResponse';
+  event_type?: Maybe<Scalars['String']['output']>;
+  scope: StatisticScope;
+  task_id?: Maybe<Scalars['String']['output']>;
+  type: StatisticType;
+  updated_at: Scalars['String']['output'];
+  user_id?: Maybe<Scalars['String']['output']>;
+  value: Scalars['Float']['output'];
+};
+
+export enum StatisticScope {
+  Global = 'GLOBAL',
+  Session = 'SESSION',
+  Task = 'TASK',
+  User = 'USER'
+}
+
+export enum StatisticType {
+  Mean = 'MEAN',
+  SuccessRate = 'SUCCESS_RATE',
+  Sum = 'SUM'
+}
 
 /**  ------------------------------------------------------------------------- */
 export type Task = {

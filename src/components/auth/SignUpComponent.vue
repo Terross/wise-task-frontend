@@ -108,12 +108,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { useProfileStore } from "@/store/profile";
-import { SIGN_UP } from "@/api/Mutations";
-import { useMutation } from "@vue/apollo-composable";
-import { Role } from "@/common/Role";
-import { UserStorageSetters } from "@/entities/user/storage/setters";
+import {defineComponent} from "vue";
+import {useProfileStore} from "@/store/profile";
+import {SIGN_UP} from "@/api/Mutations";
+import {useMutation} from "@vue/apollo-composable";
+import {UserStorageSetters} from "@/entities/user/storage/setters";
 
 export default defineComponent({
   data() {
@@ -126,7 +125,6 @@ export default defineComponent({
       password: "",
       repeatedPassword: "",
       visible: false,
-      group: "",
       profileStore: useProfileStore(),
       firstNameRules: [
         (value: string) => {
@@ -151,7 +149,6 @@ export default defineComponent({
             firstName: this.firstName,
             lastName: this.lastName,
             patronymic: this.patronymic,
-            studentGroup: this.group,
           },
         },
       };
@@ -165,12 +162,11 @@ export default defineComponent({
         const jwtData = token.split(".")[1];
         const decodedJwtJsonData = window.atob(jwtData);
         const decodedJwtData = JSON.parse(decodedJwtJsonData);
-        const user = {
+        this.profileStore.activeUser = {
           role: decodedJwtData.role,
           id: decodedJwtData.id,
           email: decodedJwtData.email,
         };
-        this.profileStore.activeUser = user;
       });
       this.$router.push("/plugins");
 

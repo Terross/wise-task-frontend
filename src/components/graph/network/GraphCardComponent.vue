@@ -53,7 +53,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, reactive, ref, toRefs } from 'vue'
-import { directGraphConfigs, undirectGraphConfigs } from "@/components/graph/network/helper/graphConfig"
+import undirectGraphConfigs, { directGraphConfigs } from "@/components/graph/network/helper/graphConfig"
 import * as vNG from "v-network-graph"
 
 export default defineComponent({

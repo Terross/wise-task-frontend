@@ -26,8 +26,13 @@ export const UPDATE_PROFILE = gql`
             lastName
             patronymic
             profileRole
-            studentGroup
         }
+    }
+`
+
+export const DELETE_PROFILE = gql`
+    mutation DeleteProfile ($id: ID!) {
+        deleteProfile (id: $id)
     }
 `
 
@@ -90,6 +95,12 @@ export const CREATE_TASK_GRAPH = gql`
                 pluginType
             }
         }
+    }
+`
+
+export const DELETE_TASK = gql`
+    mutation DeleteTask ($id: ID!) {
+        deleteTask(id: $id)
     }
 `
 

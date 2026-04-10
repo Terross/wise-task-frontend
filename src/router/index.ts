@@ -5,7 +5,7 @@
  */
 
 // Composables
-import { createRouter, createWebHistory } from "vue-router/auto";
+import { createRouter, createWebHistory } from 'vue-router/auto';
 import { setupLayouts } from "virtual:generated-layouts";
 import { useProfileStore } from "@/store/profile";
 
@@ -15,7 +15,7 @@ const router = createRouter({
     ...setupLayouts(routes),
 
     {
-      path: "/*",
+      path: "/**",
       redirect: () => {
         const { activeUser } = useProfileStore();
         return activeUser == null ? "auth/signIn" : "profiles";

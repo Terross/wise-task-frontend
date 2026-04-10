@@ -20,9 +20,6 @@
                 <v-text-field
 									label="Роль"
 									v-model="profile.profileRole"></v-text-field>
-                <v-text-field
-									label="Группа"
-									v-model="profile.studentGroup"></v-text-field>
 							</v-col>
 						</v-row>
 					</v-container>

@@ -2,17 +2,24 @@
   <v-container fluid>
     <v-row>
       <v-col cols="4">
-        <profile-info-component 
-          v-bind:profile="profile" 
-          v-bind:loading="loading"></profile-info-component>
+        <profile-info-component
+            v-if="profile"
+            :profile="profile"
+            :loading="loading"/>
       </v-col>
       <v-col cols="8">
         <v-row>
           <v-col cols="12">
-            <profile-task-component v-bind:profile="profile" v-bind:loading="loading"></profile-task-component>
-          </v-col>         
+            <profile-task-component
+                v-if="profile"
+                :profile="profile"
+                :loading="loading"/>
+          </v-col>
           <v-col cols="12">
-            <profile-solutions-component v-bind:profile="profile" v-bind:loading="loading"></profile-solutions-component>
+            <profile-solutions-component
+                v-if="profile"
+                :profile="profile"
+                :loading="loading"/>
           </v-col>
         </v-row>
       </v-col>
@@ -21,29 +28,42 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue'
+import { defineComponent } from 'vue'
 import { GET_PROFILE } from '@/api/Queries'
 import { useQuery } from '@vue/apollo-composable'
 import { useProfileStore } from '@/store/profile'
 import { storeToRefs } from 'pinia'
-
+import ProfileTaskComponent from "@/components/profile/ProfileTaskComponent.vue";
+import ProfileSolutionsComponent from "@/components/profile/ProfileSolutionsComponent.vue";
+import ProfileInfoComponent from "@/components/profile/ProfileInfoComponent.vue";
 
 export default defineComponent({
-  setup(props) {
-    const { onResult, loading, error } = useQuery(GET_PROFILE, { id: props.id })
-    const { currentUser } = storeToRefs(useProfileStore())
-    const profile = computed(() => currentUser)
-    onResult(response => {
-      if (response.data) {
-        useProfileStore().currentUser = response.data.getProfile
-      }
-    })
-    return {
-      profile,
-      loading,
-      error
+  components: {ProfileInfoComponent, ProfileSolutionsComponent, ProfileTaskComponent},
+  props: {
+    id: {
+      type: String,
+      required: true
     }
   },
-  props: ["id"]
+  setup(props) {
+    const profileStore = useProfileStore()
+    const { currentUser } = storeToRefs(profileStore)
+
+    const { onResult, loading } = useQuery(
+        GET_PROFILE,
+        { id: props.id }
+    )
+
+    onResult(response => {
+      if (response.data) {
+        profileStore.currentUser = response.data.getProfile
+      }
+    })
+
+    return {
+      profile: currentUser,
+      loading
+    }
+  }
 })
 </script>

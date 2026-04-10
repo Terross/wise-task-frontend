@@ -1,93 +1,111 @@
 <template>
   <v-skeleton-loader
-          v-if="loading"
-          class="mx-auto border"
-          type="card"
+      v-if="loading"
+      class="mx-auto border"
+      type="card"
   ></v-skeleton-loader>
   <v-card v-if="!loading">
     <v-card-title>Карточка профиля</v-card-title>
     <v-card-text v-if="profile">
       <v-list :items="items"></v-list>
     </v-card-text>
-    <v-card-actions>
+    <v-card-actions v-if="isUserAdmin">
       <v-row justify="center" align="center">
         <v-col cols="auto">
           <v-btn
-            color="primary"
-            @click="updateProfileClick"
-            variant="outlined">Редактировать</v-btn>
+              color="primary"
+              @click="updateProfileClick"
+              variant="outlined"
+          >Редактировать</v-btn
+          >
         </v-col>
       </v-row>
     </v-card-actions>
   </v-card>
+
   <profile-dialog-component
-    v-bind:dialog="dialog"
-    v-bind:profile="profileModel"
-    @hideDialog="dialog = false"></profile-dialog-component>
+      v-if="dialog"
+      :dialog="dialog"
+      :profile="profileModel"
+      @hideDialog="dialog = false"
+  ></profile-dialog-component>
 </template>
 
 <script lang="ts">
-import { Role } from '@/__generated__/graphql'
-import { computed, defineComponent, reactive, ref, toRefs } from 'vue'
+import {computed, defineComponent, onMounted, ref} from 'vue'
+import ProfileDialogComponent from "@/components/profile/ProfileDialogComponent.vue"
+import {useProfileStore} from "@/store/profile";
+import {UserStorageGetters} from "@/entities/user/storage/getters";
+import {getUserFromToken} from "@/entities/user/lib/getUserFromToken";
 
 export default defineComponent({
+  components: { ProfileDialogComponent },
   props: {
-    profile: Object,
-    loading: Boolean
+    profile: {
+      type: Object,
+      default: null
+    },
+    loading: {
+      type: Boolean,
+      default: false
+    }
   },
   setup(props) {
-    const { profile } = toRefs(props)
+    const dialog = ref(false)
+    const profileModel = ref({ ...props.profile })
+    const profileStore = useProfileStore();
     const items = computed(() => {
-      if (profile.value) {
-        const result = []
-        result.push(
+      if (props.profile) {
+        return [
           {
-            title: "Имя: " + profile.value.firstName,
+            title: "Имя: " + props.profile.firstName,
             value: 1,
           },
           {
-            title: "Фамилия: " + profile.value.lastName,
+            title: "Фамилия: " + props.profile.lastName,
             value: 2,
           },
           {
-            title: "Отчество: " + profile.value.patronymic,
+            title: "Отчество: " + props.profile.patronymic,
             value: 3,
           },
           {
-            title: "Email: " + profile.value.email,
+            title: "Email: " + props.profile.email,
             value: 4,
           },
           {
-            title: "Роль: " + profile.value.profileRole,
+            title: "Роль: " + props.profile.profileRole,
             value: 5,
           }
-        )
-        if (profile.value.profileRole === Role.Student) {
-          result.push(
-            {
-              title: "Группа: " + profile.value.studentGroup,
-              value: 6,
-            }
-          )
-        }
-        return result
-      } else {
-        return []
+        ]
       }
+      return []
     })
-    const dialog = ref(false)
-    const profileModel = reactive({ ...profile.value })
-    return { 
-      profile,
-      items, 
-      dialog, 
-      profileModel
-     }
-  },
-  methods: {
-    updateProfileClick() {
-      this.dialog = !this.dialog
-      Object.assign(this.profileModel, { ...this.profile })
+
+    onMounted(async () => {
+      if (!profileStore.activeUser) {
+        const token = await UserStorageGetters.getToken();
+        if (token) {
+          profileStore.activeUser = await getUserFromToken(token);
+        }
+      }
+    });
+
+    const isUserAdmin = computed(() => {
+      return profileStore.activeUser?.role === "ADMIN"
+    })
+
+    const updateProfileClick = () => {
+      dialog.value = true
+      profileModel.value = { ...props.profile }
+    }
+
+    return {
+      items,
+      dialog,
+      profileModel,
+      updateProfileClick,
+      isUserAdmin
     }
   }
 })

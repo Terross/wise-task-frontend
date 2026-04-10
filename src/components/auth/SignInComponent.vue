@@ -104,7 +104,7 @@ export default defineComponent({
         this.loading = false;
         const token = response.data.signIn.token;
         UserStorageSetters.setToken(token);
-        setTimeout(() => this.$router.push("/plugins"), 30);
+        setTimeout(() => this.$router.push("/tasks"), 30);
       });
 
       onError(({ networkError, graphQLErrors }) => {
