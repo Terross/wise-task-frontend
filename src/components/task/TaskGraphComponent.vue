@@ -1,144 +1,185 @@
 <template>
-  <v-container>
-    <v-row>
-      <v-col>
-        <Graph :style="{ width: '100%', border: '1px solid black' }" />
-      </v-col>
-      <v-col>
-        <v-card>
-          <v-card-title>{{ activeTask.name }}</v-card-title>
-          <v-card-text
-              class="text-pre-wrap"
-              v-html="formatDescription(activeTask.description)"
-          />
-          <v-card-actions>
-            <v-btn color="primary" variant="outlined" @click="solveTask">
-              Отправить решение
-            </v-btn>
-          </v-card-actions>
-          <v-card
-              v-if="extraGraph && extraGraph.vertexList.length !== 0"
-              class="mt-4"
-          >
-            <v-card-text>
-              <v-network-graph
-                  :style="{
-                  width: '100%',
-                  height: '500px',
-                  border: '1px solid #000',
-                }"
-                  :nodes="graphData.nodes"
-                  :edges="graphData.edges"
-                  :layouts="graphData.layouts"
-                  :configs="graphConfigs"
-              >
-                <template #override-node="{ nodeId, ...props }">
-                  <circle
-                      :r="20"
-                      :fill="getColorCode(props.config.color)"
-                      stroke="#000"
-                      stroke-width="1"
-                  />
-                  <text
-                      v-if="graphData.nodes[nodeId].weight !== undefined"
-                      font-size="12"
-                      text-anchor="middle"
-                      fill="#000000"
-                      y="45"
-                  >
-                    Вес: {{ graphData.nodes[nodeId].weight }}
-                  </text>
-                  <text
-                      font-size="12"
-                      text-anchor="middle"
-                      fill="#000000"
-                      y="30"
-                  >
-                    {{ graphData.nodes[nodeId].label }}
-                  </text>
-                  <text
-                      font-size="12"
-                      text-anchor="middle"
-                      fill="#000000"
-                      y="60"
-                  >
-                    Координаты: ({{ graphData.nodes[nodeId].xCoordinate }},
-                    {{ graphData.nodes[nodeId].yCoordinate }})
-                  </text>
-                </template>
-                <template #edge-label="{ edgeId, ...slotProps }">
-                  <v-edge-label
-                      :text="`${graphData.edges[edgeId].weight}`"
-                      align="center"
-                      vertical-align="below"
-                      v-bind="slotProps"
-                  />
-                  <v-edge-label
-                      :text="`${graphData.edges[edgeId].label}`"
-                      align="center"
-                      vertical-align="above"
-                      v-bind="slotProps"
-                  />
-                </template>
-              </v-network-graph>
-            </v-card-text>
-          </v-card>
-        </v-card>
+  <v-layout>
+    <div style="position: relative; width: 100%; height: 100vh">
+      <Graph
+          :style="{
+          width: '100%',
+          height: '100%',
+          border: '1px solid black',
+          boxSizing: 'border-box',
+        }"
+      />
 
-        <v-alert
-            v-model="successAlert"
-            text="Задача решена верно"
-            title="Успех!"
-            type="success"
-            closable
-            variant="tonal"
-        />
-        <v-alert
-            v-model="errorAlert"
-            text="В решении есть ошибка"
-            title="Ошибка!"
-            type="error"
-            closable
-            variant="tonal"
-        />
+      <v-btn
+          v-if="!drawer"
+          icon
+          class="drawer-toggle-btn"
+          @click="drawer = true"
+      >
+        <v-icon>mdi-chevron-left</v-icon>
+      </v-btn>
+    </div>
 
-        <v-card v-if="errorAlert">
-          <v-card-title>Ошибки в модулях</v-card-title>
-          <v-card-text>
-            <v-list lines="one">
-              <v-list-item
-                  v-for="(item, i) in result"
-                  :key="i"
-                  :title="`${i + 1}. ${item.mistakeText} = ${item.value}`"
+    <v-navigation-drawer
+        v-model="drawer"
+        location="right"
+        temporary
+        :width="drawerWidth"
+    >
+      <div class="d-flex justify-end pa-2">
+        <v-btn icon @click="drawer = false">
+          <v-icon>mdi-chevron-right</v-icon>
+        </v-btn>
+      </div>
+
+      <v-container>
+        <v-row>
+          <v-col>
+            <v-card>
+              <v-card-title>{{ activeTask.name }}</v-card-title>
+              <v-card-text
+                  class="text-pre-wrap"
+                  v-html="formatDescription(activeTask.description)"
               />
-            </v-list>
-          </v-card-text>
-        </v-card>
+              <v-card-actions>
+                <v-btn color="primary" variant="outlined" @click="solveTask">
+                  Отправить решение
+                </v-btn>
+              </v-card-actions>
 
-        <v-card>
-          <v-card-text class="text-center">
-            <div v-if="statisticLoading" class="d-flex align-center justify-center">
-              <v-progress-circular indeterminate size="20" width="2" class="mr-2" />
-              <span class="text-caption">Загрузка...</span>
-            </div>
-            <div v-else-if="statistic">
-              <div class="text-h5 font-weight-bold primary--text mb-1">
-                {{ formatPercentage(statistic.value) }}
-              </div>
-              <div class="text-body-2">успешно решили задачу</div>
-            </div>
-            <div v-else class="text-body-2">
-              Ошибка загрузки сервиса статистики
-            </div>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+              <v-card
+                  v-if="extraGraph && extraGraph.vertexList.length !== 0"
+                  class="mt-4"
+              >
+                <v-card-text>
+                  <v-network-graph
+                      :style="{
+                      width: '100%',
+                      height: '500px',
+                      border: '1px solid #000',
+                    }"
+                      :nodes="graphData.nodes"
+                      :edges="graphData.edges"
+                      :layouts="graphData.layouts"
+                      :configs="graphConfigs"
+                  >
+                    <template #override-node="{ nodeId, ...props }">
+                      <circle
+                          :r="20"
+                          :fill="getColorCode(props.config.color)"
+                          stroke="#000"
+                          stroke-width="1"
+                      />
+                      <text
+                          v-if="graphData.nodes[nodeId].weight !== undefined"
+                          font-size="12"
+                          text-anchor="middle"
+                          fill="#000000"
+                          y="45"
+                      >
+                        Вес: {{ graphData.nodes[nodeId].weight }}
+                      </text>
+                      <text
+                          font-size="12"
+                          text-anchor="middle"
+                          fill="#000000"
+                          y="30"
+                      >
+                        {{ graphData.nodes[nodeId].label }}
+                      </text>
+                      <text
+                          font-size="12"
+                          text-anchor="middle"
+                          fill="#000000"
+                          y="60"
+                      >
+                        Координаты: ({{ graphData.nodes[nodeId].xCoordinate }},
+                        {{ graphData.nodes[nodeId].yCoordinate }})
+                      </text>
+                    </template>
+                    <template #edge-label="{ edgeId, ...slotProps }">
+                      <v-edge-label
+                          :text="`${graphData.edges[edgeId].weight}`"
+                          align="center"
+                          vertical-align="below"
+                          v-bind="slotProps"
+                      />
+                      <v-edge-label
+                          :text="`${graphData.edges[edgeId].label}`"
+                          align="center"
+                          vertical-align="above"
+                          v-bind="slotProps"
+                      />
+                    </template>
+                  </v-network-graph>
+                </v-card-text>
+              </v-card>
+            </v-card>
+
+            <v-alert
+                v-model="successAlert"
+                text="Задача решена верно"
+                title="Успех!"
+                type="success"
+                closable
+                variant="tonal"
+            />
+            <v-alert
+                v-model="errorAlert"
+                text="В решении есть ошибка"
+                title="Ошибка!"
+                type="error"
+                closable
+                variant="tonal"
+            />
+
+            <v-card v-if="errorAlert">
+              <v-card-title>Ошибки в модулях</v-card-title>
+              <v-card-text>
+                <v-list lines="one">
+                  <v-list-item
+                      v-for="(item, i) in result"
+                      :key="i"
+                      :title="`${i + 1}. ${item.mistakeText} = ${item.value}`"
+                  />
+                </v-list>
+              </v-card-text>
+            </v-card>
+
+            <v-card class="mt-4">
+              <v-card-text class="text-center">
+                <div
+                    v-if="statisticLoading"
+                    class="d-flex align-center justify-center"
+                >
+                  <v-progress-circular
+                      indeterminate
+                      size="20"
+                      width="2"
+                      class="mr-2"
+                  />
+                  <span class="text-caption">Загрузка...</span>
+                </div>
+                <div v-else-if="statistic">
+                  <div class="text-h5 font-weight-bold primary--text mb-1">
+                    {{ formatPercentage(statistic.value) }}
+                  </div>
+                  <div class="text-body-2">успешно решили задачу</div>
+                </div>
+                <div v-else class="text-body-2">
+                  Ошибка загрузки сервиса статистики
+                </div>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-navigation-drawer>
+  </v-layout>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted, onUnmounted } from "vue";
 import { SOLVE_TASK_GRAPH } from "@/api/Mutations";
 import { GET_GRAPH_BY_ID, GET_TASK, GET_STATISTIC } from "@/api/Queries";
 import { StatisticRequestInput, StatisticResponse } from "@/api/Statistic";
@@ -173,11 +214,26 @@ const errorAlert = ref(false);
 const result = ref<PluginResult[]>([]);
 const extraGraph = ref<null | GraphType>(null);
 
-// Статистика
+const drawer = ref(true);
+const drawerWidth = ref(600);
+
+const updateDrawerWidth = () => {
+  drawerWidth.value = Math.max(600, window.innerWidth / 2);
+};
+
+onMounted(() => {
+  updateDrawerWidth();
+  window.addEventListener("resize", updateDrawerWidth);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", updateDrawerWidth);
+});
+
+
 const statistic = ref<StatisticResponse | null>(null);
 const statisticLoading = ref(false);
 
-// Функции ДО их использования
 const loadStatisticForTask = (taskId: string) => {
   if (!taskId) return;
 
@@ -296,7 +352,6 @@ const graphConfigs = computed(() => {
   };
 });
 
-// Запросы
 const { onResult: onTaskResult } = useQuery(GET_TASK, { id: props.id });
 onTaskResult((response) => {
   if (response.data) {
@@ -379,6 +434,20 @@ const solveTask = async () => {
 </script>
 
 <style scoped>
+.drawer-toggle-btn {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  border-radius: 20px 0 0 20px !important;
+  height: 60px !important;
+  width: 40px !important;
+  background-color: #1976d2 !important;
+  color: white !important;
+  box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 5;
+}
+
 .text-pre-wrap {
   white-space: pre-wrap;
 }
