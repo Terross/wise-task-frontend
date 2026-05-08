@@ -8,7 +8,7 @@ export function setupNodeChangesHandler() {
 
   const { onNodesChange, onNodeDragStart } = vueFlowState;
 
-  onNodesChange((events: NodeChange[]) => {
+  const nodesChangeHook = onNodesChange((events: NodeChange[]) => {
     if (events.length === 0) {
       return;
     }
@@ -32,7 +32,12 @@ export function setupNodeChangesHandler() {
     }
   });
 
-  onNodeDragStart((event) => {
+  const nodeDragStartHook = onNodeDragStart((event) => {
     nodeStore.nodeShift(event.node.id, event.node.computedPosition);
   });
+
+  return () => {
+    nodesChangeHook.off();
+    nodeDragStartHook.off();
+  };
 }

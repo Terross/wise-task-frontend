@@ -1,11 +1,19 @@
 <script setup lang="ts">
-import { VueFlow } from "@vue-flow/core";
+import { MarkerType, VueFlow } from "@vue-flow/core";
 import SpecialNode from "./SpecialNode.vue";
 import SpecialEdge from "./SpecialEdge.vue";
 import { useNodeStore } from "@/features/graph/stores/nodes";
-import { ref, nextTick, provide, onMounted } from "vue";
+import {
+  ref,
+  computed,
+  provide,
+  onMounted,
+  onUnmounted,
+  watch,
+  nextTick,
+} from "vue";
 import HelpingModal from "@/features/graph/ui/graph/HelpingModal.vue";
-import Background from "./Background";
+import Background from "./Background.vue";
 import RightClickModal from "@/features/graph/ui/graph/RightClickModal.vue";
 import DownloadGraphButton from "@/features/graph/ui/graph/DownloadGraphButton.vue";
 import { useVueFlowBus } from "@/features/graph/stores/vueFlowBus";
@@ -13,24 +21,51 @@ import { setupNodeChangesHandler } from "@/features/graph/lib/flowEventsHandlers
 import { setupEdgeChangesHandler } from "@/features/graph/lib/flowEventsHandlers/edgeEventsHandling";
 import SettingsDropDown from "@/features/graph/ui/graph/SettingsModal.vue";
 import HotKeysListener from "@/features/graph/ui/graph/HotKeysListener.vue";
+import { GraphType } from "@/__generated__/graphql";
+import {
+  graphCanColorKey,
+  graphNodeDraggingActiveKey,
+} from "@/features/graph/ui/graph/graphConstructorPolicy";
+import { GRAPH_VUE_FLOW_ID } from "@/features/graph/stores/vueFlowBus";
+import { graphSettingsStore } from "@/features/graph/stores/graphSettings";
 
 interface Props {
   style?: Record<string, string | number>;
+  canColor?: boolean;
+  graphType?: GraphType;
 }
 
 const props = defineProps<Props>();
 
-onMounted(() => {
-  setupEdgeChangesHandler();
-  setupNodeChangesHandler();
-});
-
 const nodeStore = useNodeStore();
+let cleanupEdgeHandlers: (() => void) | undefined;
+let cleanupNodeHandlers: (() => void) | undefined;
+let cleanupPaneContextMenu: (() => void) | undefined;
+const graphNodes = computed({
+  get: () => nodeStore.nodes as any,
+  set: (value) => {
+    nodeStore.nodes = value as any;
+  },
+});
+const graphEdges = computed({
+  get: () => nodeStore.edges as any,
+  set: (value) => {
+    nodeStore.edges = value as any;
+  },
+});
+const canColor = computed(() => props.canColor ?? true);
+provide(graphCanColorKey, canColor);
+const isMoveModifierPressed = ref(false);
+const isNodeDraggingActive = computed(
+  () => graphSettingsStore.isMoveMode || isMoveModifierPressed.value,
+);
+provide(graphNodeDraggingActiveKey, isNodeDraggingActive);
 
 const { vueFlowState } = useVueFlowBus();
 provide("vueFlowState", vueFlowState);
 
-const { onPaneContextMenu, project, setEdges, fitView } = vueFlowState;
+const { onPaneContextMenu, project, setEdges, fitView, updateNodeInternals } =
+  vueFlowState;
 
 const contextMenuPosition = ref({
   position: { x: 0, y: 0 },
@@ -38,28 +73,76 @@ const contextMenuPosition = ref({
 });
 const isHelpModalOpen = ref(false);
 const isRightClickModalOpen = ref(false);
+const connectionLineOptions = computed(() => ({
+  style: {
+    strokeWidth: 2,
+  },
+  ...(nodeStore.isDirected
+    ? {
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+        },
+      }
+    : {}),
+}));
 
-onPaneContextMenu((event) => {
-  event.preventDefault();
-  isRightClickModalOpen.value = false;
+const syncMoveModifierState = (event?: KeyboardEvent) => {
+  isMoveModifierPressed.value = !!(event?.ctrlKey || event?.metaKey);
+};
 
-  const pane = event.currentTarget as HTMLElement;
-  const bounds = pane.getBoundingClientRect();
+const resetMoveModifierState = () => {
+  isMoveModifierPressed.value = false;
+};
 
-  const modalPosition = {
-    x: event.clientX - bounds.left,
-    y: event.clientY - bounds.top,
-  };
+onMounted(() => {
+  cleanupEdgeHandlers = setupEdgeChangesHandler();
+  cleanupNodeHandlers = setupNodeChangesHandler();
+  window.addEventListener("keydown", syncMoveModifierState);
+  window.addEventListener("keyup", syncMoveModifierState);
+  window.addEventListener("blur", resetMoveModifierState);
 
-  const graphPosition = project(modalPosition);
+  const paneContextMenuHook = onPaneContextMenu((event) => {
+    event.preventDefault();
+    isRightClickModalOpen.value = false;
 
-  contextMenuPosition.value = {
-    modalPosition,
-    position: graphPosition,
-  };
+    const pane = event.currentTarget as HTMLElement;
+    const bounds = pane.getBoundingClientRect();
 
-  isRightClickModalOpen.value = true;
+    const modalPosition = {
+      x: event.clientX - bounds.left,
+      y: event.clientY - bounds.top,
+    };
+
+    const graphPosition = project(modalPosition);
+
+    contextMenuPosition.value = {
+      modalPosition,
+      position: graphPosition,
+    };
+
+    isRightClickModalOpen.value = true;
+  });
+
+  cleanupPaneContextMenu = paneContextMenuHook.off;
 });
+
+onUnmounted(() => {
+  cleanupEdgeHandlers?.();
+  cleanupNodeHandlers?.();
+  cleanupPaneContextMenu?.();
+  window.removeEventListener("keydown", syncMoveModifierState);
+  window.removeEventListener("keyup", syncMoveModifierState);
+  window.removeEventListener("blur", resetMoveModifierState);
+
+  cleanupEdgeHandlers = undefined;
+  cleanupNodeHandlers = undefined;
+  cleanupPaneContextMenu = undefined;
+});
+
+const toggleMoveMode = () => {
+  graphSettingsStore.isMoveMode = !graphSettingsStore.isMoveMode;
+  graphSettingsStore.saveToLocalStorage();
+};
 
 const handleAddNodeAtPosition = () => {
   nodeStore.addNode({
@@ -120,9 +203,35 @@ const addNodeToCenter = () => {
 
 const normalize = () => {
   const edges = nodeStore.normalizeView();
-  setEdges(JSON.parse(JSON.stringify(edges)));
+  setEdges(JSON.parse(JSON.stringify(edges)) as any);
   setTimeout(() => fitView({ padding: 5, includeHiddenNodes: true }), 150);
 };
+
+watch(
+  () => props.graphType,
+  (graphType) => {
+    if (graphType === GraphType.Direct) {
+      nodeStore.isDirected = true;
+    }
+    if (graphType === GraphType.Undirect) {
+      nodeStore.isDirected = false;
+    }
+  },
+  { immediate: true },
+);
+
+watch(
+  () => graphSettingsStore.isOneHandle,
+  async () => {
+    await nextTick();
+    updateNodeInternals(nodeStore.nodes.map((node) => node.id));
+  },
+);
+
+const isGraphTypeLocked = computed(
+  () => props.graphType === GraphType.Direct || props.graphType === GraphType.Undirect,
+);
+
 </script>
 
 <template>
@@ -131,7 +240,12 @@ const normalize = () => {
       <v-btn @click="addNodeToCenter">Добавить вершину</v-btn>
       <v-btn @click="undo">UNDO</v-btn>
       <DownloadGraphButton />
-      <v-btn @click="nodeStore.toggleIsDirected">Сменить направленность</v-btn>
+      <v-btn @click="toggleMoveMode"> 
+        {{ graphSettingsStore.isMoveMode ? "Режим связей" : "Режим передвижения" }}
+      </v-btn>
+      <v-btn @click="nodeStore.toggleIsDirected" :disabled="isGraphTypeLocked">
+        Сменить направленность
+      </v-btn>
       <v-btn @click="normalize">Нормализовать граф</v-btn>
       <v-btn>
         <label for="upload-json" style="cursor: pointer">Загрузить JSON</label>
@@ -147,9 +261,14 @@ const normalize = () => {
       <SettingsDropDown />
     </div>
     <VueFlow
+      :id="GRAPH_VUE_FLOW_ID"
       :connection-radius="50"
-      v-model:nodes="nodeStore.nodes"
-      v-model:edges="nodeStore.edges"
+      :connection-line-options="connectionLineOptions"
+      :edge-updater-radius="20"
+      :connect-on-click="false"
+      :nodes-draggable="isNodeDraggingActive"
+      v-model:nodes="graphNodes"
+      v-model:edges="graphEdges"
       class="pinia-flow"
       @pane-click="closeRightClickModal"
     >

@@ -24,6 +24,7 @@ interface GraphSettingsStore {
   patternSize: number;
   patternColor: string;
   isOneHandle: boolean;
+  isMoveMode: boolean;
 }
 
 const STORAGE_KEY: string = "graphSettings";
@@ -39,6 +40,7 @@ const getDefaultSettings = (): GraphSettingsStore => ({
   patternSize: BACKGROUND_DEFAULT_SIZE,
   patternColor: BACKGROUND_DEFAULT_COLOR,
   isOneHandle: false,
+  isMoveMode: false,
 });
 
 const loadSettings = (): GraphSettingsStore => {

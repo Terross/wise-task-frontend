@@ -58,6 +58,7 @@ export const useNodeStore = defineStore("nodes", {
         type: "special",
         data: {
           label,
+          weight: 0,
           size: {
             width: graphSettingsStore.defaultNodeSize,
             height: graphSettingsStore.defaultNodeSize,
@@ -291,8 +292,11 @@ export const useNodeStore = defineStore("nodes", {
     },
 
     addEdge(edge: CustomEdge) {
-      edge.data.color = "#949494";
-      edge.data.weight = 0;
+      edge.data = {
+        ...edge.data,
+        color: "#949494",
+        weight: 0,
+      };
       this.edges.push(edge);
       history.onStateUpdate({
         type: "edge:add",
