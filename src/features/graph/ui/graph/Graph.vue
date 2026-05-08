@@ -35,7 +35,9 @@ interface Props {
   graphType?: GraphType;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  canColor: true,
+});
 
 const nodeStore = useNodeStore();
 let cleanupEdgeHandlers: (() => void) | undefined;
@@ -53,7 +55,7 @@ const graphEdges = computed({
     nodeStore.edges = value as any;
   },
 });
-const canColor = computed(() => props.canColor ?? true);
+const canColor = computed(() => props.canColor);
 provide(graphCanColorKey, canColor);
 const isMoveModifierPressed = ref(false);
 const isNodeDraggingActive = computed(

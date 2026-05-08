@@ -23,6 +23,7 @@
           border: '1px solid black',
           boxSizing: 'border-box',
         }"
+          :can-color="taskGraphInput.rule.isColor"
       />
 
       <v-btn
@@ -129,6 +130,7 @@ export default defineComponent({
 
     return {
       taskTextModel,
+      taskGraphInput,
       taskGraphConstructorInfo,
       drawer,
       drawerWidth,

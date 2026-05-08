@@ -12,7 +12,12 @@ import { useProfileStore } from "@/store/profile";
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   extendRoutes: (routes: any) => [
-    ...setupLayouts(routes),
+    {
+      path: "/",
+      redirect: "/plugins",
+    },
+
+    ...setupLayouts(routes).filter((route: any) => route.path !== "/"),
 
     {
       path: "/**",
